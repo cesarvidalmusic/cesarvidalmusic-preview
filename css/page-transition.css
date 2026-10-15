@@ -1,0 +1,73 @@
+/* Shared navigation transition. Keep timing and visual settings in one place. */
+:root {
+  --cv-transition-ready: 1;
+  --cv-transition-out-duration: 500ms;
+  --cv-transition-in-duration: 650ms;
+  --cv-transition-reduced-out-duration: 80ms;
+  --cv-transition-reduced-in-duration: 100ms;
+}
+
+.cv-transition-entering,
+.cv-transition-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483600;
+  opacity: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse at 57% 63%,
+      rgba(44, 85, 68, 0.18),
+      transparent 75%
+    ),
+    #242017;
+}
+
+.cv-transition-curtain {
+  transition: opacity var(--cv-transition-out-duration) cubic-bezier(0.40, 0, 0.22, 1);
+}
+
+.cv-transition-curtain.is-covered,
+html.cv-transition-incoming .cv-transition-entering {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+html.cv-transition-leaving [data-page-transition-content],
+html.cv-transition-incoming [data-page-transition-content] {
+  filter: blur(7px) brightness(0.90);
+  transform: scale(1.008);
+}
+
+html.cv-transition-leaving [data-page-transition-content] {
+  transition:
+    filter var(--cv-transition-out-duration) cubic-bezier(0.40, 0, 0.22, 1),
+    transform var(--cv-transition-out-duration) cubic-bezier(0.40, 0, 0.22, 1);
+}
+
+/* CSS fallback for browsers without Element.animate. */
+html.cv-transition-incoming.cv-transition-reveal .cv-transition-entering {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cv-transition-in-duration) cubic-bezier(0.40, 0, 0.22, 1);
+}
+
+html.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
+  filter: blur(0) brightness(1);
+  transform: scale(1);
+  transition:
+    filter var(--cv-transition-in-duration) cubic-bezier(0.40, 0, 0.22, 1),
+    transform var(--cv-transition-in-duration) cubic-bezier(0.40, 0, 0.22, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-transition-curtain,
+  html.cv-transition-leaving [data-page-transition-content] {
+    transition-duration: var(--cv-transition-reduced-out-duration);
+  }
+
+  html.cv-transition-incoming.cv-transition-reveal .cv-transition-entering,
+  html.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
+    transition-duration: var(--cv-transition-reduced-in-duration);
+  }
+}

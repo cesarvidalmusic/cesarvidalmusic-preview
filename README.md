@@ -1,83 +1,41 @@
-# cesarvidalmusic.art
+# César Vidal — web de pruebas
 
-Personal website of César Vidal — saxophonist, composer and improviser.
+Vista previa: <https://cesarvidalmusic.github.io/cesarvidalmusic-preview/>
 
----
+Este repositorio permite probar cambios antes de llevarlos a la web oficial.
+GitHub Pages publica automáticamente la rama `main`, desde la raíz. No añadir
+un archivo `CNAME` ni configurar aquí el dominio `cesarvidalmusic.art`.
 
-## Estructura de archivos
+## Transición entre páginas
 
+Las 13 páginas HTML comparten `page-transition.js` y `css/page-transition.css`.
+La salida dura 500 ms y la entrada 650 ms, conservando el fondo oscuro, el
+degradado y el desenfoque aprobados. Los ajustes de duración están en las
+variables CSS. La preferencia de movimiento reducido usa 80 ms y 100 ms.
+
+Cada HTML detecta la navegación desde el `<head>`, incluye la cortina de entrada
+y marca su contenedor con `data-page-transition-content`. La galería expone
+`window.cvPageReady` para que su contenido esté listo antes del fundido.
+
+El controlador cubre enlaces internos del menú y tarjetas creadas dinámicamente.
+Respeta enlaces externos, descargas, nuevas pestañas y enlaces desactivados.
+Al añadir otra página, incluir los mismos elementos y registrar su nombre en
+`ALLOWED_PAGES` dentro de `page-transition.js`. Al cambiar los archivos compartidos,
+actualizar su parámetro de versión en los HTML para renovar la caché del navegador.
+
+## Comprobación de cambios
+
+En el entorno de desarrollo, con Python Playwright, Chromium y Node disponibles:
+
+```sh
+python3 tests/test_page_transitions.py
 ```
-cesarvidalmusic/
-├── index.html          ← Home
-├── bio.html
-├── music.html
-├── projects.html
-├── contact.html
-├── css/
-│   └── style.css
-├── fonts/
-│   ├── Mattone-Black.woff2     ← DEBES DESCARGAR (ver abajo)
-│   └── Mattone-Regular.woff2  ← DEBES DESCARGAR (ver abajo)
-└── img/
-    ├── hero.jpg                ← Tu foto principal (home)
-    └── bio-photo.jpg           ← Tu foto de la página Bio
-```
 
----
+La prueba inicia un servidor local temporal y comprueba los enlaces internos,
+las entradas y salidas completas, móvil, movimiento reducido, caché, cargas
+lentas y recuperación cuando faltan recursos o se bloquea el almacenamiento.
+No comprueba la reproducción de servicios externos como Bandcamp.
 
-## Paso 1: Descargar las fuentes
-
-1. Ve a https://www.collletttivo.it/typefaces/mattone
-2. Haz click en **Download**
-3. Descomprime el zip
-4. Copia `Mattone-Black.woff2` y `Mattone-Regular.woff2` a la carpeta `fonts/`
-
----
-
-## Paso 2: Agregar tus fotos
-
-- `img/hero.jpg` → tu foto principal (la de Amsterdam en B&N, horizontal)
-- `img/bio-photo.jpg` → retrato para la página Bio
-
-Puedes usar JPG o WEBP. Recomendado: máximo 1.5MB por imagen para que cargue rápido.
-
----
-
-## Paso 3: Actualizar los links
-
-Busca los comentarios `<!-- Replace ... -->` en cada HTML y pon tus URLs reales:
-- Email en contact.html
-- Links de Bandcamp, Apple Music, Instagram, YouTube
-
----
-
-## Paso 4: Subir a GitHub Pages
-
-1. Crea una cuenta en https://github.com si no tienes
-2. Crea un repositorio nuevo llamado `cesarvidalmusic` (público)
-3. Sube todos los archivos (arrastra y suelta en la interfaz web de GitHub)
-4. Ve a Settings → Pages → Source: Deploy from branch → main → / (root)
-5. GitHub te dará una URL tipo `tuusuario.github.io/cesarvidalmusic`
-
----
-
-## Paso 5: Conectar tu dominio de Porkbun
-
-En Porkbun, ve a DNS de tu dominio y agrega estos registros:
-
-| Type  | Host | Answer               | TTL  |
-|-------|------|----------------------|------|
-| A     | @    | 185.199.108.153      | 600  |
-| A     | @    | 185.199.109.153      | 600  |
-| A     | @    | 185.199.110.153      | 600  |
-| A     | @    | 185.199.111.153      | 600  |
-| CNAME | www  | tuusuario.github.io  | 600  |
-
-Luego en GitHub → Settings → Pages → Custom domain: escribe `cesarvidalmusic.art`
-Activa "Enforce HTTPS" (puede tardar unos minutos en aparecer).
-
----
-
-## Actualizar el sitio en el futuro
-
-Para cambiar cualquier contenido: edita el archivo HTML en GitHub directamente desde el navegador (botón del lápiz), haz commit, y el sitio se actualiza en ~1 minuto.
+Tras subir cambios a este repositorio, esperar a que termine correctamente el
+despliegue de Pages y probar la vista previa en el navegador. La publicación
+de esta copia es independiente de la web oficial.
