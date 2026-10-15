@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SPAM — César Vidal" />
+  <title>SPAM — César Vidal</title>
+
+  <link rel="preload" href="fonts/Ronzino-BoldOblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" as="image" href="img/spam-corner-static.webp" type="image/webp" fetchpriority="high">
+  <link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script defer src="favicon.js?v=6"></script>
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    :root {
+      --spam-cream: #E6DFC5;
+      --spam-black: #050505;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--spam-cream);
+    }
+
+    .cv-page {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--spam-cream);
+    }
+
+    .cv-nav {
+      background: transparent;
+      z-index: 5;
+    }
+
+    .cv-nav.cv-nav--light a {
+      color: rgba(5,5,5,0.72);
+    }
+
+    .cv-nav.cv-nav--light a:hover {
+      color: var(--accent);
+    }
+
+    .cv-nav a.active {
+      color: var(--accent);
+      text-shadow: 0.35px 0 currentColor, -0.35px 0 currentColor;
+    }
+
+    .cv-page-content {
+      position: relative;
+      z-index: 2;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding-top: var(--nav-height);
+      box-sizing: border-box;
+      background: transparent;
+    }
+
+    .cv-spam-stage {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 0.53fr) minmax(0, 0.47fr);
+      align-items: center;
+      gap: clamp(1.4rem, 2.8vw, 3.2rem);
+      padding: 0 var(--pad-x) 2.3rem 0;
+      box-sizing: border-box;
+    }
+
+    .cv-spam-artwork-wrap {
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .cv-spam-artwork-img {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      display: block;
+      width: min(52vw, 650px);
+      max-width: none;
+      height: auto;
+      object-fit: contain;
+      background: transparent;
+      z-index: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .cv-spam-text-panel {
+      width: 100%;
+      max-width: 680px;
+      min-width: 0;
+      font-family: 'Ronzino', sans-serif;
+      color: var(--spam-black);
+      justify-self: start;
+      position: relative;
+      z-index: 3;
+    }
+
+    .cv-page-title {
+      margin: 0 0 clamp(1rem, 2vh, 1.45rem);
+      color: var(--spam-black);
+    }
+
+    .cv-spam-copy {
+      margin: 0 0 0.78rem;
+      font-size: clamp(12px, 0.92vw, 14.2px);
+      line-height: 1.43;
+      letter-spacing: 0.002em;
+      color: rgba(5,5,5,0.84);
+      text-align: justify;
+      text-justify: inter-word;
+    }
+
+    .cv-spam-copy em {
+      font-style: italic;
+    }
+
+    .cv-spam-copy strong {
+      font-weight: 400;
+      text-shadow: 0.35px 0 currentColor, -0.35px 0 currentColor;
+    }
+
+    .cv-spam-bandcamp-area {
+      margin-top: clamp(1rem, 2vh, 1.4rem);
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .cv-spam-bandcamp-area iframe {
+      display: block;
+      width: 100%;
+      height: 120px;
+      border: 0;
+    }
+
+    .cv-spam-footer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 4;
+      padding: 0.55rem clamp(0.5rem, 2vw, 1.25rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      border: 0;
+      pointer-events: none;
+    }
+
+    .cv-spam-footer span {
+      font-family: 'Ronzino', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      color: rgba(5,5,5,0.58);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cv-page">
+
+    <nav class="cv-nav cv-nav--light">
+      <ul>
+        <li><a href="index.html">home</a></li>
+        <li><a href="bio.html">bio</a></li>
+        <li><a href="music-projects.html" class="active">music &amp; projects</a></li>
+        <li><a href="https://syos.co/en/blogs/our-artists/cesar-vidal" target="_blank" rel="noopener">syos artist</a></li>
+        <li><a href="gonzalez-reeds.html">gonzalez reeds</a></li>
+<li class="cv-nav-soon">
+  <a href="#" aria-disabled="true">merch</a>
+  <span class="cv-nav-soon-bubble">coming soon</span>
+</li>        <li><a href="contact.html">contact</a></li>
+      </ul>
+    </nav>
+
+    <main class="cv-page-content">
+      <section class="cv-spam-stage">
+
+        <div class="cv-spam-artwork-wrap">
+          <img
+            class="cv-spam-artwork-img"
+            src="img/spam-corner-static.webp"
+            alt="SPAM artwork"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </div>
+
+        <article class="cv-spam-text-panel">
+          <h1 class="cv-page-title"><em>SPAM</em></h1>
+
+          <p class="cv-spam-copy">
+            <strong>SPAM</strong> is the second release by the duo of César Vidal and Chilean guitarist Nicolás Vera, recorded between January and February 2026. The EP features eight compositions and remote improvisations developed through an exploration of sound, texture, melody, and harmony.
+          </p>
+
+          <p class="cv-spam-copy">
+            Building on the acoustic foundation of their first release, <em>NUBES</em>, <strong>SPAM</strong> expands the duo’s sonic palette through electronic textures, analog effects, synthesizers, and subtle forms of sound processing. The material was recorded remotely, with Vera working from Bruma in Santiago, Chile, and Vidal recording in Amsterdam.
+          </p>
+
+          <p class="cv-spam-copy">
+            The EP was mixed by Nicolás Vera and marks the duo’s second collaboration with Chilean engineer Gonzalo “Chalo” González, a Latin Grammy nominee who has worked on numerous significant recordings within Chilean popular music.
+          </p>
+
+          <p class="cv-spam-copy">
+            <strong>SPAM</strong> was officially presented on April 24, 2026, as part of the clubnight programme of <strong>jazzahead! 2026</strong> in Bremen, Germany.
+          </p>
+
+          <div class="cv-spam-bandcamp-area">
+            <iframe
+              src="https://bandcamp.com/EmbeddedPlayer/album=2821956132/size=large/bgcol=333333/linkcol=c8400a/tracklist=false/artwork=none/transparent=true/"
+              seamless>
+              <a href="https://cesarvidal.bandcamp.com/album/spam-2">SPAM by César Vidal, Nicolás Vera</a>
+            </iframe>
+          </div>
+        </article>
+
+      </section>
+    </main>
+
+    <footer class="cv-spam-footer">
+      <span>© 2026 César Vidal</span>
+      <span>cesarvidalmusic.art</span>
+    </footer>
+
+  </div>
+  <script>
+  document.querySelectorAll(".cv-nav-soon > a").forEach(link => {
+    link.addEventListener("click", event => {
+      event.preventDefault();
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="César Vidal — Saxophonist, Composer and Improviser based in Amsterdam." />
+  <title>César Vidal</title>
+
+  <link rel="preload" href="fonts/Ronzino-BoldOblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
+
+  <link rel="preload" as="image" href="img/hero-home.webp" type="image/webp" fetchpriority="high">
+
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <script defer src="favicon.js?v=6"></script>
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .cv-home-wrap {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .cv-hero {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+      background: #0d0d0d;
+      min-height: 0;
+    }
+
+    .cv-hero-img-wrap {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .cv-hero-img {
+      position: absolute;
+
+      top: -8px;
+      right: 0;
+      bottom: -8px;
+      left: -0.7cm;
+
+      width: calc(100% + 0.7cm);
+      height: calc(100% + 16px);
+
+      object-fit: cover;
+      object-position: 50% 56%;
+
+      display: block;
+      animation: heroBlur 50s ease-in-out infinite;
+      will-change: filter;
+    }
+
+    @keyframes heroBlur {
+      0%   { filter: blur(0px) brightness(1); }
+      50%  { filter: blur(9px) brightness(0.88); }
+      100% { filter: blur(0px) brightness(1); }
+    }
+
+    .cv-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.55) 0%,
+        rgba(0,0,0,0.08) 40%,
+        rgba(0,0,0,0.0) 65%,
+        rgba(0,0,0,0.18) 100%
+      );
+      z-index: 1;
+    }
+
+    .cv-hero-content {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-top: clamp(0.35rem, 1vw, 0.75rem);
+      padding-right: clamp(2rem, 4vw, 3.5rem);
+      padding-bottom: clamp(0.8rem, 2.15vw, 1.35rem);
+      padding-left: clamp(2rem, 4vw, 3.5rem);
+    }
+
+    .cv-hero-name {
+      font-family: 'Ronzino', serif;
+      font-weight: 700;
+      font-style: oblique;
+      font-size: clamp(36px, 7.5vw, 86px);
+      line-height: 1;
+      color: #fff;
+      text-transform: lowercase;
+      letter-spacing: -0.06em;
+      text-align: right;
+      margin-top: clamp(1.2rem, 2.5vw, 2rem);
+      flex-shrink: 0;
+    }
+
+    .cv-hero-spacer {
+      flex: 1;
+    }
+
+    .cv-hero-tagline-left {
+      position: absolute;
+      bottom: clamp(0.5rem, 1.5vw, 1rem);
+      left: clamp(0.5rem, 2vw, 1.25rem);
+      font-family: 'Ronzino', sans-serif;
+      font-size: clamp(9px, 0.9vw, 11px);
+      letter-spacing: 0.16em;
+      color: rgba(255,255,255,0.45);
+      z-index: 11;
+    }
+
+    .cv-hero-tagline-right {
+      position: absolute;
+      bottom: clamp(0.5rem, 1.5vw, 1rem);
+      right: clamp(0.75rem, 2vw, 1.25rem);
+      font-family: 'Ronzino', sans-serif;
+      font-size: clamp(9px, 0.9vw, 11px);
+      letter-spacing: 0.16em;
+      color: rgba(255,255,255,0.45);
+      z-index: 11;
+    }
+
+    .cv-dot {
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #C8400A;
+      margin: 0 0.4em;
+      vertical-align: middle;
+    }
+
+    .cv-home-footer {
+      flex-shrink: 0;
+      padding: 0.65rem clamp(0.5rem, 2vw, 1.25rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 0.5px solid #E0E0E0;
+      background: #fff;
+    }
+
+    .cv-home-footer span {
+      font-family: 'Ronzino', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      color: #bbb;
+    }
+
+    .cv-nav-soon {
+      position: relative;
+    }
+
+    .cv-nav-soon > a {
+      cursor: default;
+    }
+
+    .cv-nav-soon-bubble {
+      position: absolute;
+      top: calc(100% + 0.55rem);
+      left: 50%;
+      transform: translateX(-50%) translateY(-0.15rem);
+      opacity: 0;
+      pointer-events: none;
+
+      padding: 0.34rem 0.52rem 0.38rem;
+      border-radius: 999px;
+
+      font-family: 'Ronzino', sans-serif;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
+      white-space: nowrap;
+
+      color: #ffffff;
+      background: var(--accent);
+
+      transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+    }
+
+    .cv-nav-soon:hover .cv-nav-soon-bubble {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cv-home-wrap">
+
+    <section class="cv-hero">
+      <div class="cv-hero-img-wrap">
+        <img
+          class="cv-hero-img"
+          src="img/hero-home.webp"
+          alt="César Vidal — photo by Orlando Pedroso"
+          decoding="async"
+          fetchpriority="high"
+        />
+      </div>
+
+      <div class="cv-hero-overlay"></div>
+
+      <nav class="cv-nav cv-nav--dark cv-home-main-nav">
+        <ul>
+          <li><a href="bio.html">bio</a></li>
+          <li><a href="music-projects.html">music &amp; projects</a></li>
+          <li><a href="https://syos.co/en/blogs/our-artists/cesar-vidal" target="_blank" rel="noopener">syos artist</a></li>
+          <li><a href="gonzalez-reeds.html">gonzalez reeds</a></li>
+          <li class="cv-nav-soon">
+            <a href="#" aria-disabled="true">merch</a>
+            <span class="cv-nav-soon-bubble">coming soon</span>
+          </li>
+          <li><a href="contact.html">contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="cv-hero-content">
+        <div class="cv-hero-name">césar vidal</div>
+        <div class="cv-hero-spacer"></div>
+      </div>
+
+      <span class="cv-hero-tagline-left">
+        saxophonist<span class="cv-dot"></span>composer<span class="cv-dot"></span>improviser
+      </span>
+
+      <span class="cv-hero-tagline-right">photo by Orlando Pedroso</span>
+    </section>
+
+    <footer class="cv-home-footer">
+      <span>© 2026 César Vidal</span>
+      <span>cesarvidalmusic.art</span>
+    </footer>
+
+  </div>
+
+  <script>
+    document.querySelectorAll(".cv-nav-soon > a").forEach(link => {
+      link.addEventListener("click", event => {
+        event.preventDefault();
+      });
+    });
+  </script>
+</body>
+</html>

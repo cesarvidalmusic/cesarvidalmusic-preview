@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Music & Projects — César Vidal." />
+  <title>Music & Projects — César Vidal</title>
+
+  <link rel="preload" href="fonts/Ronzino-BoldOblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
+
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <script defer src="favicon.js?v=6"></script>
+
+  <link rel="preload" as="image" href="img/cover-des-visages.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/cover-nubes.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/cover-spam.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/cover-artikulation-band.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/cover-solo-project.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/cover-des-visages-ep.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/cover-aleas.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/cover-flor-de-loto.webp" type="image/webp" fetchpriority="high">
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .cv-page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .cv-page-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding-top: 0;
+    }
+
+    .cv-mp-stage {
+      flex: none;
+      min-height: 0;
+      height: calc(100vh - (var(--nav-height) * 2) - 52px);
+      padding: 0 var(--pad-x);
+      display: flex;
+      gap: 0;
+      overflow: hidden;
+    }
+
+    .cv-mp-col {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      border-left: 0.5px solid #E0E0E0;
+    }
+
+    .cv-mp-col:last-child {
+      border-right: 0.5px solid #E0E0E0;
+    }
+
+    .cv-mp-track {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      will-change: transform;
+    }
+
+    .cv-mp-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1rem 1rem 1.15rem;
+      border-bottom: 0.5px solid #E0E0E0;
+      height: 75vh;
+      box-sizing: border-box;
+      text-decoration: none;
+      color: #0A0A0A;
+      gap: 0.82rem;
+      transition: background 0.35s ease, transform 0.35s ease;
+      transform-origin: center center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cv-mp-card:hover {
+      background: var(--hover-color);
+      transform: scale(1.03);
+      z-index: 2;
+    }
+
+    .cv-mp-card--coming-soon {
+      cursor: default;
+    }
+
+    .cv-mp-cover {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .cv-mp-card-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.44rem;
+      min-height: 0;
+      max-width: 100%;
+      transition: transform 0.35s ease;
+    }
+
+    .cv-mp-card:hover .cv-mp-card-text {
+      transform: translateY(-0.02rem);
+    }
+
+    .cv-mp-card-title {
+      font-family: 'Ronzino', sans-serif;
+      font-weight: 400;
+      font-size: clamp(13px, 1.25vw, 18px);
+      line-height: 1.16;
+      letter-spacing: 0.005em;
+      color: #0A0A0A;
+      transition: color 0.35s ease;
+    }
+
+    .cv-mp-card-title em {
+      font-style: italic;
+    }
+
+    .cv-mp-card-preview {
+      display: -webkit-box;
+      -webkit-line-clamp: 8;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+
+      font-family: 'Ronzino', sans-serif;
+      font-weight: 400;
+      font-size: clamp(11.7px, 0.9vw, 13.8px);
+      line-height: 1.36;
+      letter-spacing: 0.001em;
+      color: rgba(10,10,10,0.72);
+      transition: color 0.35s ease;
+    }
+
+    .cv-mp-card-preview em {
+      font-style: italic;
+    }
+
+    .cv-mp-card-more {
+      margin-top: 0.08rem;
+      font-family: 'Ronzino', sans-serif;
+      font-weight: 400;
+      font-size: clamp(10px, 0.78vw, 11.8px);
+      line-height: 1.2;
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
+      color: rgba(10,10,10,0.46);
+      transition: color 0.35s ease;
+    }
+
+    .cv-mp-coming-soon {
+      margin-top: 0.08rem;
+      font-family: 'Ronzino', sans-serif;
+      font-weight: 400;
+      font-size: clamp(10px, 0.78vw, 11.8px);
+      line-height: 1.2;
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
+      color: rgba(10,10,10,0.48);
+      transition: color 0.35s ease;
+    }
+
+    .cv-mp-footer {
+      flex-shrink: 0;
+      padding: 0.55rem clamp(0.5rem, 2vw, 1.25rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 0.5px solid #E0E0E0;
+      background: #fff;
+    }
+
+    .cv-mp-footer span {
+      font-family: 'Ronzino', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      color: #bbb;
+    }
+
+    .cv-page-hero {
+      padding-top: calc(var(--nav-height) + 0.75rem);
+      flex-shrink: 0;
+    }
+
+    .cv-nav-soon {
+      position: relative;
+    }
+
+    .cv-nav-soon > a {
+      cursor: default;
+    }
+
+    .cv-nav-soon-bubble {
+      position: absolute;
+      top: calc(100% + 0.55rem);
+      left: 50%;
+      transform: translateX(-50%) translateY(-0.15rem);
+      opacity: 0;
+      pointer-events: none;
+
+      padding: 0.34rem 0.52rem 0.38rem;
+      border-radius: 999px;
+
+      font-family: 'Ronzino', sans-serif;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
+      white-space: nowrap;
+
+      color: #ffffff;
+      background: var(--accent);
+
+      transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+    }
+
+    .cv-nav-soon:hover .cv-nav-soon-bubble {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cv-page">
+
+    <nav class="cv-nav cv-nav--light">
+      <ul>
+        <li><a href="index.html">home</a></li>
+        <li><a href="bio.html">bio</a></li>
+        <li><a href="music-projects.html" class="active">music &amp; projects</a></li>
+        <li><a href="https://syos.co/en/blogs/our-artists/cesar-vidal" target="_blank" rel="noopener">syos artist</a></li>
+        <li><a href="gonzalez-reeds.html">gonzalez reeds</a></li>
+        <li class="cv-nav-soon">
+          <a href="#" aria-disabled="true">merch</a>
+          <span class="cv-nav-soon-bubble">coming soon</span>
+        </li>
+        <li><a href="contact.html">contact</a></li>
+      </ul>
+    </nav>
+
+    <main class="cv-page-content">
+
+      <div class="cv-page-hero">
+        <h1 class="cv-page-title">music &amp; projects</h1>
+      </div>
+
+      <div class="cv-mp-stage" id="stage">
+
+        <div class="cv-mp-col">
+          <div class="cv-mp-track" id="track0"></div>
+        </div>
+
+        <div class="cv-mp-col">
+          <div class="cv-mp-track" id="track1"></div>
+        </div>
+
+        <div class="cv-mp-col">
+          <div class="cv-mp-track" id="track2"></div>
+        </div>
+
+        <div class="cv-mp-col">
+          <div class="cv-mp-track" id="track3"></div>
+        </div>
+
+      </div>
+    </main>
+
+    <footer class="cv-mp-footer">
+      <span>© 2026 César Vidal</span>
+      <span>cesarvidalmusic.art</span>
+    </footer>
+
+  </div>
+
+  <script>
+    const SPEEDS = [22, 30, 18, 26];
+
+    const DIRS = [1, -1, 1, -1];
+
+    const stageEl = document.getElementById("stage");
+
+    const trackEls = [
+      document.getElementById("track0"),
+      document.getElementById("track1"),
+      document.getElementById("track2"),
+      document.getElementById("track3")
+    ];
+
+    const PROJECTS = [
+      {
+        title: "Des Visages",
+        image: "img/cover-des-visages.webp",
+        link: "des-visages.html",
+        preview: "A Europe-based duo of saxophone and live electronics created by Chilean musicians Jorge Care and César Vidal. Their music unfolds through spontaneous interaction, prepared saxophone, synthesizers, controllers and digital environments, weaving sonic narratives that blur the boundaries between acoustic and electronic sound."
+      },
+      {
+        title: "NUBES",
+        image: "img/cover-nubes.webp",
+        link: "nubes.html",
+        italic: true,
+        preview: "The first duo album by César Vidal and Chilean guitarist Nicolás Vera, created through a period of remote collaboration between Amsterdam and Santiago. The music features original compositions by both musicians and develops an airy, fluid character inspired by the behavior of clouds."
+      },
+      {
+        title: "SPAM",
+        image: "img/cover-spam.webp",
+        link: "spam.html",
+        italic: true,
+        preview: "The second release by César Vidal and Nicolás Vera, recorded between January and February 2026. The EP expands the duo’s acoustic foundation through electronic textures, analog effects, synthesizers and subtle sound processing, while continuing their exploration of sound, texture, melody and harmony."
+      },
+      {
+        title: "César Vidal & Artikulation Band",
+        image: "img/cover-artikulation-band.webp",
+        link: "artikulation-band.html",
+        preview: "A multicultural contemporary jazz quintet based in the Netherlands, bringing together musicians from Chile, Italy, Portugal and the Basque Country. The group explores the intersection between acoustic and electronic sound worlds through composition, improvisation and live electronics."
+      },
+      {
+        title: "Solo Project",
+        image: "img/cover-solo-project.webp",
+        link: null,
+        comingSoon: true,
+        preview: "A project for solo saxophone based on the sonic exploration of the instrument through non-conventional techniques and improvisation. Currently in development, the project investigates sympathetic resonances through piano, as well as possible electronic extensions."
+      },
+      {
+        title: "Des Visages (EP)",
+        image: "img/cover-des-visages-ep.webp",
+        link: "des-visages-ep.html",
+        italic: true,
+        preview: "The recorded debut of Des Visages, captured in 2025 at Studio d’enregistrement HEM in Geneva, Switzerland. Comprising three original pieces, the EP consolidates the duo’s aesthetic vision, where acoustic and electronic elements intertwine through improvisation."
+      },
+      {
+        title: "aleas",
+        image: "img/cover-aleas.webp",
+        link: "aleas.html",
+        italic: true,
+        preview: "The second recording project by Des Visages, recorded at Dijktheater in Amsterdam. The album emerged from the duo’s interest in improvisation in its most direct form, where chance, risk, listening and real-time interaction shape the music as it unfolds."
+      },
+      {
+        title: "Flor de Loto",
+        image: "img/cover-flor-de-loto.webp",
+        link: "flor-de-loto.html",
+        italic: true,
+        preview: "A duo album by César Vidal and Chilean pianist Joaquín Fuentes, recorded during an early and meaningful stage in Vidal’s musical path. The music comes from friendship, silence and spontaneous interaction, creating an acoustic space that feels honest, fragile and direct."
+      }
+    ];
+
+    const HOVER_COLORS = [
+      "#242017",
+      "#2c5544",
+      "#ed6551",
+      "#efd06f"
+    ];
+
+    const DARK_HOVER_COLORS = [
+      "#242017",
+      "#2c5544"
+    ];
+
+    const offsets = [0, 0, 0, 0];
+
+    let cardHeight = 0;
+    let lastTime = null;
+
+    function preloadProjectImages() {
+      const loaders = PROJECTS.map(project => {
+        return new Promise(resolve => {
+          const img = new Image();
+
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+
+          img.decoding = "async";
+          img.loading = "eager";
+          img.src = project.image;
+        });
+      });
+
+      return Promise.all(loaders);
+    }
+
+    function shuffle(array) {
+      const copy = [...array];
+
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+
+      return copy;
+    }
+
+    function setCardProject(card, project) {
+      card.dataset.project = project.title;
+
+      card.classList.remove("cv-mp-card--coming-soon");
+      card.removeAttribute("aria-disabled");
+
+      if (project.link) {
+        card.href = project.link;
+      } else {
+        card.removeAttribute("href");
+        card.setAttribute("aria-disabled", "true");
+        card.classList.add("cv-mp-card--coming-soon");
+      }
+
+      card.innerHTML = `
+        <img class="cv-mp-cover" src="${project.image}" alt="${project.title}" loading="eager" decoding="async" fetchpriority="high" />
+        <span class="cv-mp-card-text">
+          <span class="cv-mp-card-title">
+            ${project.italic ? "<em>" + project.title + "</em>" : project.title}
+          </span>
+          <span class="cv-mp-card-preview">
+            ${project.preview}
+          </span>
+          ${
+            project.comingSoon
+              ? '<span class="cv-mp-coming-soon">coming soon</span>'
+              : '<span class="cv-mp-card-more">read more…</span>'
+          }
+        </span>
+      `;
+
+      card.style.removeProperty("--hover-color");
+    }
+
+    function createCard(project) {
+      const card = document.createElement("a");
+
+      card.className = "cv-mp-card";
+
+      setCardProject(card, project);
+      addHover(card);
+
+      if (project.comingSoon) {
+        card.addEventListener("click", event => {
+          event.preventDefault();
+        });
+      }
+
+      return card;
+    }
+
+    function applyHoverTextColor(card, color) {
+      const textElements = card.querySelectorAll(
+        ".cv-mp-card-title, .cv-mp-card-preview, .cv-mp-card-more, .cv-mp-coming-soon"
+      );
+
+      textElements.forEach(element => {
+        if (DARK_HOVER_COLORS.includes(color)) {
+          element.style.color = "#ffffff";
+        } else {
+          element.style.color = "#0A0A0A";
+        }
+      });
+    }
+
+    function clearHoverTextColor(card) {
+      const textElements = card.querySelectorAll(
+        ".cv-mp-card-title, .cv-mp-card-preview, .cv-mp-card-more, .cv-mp-coming-soon"
+      );
+
+      textElements.forEach(element => {
+        element.style.color = "";
+      });
+    }
+
+    function addHover(card) {
+      card.addEventListener("mouseenter", () => {
+        const color = HOVER_COLORS[
+          Math.floor(Math.random() * HOVER_COLORS.length)
+        ];
+
+        card.style.setProperty("--hover-color", color);
+        applyHoverTextColor(card, color);
+      });
+
+      card.addEventListener("mouseleave", () => {
+        card.style.removeProperty("--hover-color");
+        clearHoverTextColor(card);
+      });
+    }
+
+    function getVisibleCards() {
+      const stageRect = stageEl.getBoundingClientRect();
+
+      return Array
+        .from(document.querySelectorAll(".cv-mp-card"))
+        .filter(card => {
+          const rect = card.getBoundingClientRect();
+
+          return (
+            rect.top < stageRect.bottom &&
+            rect.bottom > stageRect.top
+          );
+        });
+    }
+
+    function getVisibleProjectTitles(excludeCard = null) {
+      return getVisibleCards()
+        .filter(card => card !== excludeCard)
+        .map(card => card.dataset.project)
+        .filter(Boolean);
+    }
+
+    function pickProject(blockedTitles = []) {
+      let available = PROJECTS.filter(project => {
+        return !blockedTitles.includes(project.title);
+      });
+
+      if (available.length === 0) {
+        available = PROJECTS;
+      }
+
+      return available[
+        Math.floor(Math.random() * available.length)
+      ];
+    }
+
+    function measureCardHeight() {
+      const testCard = document.createElement("a");
+
+      testCard.className = "cv-mp-card";
+      testCard.style.visibility = "hidden";
+      testCard.style.pointerEvents = "none";
+
+      testCard.innerHTML = `
+        <span class="cv-mp-card-title">measure</span>
+      `;
+
+      trackEls[0].appendChild(testCard);
+
+      cardHeight = testCard.offsetHeight;
+
+      trackEls[0].removeChild(testCard);
+
+      if (!cardHeight || cardHeight < 100) {
+        cardHeight = Math.round(window.innerHeight * 0.75);
+      }
+    }
+
+    function buildInitialGallery() {
+      const deck = shuffle(PROJECTS);
+      let index = 0;
+
+      trackEls.forEach((track, i) => {
+        track.innerHTML = "";
+
+        for (let j = 0; j < 2; j++) {
+          const project = deck[index % deck.length];
+          index++;
+
+          track.appendChild(
+            createCard(project)
+          );
+        }
+
+        offsets[i] = 0;
+
+        applyTransform(i);
+      });
+    }
+
+    function applyTransform(i) {
+      let y;
+
+      if (DIRS[i] === 1) {
+        y = -offsets[i];
+      } else {
+        y = offsets[i] - cardHeight;
+      }
+
+      trackEls[i].style.transform = `translateY(${y}px)`;
+    }
+
+    function recycleColumn(i) {
+      const track = trackEls[i];
+
+      if (DIRS[i] === 1) {
+        const firstCard = track.firstElementChild;
+
+        if (firstCard) {
+          track.removeChild(firstCard);
+        }
+
+        const blocked = getVisibleProjectTitles();
+        const newProject = pickProject(blocked);
+
+        track.appendChild(
+          createCard(newProject)
+        );
+
+        offsets[i] -= cardHeight;
+      } else {
+        const lastCard = track.lastElementChild;
+
+        if (lastCard) {
+          track.removeChild(lastCard);
+        }
+
+        const blocked = getVisibleProjectTitles();
+        const newProject = pickProject(blocked);
+
+        track.insertBefore(
+          createCard(newProject),
+          track.firstElementChild
+        );
+
+        offsets[i] -= cardHeight;
+      }
+    }
+
+    function animate(ts) {
+      if (!lastTime) {
+        lastTime = ts;
+      }
+
+      const dt = (ts - lastTime) / 1000;
+      lastTime = ts;
+
+      trackEls.forEach((track, i) => {
+        offsets[i] += SPEEDS[i] * dt;
+
+        while (offsets[i] >= cardHeight) {
+          recycleColumn(i);
+        }
+
+        applyTransform(i);
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    function startGallery() {
+      measureCardHeight();
+      buildInitialGallery();
+      requestAnimationFrame(animate);
+    }
+
+    const preloadLimit = new Promise(resolve => setTimeout(resolve, 2200));
+
+    Promise.race([
+      preloadProjectImages(),
+      preloadLimit
+    ]).then(startGallery);
+  </script>
+
+  <script>
+    document.querySelectorAll(".cv-nav-soon > a").forEach(link => {
+      link.addEventListener("click", event => {
+        event.preventDefault();
+      });
+    });
+  </script>
+</body>
+</html>
