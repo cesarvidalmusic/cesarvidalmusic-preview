@@ -2,6 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+
+  <!-- DETECTAR TRANSICIÓN ANTES DEL PRIMER RENDER -->
+
+  <script>
+    (function () {
+      try {
+        const key = "cv-soft-page-transition-v9";
+        const raw = sessionStorage.getItem(key);
+        const state = raw ? JSON.parse(raw) : null;
+        const age = state ? Date.now() - Number(state.time) : Infinity;
+
+        // Consumir la señal una sola vez, antes de esperar hojas de estilo
+        // o scripts externos. La clase conserva la decisión hasta el fade-in.
+        if (raw) {
+          sessionStorage.removeItem(key);
+        }
+
+        if (
+          state &&
+          state.target === location.pathname &&
+          age >= 0 &&
+          age < 60000
+        ) {
+          document.documentElement.classList.add(
+            "cv-transition-v9-incoming"
+          );
+        }
+
+      } catch (error) {
+        // La página continúa normalmente si falla el almacenamiento.
+      }
+    })();
+  </script>
+
+  <script defer src="page-transition.js?v=9"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Bio — César Vidal, saxophonist, composer and improviser." />
   <title>Bio — César Vidal</title>
@@ -142,21 +177,20 @@
     }
   </style>
 
-  <!-- TRANSICIÓN V8: ESTADO INICIAL DEL FADE-IN -->
+  <!-- TRANSICIÓN V9: ESTADO INICIAL DEL FADE-IN -->
 
   <style>
-    html.cv-transition-v8-incoming .cv-page {
+    html.cv-transition-v9-incoming .cv-page {
       filter: blur(7px) brightness(0.90);
       transform: scale(1.008);
     }
 
-    html.cv-transition-v8-incoming::after {
-      content: "";
+    .cv-transition-v9-entering {
       position: fixed;
       inset: 0;
       z-index: 2147483600;
-      opacity: 1;
-      pointer-events: auto;
+      opacity: 0;
+      pointer-events: none;
 
       background:
         radial-gradient(
@@ -167,63 +201,39 @@
         #242017;
     }
 
-    html.cv-transition-v8-incoming.cv-transition-v8-reveal::after {
+    html.cv-transition-v9-incoming .cv-transition-v9-entering {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    html.cv-transition-v9-incoming.cv-transition-v9-reveal .cv-transition-v9-entering {
       opacity: 0;
       pointer-events: none;
 
       transition:
-        opacity 1080ms cubic-bezier(0.40, 0, 0.22, 1);
+        opacity 650ms cubic-bezier(0.40, 0, 0.22, 1);
     }
 
-    html.cv-transition-v8-incoming.cv-transition-v8-reveal .cv-page {
+    html.cv-transition-v9-incoming.cv-transition-v9-reveal .cv-page {
       filter: blur(0) brightness(1);
       transform: scale(1);
 
       transition:
-        filter 1080ms cubic-bezier(0.40, 0, 0.22, 1),
-        transform 1080ms cubic-bezier(0.40, 0, 0.22, 1);
+        filter 650ms cubic-bezier(0.40, 0, 0.22, 1),
+        transform 650ms cubic-bezier(0.40, 0, 0.22, 1);
     }
 
     @media (prefers-reduced-motion: reduce) {
-      html.cv-transition-v8-incoming.cv-transition-v8-reveal::after,
-      html.cv-transition-v8-incoming.cv-transition-v8-reveal .cv-page {
+      html.cv-transition-v9-incoming.cv-transition-v9-reveal .cv-transition-v9-entering,
+      html.cv-transition-v9-incoming.cv-transition-v9-reveal .cv-page {
         transition-duration: 100ms;
       }
     }
   </style>
-
-  <!-- DETECTAR TRANSICIÓN ANTES DEL PRIMER RENDER -->
-
-  <script>
-    (function () {
-      try {
-        const key = "cv-soft-page-transition-v8";
-        const raw = sessionStorage.getItem(key);
-        const state = raw ? JSON.parse(raw) : null;
-        const age = state ? Date.now() - Number(state.time) : Infinity;
-
-        if (
-          state &&
-          state.target === location.pathname &&
-          age >= 0 &&
-          age < 12000
-        ) {
-          document.documentElement.classList.add(
-            "cv-transition-v8-incoming"
-          );
-
-        } else if (raw) {
-          sessionStorage.removeItem(key);
-        }
-
-      } catch (error) {
-        // La página continúa normalmente si falla el almacenamiento.
-      }
-    })();
-  </script>
 </head>
 
 <body>
+  <div class="cv-transition-v9-entering" aria-hidden="true"></div>
   <div class="cv-page">
 
     <nav class="cv-nav cv-nav--light">
@@ -307,10 +317,5 @@
       });
     });
   </script>
-
-  <!-- TRANSICIÓN V8 -->
-
-  <script defer src="page-transition.js?v=8"></script>
-
 </body>
 </html>
