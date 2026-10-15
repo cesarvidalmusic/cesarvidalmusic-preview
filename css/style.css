@@ -1,0 +1,608 @@
+/* =============================================
+   CÉSAR VIDAL — cesarvidalmusic.art
+   Global Stylesheet
+   ============================================= */
+
+@font-face {
+  font-family: 'Ronzino';
+  src: url('../fonts/Ronzino-BoldOblique.woff2') format('woff2');
+  font-weight: 700;
+  font-style: oblique;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ronzino';
+  src: url('../fonts/Ronzino-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ronzino';
+  src: url('../fonts/Ronzino-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* RESET & BASE */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #ffffff;
+  color: #0A0A0A;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+
+/* TOKENS */
+:root {
+  --accent: #C8400A;
+  --black: #0A0A0A;
+  --white: #ffffff;
+  --grey-light: #E0E0E0;
+  --grey-mid: #888888;
+  --grey-soft: #F2F2F0;
+  --nav-height: clamp(2.75rem, 5vw, 3.5rem);
+  --pad-x: clamp(1.25rem, 5vw, 3rem);
+  --pad-y: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+/* =============================================
+   NAVIGATION
+   ============================================= */
+.cv-nav {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: clamp(1rem, 3vw, 1.75rem) clamp(2rem, 4vw, 3.5rem);
+  height: var(--nav-height);
+}
+
+.cv-nav--dark a { color: rgba(255,255,255,0.6); }
+.cv-nav--dark a:hover { color: var(--accent); }
+
+.cv-nav--light a { color: var(--black); }
+.cv-nav--light a:hover { color: var(--accent); }
+
+.cv-nav ul {
+  display: flex;
+  gap: clamp(1.5rem, 2.8vw, 2.5rem);
+  list-style: none;
+}
+
+.cv-nav a {
+  font-family: 'Ronzino', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  display: inline-block;
+  transform-origin: center center;
+  transition: color 0.35s ease, transform 0.35s ease;
+}
+
+.cv-nav a:hover {
+  transform: scale(1.08);
+}
+.cv-nav a.active {
+  color: var(--accent);
+}
+
+/* =============================================
+   FOOTER
+   ============================================= */
+.cv-footer {
+  padding: 1rem var(--pad-x);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 0.5px solid var(--grey-light);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.cv-footer span {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #bbb;
+}
+
+/* =============================================
+   ACCENT DOT
+   ============================================= */
+.cv-dot {
+  display: inline-block;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin: 0 0.45em;
+  vertical-align: middle;
+}
+
+/* =============================================
+   SECTION LABEL
+   ============================================= */
+.cv-label {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--grey-mid);
+  margin-bottom: 1.5rem;
+}
+
+/* =============================================
+   PAGE WRAPPER (for interior pages)
+   ============================================= */
+.cv-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.cv-page-content {
+  flex: 1;
+  padding-top: var(--nav-height);
+}
+
+/* =============================================
+   HOME — HERO
+   ============================================= */
+.cv-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 500px;
+  overflow: hidden;
+  background: #0d0d0d;
+}
+
+.cv-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+.cv-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.58) 0%,
+    rgba(0,0,0,0.10) 40%,
+    rgba(0,0,0,0.0) 65%,
+    rgba(0,0,0,0.15) 100%
+  );
+  z-index: 1;
+}
+
+.cv-hero-content {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(1rem, 3vw, 1.75rem) var(--pad-x);
+}
+
+.cv-hero-name {
+  font-family: 'Ronzino', serif;
+  font-weight: 700;
+  font-style: oblique;
+  font-size: clamp(36px, 7vw, 82px);
+  line-height: 1;
+  color: var(--white);
+  text-transform: lowercase;
+  letter-spacing: -0.02em;
+  text-align: right;
+  margin-top: clamp(3rem, 8vw, 5.5rem);
+  white-space: nowrap;
+}
+
+.cv-hero-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-bottom: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+.cv-hero-tagline {
+  font-size: clamp(9px, 1vw, 11px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+}
+
+/* =============================================
+   BIO PAGE
+   ============================================= */
+.cv-bio-grid {
+  display: grid;
+  grid-template-columns: 55fr 45fr;
+  gap: 0;
+  border-bottom: 0.5px solid var(--grey-light);
+  height: calc(100vh - var(--nav-height) - 52px);
+  overflow: hidden;
+}
+
+.cv-bio-text {
+  padding: var(--pad-y) var(--pad-x);
+  border-right: 0.5px solid var(--grey-light);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+.cv-bio-text p {
+  font-family: 'Ronzino', sans-serif;
+  font-weight: 400;
+  font-size: clamp(11px, 1.05vw, 14px);
+  line-height: 1.75;
+  color: #333;
+  text-align: justify;
+  hyphens: auto;
+  max-width: none;
+}
+.cv-bio-text p + p { margin-top: 0.75rem; }
+
+.cv-bio-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+/* =============================================
+   MUSIC / DISCOGRAPHY PAGE
+   ============================================= */
+.cv-music-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  border-left: 0.5px solid var(--grey-light);
+}
+
+.cv-album {
+  border-right: 0.5px solid var(--grey-light);
+  border-bottom: 0.5px solid var(--grey-light);
+  padding: var(--pad-y) var(--pad-x);
+  transition: background 0.2s;
+}
+.cv-album:hover { background: var(--grey-soft); }
+
+.cv-album-title {
+  font-family: 'Mattone', 'Arial Black', sans-serif;
+  font-weight: 900;
+  font-size: clamp(22px, 4vw, 32px);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+.cv-album-meta {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grey-mid);
+  margin-bottom: 0.75rem;
+}
+.cv-album-desc {
+  font-size: 13px;
+  line-height: 1.65;
+  color: #555;
+  margin-bottom: 1.25rem;
+}
+.cv-album-link {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-bottom: 0.5px solid var(--accent);
+  padding-bottom: 1px;
+  transition: opacity 0.2s;
+}
+.cv-album-link:hover { opacity: 0.7; }
+
+/* =============================================
+   PROJECTS PAGE
+   ============================================= */
+.cv-project {
+  border-bottom: 0.5px solid var(--grey-light);
+  padding: var(--pad-y) var(--pad-x);
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+  transition: background 0.2s;
+}
+.cv-project:hover { background: var(--grey-soft); }
+
+.cv-project-title {
+  font-family: 'Mattone', 'Arial Black', sans-serif;
+  font-weight: 900;
+  font-size: clamp(28px, 5vw, 52px);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 0.92;
+}
+.cv-project-body { }
+.cv-project-tag {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.6rem;
+}
+.cv-project-desc {
+  font-size: 14px;
+  line-height: 1.75;
+  color: #444;
+  max-width: 52ch;
+}
+.cv-project-link {
+  display: inline-block;
+  margin-top: 1rem;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--grey-mid);
+  border-bottom: 0.5px solid var(--grey-light);
+  padding-bottom: 1px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.cv-project-link:hover { color: var(--black); border-color: var(--black); }
+
+/* =============================================
+   CONTACT PAGE
+   ============================================= */
+.cv-contact-wrap {
+  padding: var(--pad-y) var(--pad-x);
+  max-width: 640px;
+}
+.cv-contact-heading {
+  font-family: 'Mattone', 'Arial Black', sans-serif;
+  font-weight: 900;
+  font-size: clamp(36px, 7vw, 72px);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 0.9;
+  margin-bottom: 2rem;
+}
+.cv-contact-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 0.5px solid var(--grey-light);
+}
+.cv-contact-list li {
+  padding: 1rem 0;
+  border-bottom: 0.5px solid var(--grey-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.cv-contact-list .platform {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--grey-mid);
+}
+.cv-contact-list a {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--black);
+  transition: color 0.2s;
+}
+.cv-contact-list a:hover { color: var(--accent); }
+
+/* =============================================
+   INTERIOR PAGE HERO (title bar)
+   ============================================= */
+.cv-page-hero {
+  padding: 0.75rem var(--pad-x);
+  border-bottom: 0.5px solid var(--grey-light);
+}
+.cv-page-title {
+  font-family: 'Ronzino', serif;
+  font-weight: 700;
+  font-style: oblique;
+  font-size: clamp(28px, 5vw, 52px);
+  text-transform: lowercase;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 720px) {
+  .cv-bio-grid {
+    grid-template-columns: 1fr;
+  }
+  .cv-bio-text {
+    border-right: none;
+    border-bottom: 0.5px solid var(--grey-light);
+  }
+  .cv-project {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .cv-project-title {
+    font-size: clamp(32px, 10vw, 52px);
+  }
+}
+
+@media (max-width: 480px) {
+  .cv-nav ul { gap: 1rem; }
+  .cv-hero-name { font-size: clamp(36px, 11vw, 60px); }
+}
+
+/* NAV HOVER OVERRIDE — stable hover without layout shift */
+.cv-nav a {
+  display: inline-block;
+  transform-origin: center center;
+  line-height: 1;
+  font-weight: 400;
+  transition: color 0.35s ease, transform 0.35s ease, text-shadow 0.35s ease;
+}
+
+.cv-nav--light a {
+  color: var(--black);
+}
+
+.cv-nav--dark a {
+  color: rgba(255,255,255,0.6);
+}
+
+.cv-nav--light a:hover,
+.cv-nav--dark a:hover {
+  color: var(--accent);
+  transform: scale(1.18);
+  text-shadow: 0.35px 0 currentColor, -0.35px 0 currentColor;
+}
+
+.cv-nav a.active {
+  color: var(--accent);
+  text-shadow: 0.35px 0 currentColor, -0.35px 0 currentColor;
+}
+/* GLOBAL FOOTER OVERRIDE — same look as index and bio */
+.cv-footer {
+  flex-shrink: 0;
+  padding: 0.55rem clamp(0.5rem, 2vw, 1.25rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 0.5px solid #E0E0E0;
+  background: #fff;
+}
+
+.cv-footer span {
+  font-family: 'Ronzino', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  color: #bbb;
+}
+.cv-nav-soon {
+  position: relative;
+}
+
+.cv-nav-soon > a {
+  cursor: default;
+}
+
+.cv-nav-soon-bubble {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(-0.15rem);
+  opacity: 0;
+  pointer-events: none;
+
+  padding: 0.34rem 0.52rem 0.38rem;
+  border-radius: 999px;
+
+  font-family: 'Ronzino', sans-serif;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  white-space: nowrap;
+
+  color: #ffffff;
+  background: var(--accent);
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.cv-nav-soon:hover .cv-nav-soon-bubble {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+/* =============================================
+   PAGE TRANSITION — jagged curtain test
+   ============================================= */
+
+.cv-page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cv-page-transition__curtain {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 118vh;
+  background: #000000;
+
+  transform: translateY(-112%);
+  transition: transform 0.72s cubic-bezier(0.76, 0, 0.24, 1);
+
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 86%,
+    96% 100%,
+    92% 86%,
+    88% 100%,
+    84% 86%,
+    80% 100%,
+    76% 86%,
+    72% 100%,
+    68% 86%,
+    64% 100%,
+    60% 86%,
+    56% 100%,
+    52% 86%,
+    48% 100%,
+    44% 86%,
+    40% 100%,
+    36% 86%,
+    32% 100%,
+    28% 86%,
+    24% 100%,
+    20% 86%,
+    16% 100%,
+    12% 86%,
+    8% 100%,
+    4% 86%,
+    0 100%
+  );
+}
+
+.cv-page-transition.is-closing .cv-page-transition__curtain {
+  transform: translateY(0);
+}
+
+.cv-page-transition.is-entering .cv-page-transition__curtain {
+  transform: translateY(-112%);
+}
+
+.cv-page-transition.is-ready .cv-page-transition__curtain {
+  transform: translateY(0);
+}

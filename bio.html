@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Bio — César Vidal, saxophonist, composer and improviser." />
+  <title>Bio — César Vidal</title>
+
+  <link rel="preload" href="fonts/Ronzino-BoldOblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
+
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <script defer src="favicon.js?v=6"></script>
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .cv-page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .cv-page-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding-top: 0;
+    }
+
+    .cv-page-hero {
+      padding-top: calc(var(--nav-height) + 0.75rem);
+      flex-shrink: 0;
+    }
+
+    .cv-bio-layout {
+      flex: none;
+      height: calc(100vh - (var(--nav-height) * 2) - 52px);
+      display: grid;
+      grid-template-columns: 50% 50%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .cv-bio-image-panel {
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .cv-bio-picture {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .cv-bio-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+    }
+
+    .cv-bio-credit {
+      position: absolute;
+      bottom: clamp(0.5rem, 1.5vw, 1rem);
+      left: clamp(0.75rem, 2vw, 1.25rem);
+      font-family: 'Ronzino', sans-serif;
+      font-size: clamp(9px, 0.9vw, 11px);
+      letter-spacing: 0.16em;
+      color: rgba(255,255,255,0.45);
+      text-transform: lowercase;
+    }
+
+    .cv-bio-text-panel {
+      min-height: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: clamp(0.9rem, 1.8vw, 1.4rem) var(--pad-x) clamp(0.8rem, 1.5vw, 1.2rem) clamp(1.5rem, 3vw, 3rem);
+      box-sizing: border-box;
+      overflow: hidden;
+      border-left: 0.5px solid #E0E0E0;
+    }
+
+    .cv-bio-copy {
+      max-width: 790px;
+      margin-left: auto;
+      font-family: 'Ronzino', sans-serif;
+      color: #0A0A0A;
+      text-align: justify;
+      text-justify: inter-word;
+      hyphens: auto;
+    }
+
+    .cv-bio-copy p {
+      margin: 0 0 1.08rem 0;
+      font-size: clamp(11.4px, 1vw, 14px);
+      line-height: 1.68;
+      letter-spacing: -0.008em;
+    }
+
+    .cv-bio-copy p:last-child {
+      margin-bottom: 0;
+    }
+
+    .cv-bio-copy strong {
+      font-weight: 700;
+    }
+
+    .cv-bio-copy em {
+      font-style: italic;
+    }
+
+    .cv-bio-footer {
+      flex-shrink: 0;
+      padding: 0.55rem clamp(0.5rem, 2vw, 1.25rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 0.5px solid #E0E0E0;
+      background: #fff;
+    }
+
+    .cv-bio-footer span {
+      font-family: 'Ronzino', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      color: #bbb;
+    }
+  </style>
+
+  <!-- TRANSICIÓN V8: ESTADO INICIAL DEL FADE-IN -->
+
+  <style>
+    html.cv-transition-v8-incoming .cv-page {
+      filter: blur(7px) brightness(0.90);
+      transform: scale(1.008);
+    }
+
+    html.cv-transition-v8-incoming::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 2147483600;
+      opacity: 1;
+      pointer-events: auto;
+
+      background:
+        radial-gradient(
+          ellipse at 57% 63%,
+          rgba(44,85,68,0.18),
+          transparent 75%
+        ),
+        #242017;
+    }
+
+    html.cv-transition-v8-incoming.cv-transition-v8-reveal::after {
+      opacity: 0;
+      pointer-events: none;
+
+      transition:
+        opacity 1080ms cubic-bezier(0.40, 0, 0.22, 1);
+    }
+
+    html.cv-transition-v8-incoming.cv-transition-v8-reveal .cv-page {
+      filter: blur(0) brightness(1);
+      transform: scale(1);
+
+      transition:
+        filter 1080ms cubic-bezier(0.40, 0, 0.22, 1),
+        transform 1080ms cubic-bezier(0.40, 0, 0.22, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html.cv-transition-v8-incoming.cv-transition-v8-reveal::after,
+      html.cv-transition-v8-incoming.cv-transition-v8-reveal .cv-page {
+        transition-duration: 100ms;
+      }
+    }
+  </style>
+
+  <!-- DETECTAR TRANSICIÓN ANTES DEL PRIMER RENDER -->
+
+  <script>
+    (function () {
+      try {
+        const key = "cv-soft-page-transition-v8";
+        const raw = sessionStorage.getItem(key);
+        const state = raw ? JSON.parse(raw) : null;
+        const age = state ? Date.now() - Number(state.time) : Infinity;
+
+        if (
+          state &&
+          state.target === location.pathname &&
+          age >= 0 &&
+          age < 12000
+        ) {
+          document.documentElement.classList.add(
+            "cv-transition-v8-incoming"
+          );
+
+        } else if (raw) {
+          sessionStorage.removeItem(key);
+        }
+
+      } catch (error) {
+        // La página continúa normalmente si falla el almacenamiento.
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  <div class="cv-page">
+
+    <nav class="cv-nav cv-nav--light">
+      <ul>
+        <li><a href="index.html">home</a></li>
+        <li><a href="bio.html" class="active">bio</a></li>
+        <li><a href="music-projects.html">music &amp; projects</a></li>
+        <li><a href="https://syos.co/en/blogs/our-artists/cesar-vidal" target="_blank" rel="noopener">syos artist</a></li>
+        <li><a href="gonzalez-reeds.html">gonzalez reeds</a></li>
+
+        <li class="cv-nav-soon">
+          <a href="#" aria-disabled="true">merch</a>
+          <span class="cv-nav-soon-bubble">coming soon</span>
+        </li>
+
+        <li><a href="contact.html">contact</a></li>
+      </ul>
+    </nav>
+
+    <main class="cv-page-content">
+
+      <div class="cv-page-hero">
+        <h1 class="cv-page-title">bio</h1>
+      </div>
+
+      <section class="cv-bio-layout">
+
+        <div class="cv-bio-image-panel">
+
+          <picture class="cv-bio-picture">
+            <source srcset="img/bio-photo.webp" type="image/webp">
+
+            <img
+              class="cv-bio-photo"
+              src="img/bio-photo.JPG"
+              alt="César Vidal — photo by Orlando Pedroso"
+              decoding="async"
+              fetchpriority="high"
+            />
+          </picture>
+
+          <span class="cv-bio-credit">
+            photo by Orlando Pedroso
+          </span>
+
+        </div>
+
+        <article class="cv-bio-text-panel">
+          <div class="cv-bio-copy">
+
+            <p>César Vidal is a Chilean saxophonist, composer, and improviser based in Amsterdam. His artistic practice explores the relationship between acoustic and electronic sound, with a particular interest in the hybrid space created between the saxophone and digital processes. Through improvisation, he investigates how sound sources of different natures can develop a shared language, bringing together acoustic and electronic elements into a common sonic environment.</p>
+
+            <p>He studied classical composition at the University of Chile, working with renowned Chilean and international composers, before completing a Master's degree in Jazz Saxophone at the Conservatorium van Amsterdam, where he studied with leading Dutch musicians such as Ben van Gelder and Simon Rigter.</p>
+
+            <p>Throughout his career, Vidal has collaborated with musicians from the Chilean and international scenes, participating in acclaimed recordings such as <strong><em>Chincol</em></strong> (2021) by Juan Pablo Salvo and <strong><em>CODEX Big Band</em></strong> (2022) by Alfredo Tauber, both recipients of the Pulsar Award for Best Jazz Artist, the most important music recognition in the Chilean music industry. He has also contributed as a sideman to numerous jazz recordings and developed a diverse discography of his own, including <strong><em>SPAM</em></strong> (2026), <strong><em>NUBES</em></strong> (2025), and <strong><em>aleas</em></strong> (2026).</p>
+
+            <p>Vidal has performed at festivals and venues across Chile and Europe, including BIMHUIS (Amsterdam), JazzBer and Getxo Jazz (Basque Country), La Fête de la Musique (Geneva), and Jazzahead (Bremen). He leads and co-leads several projects, including César Vidal &amp; Artikulation Band, a contemporary jazz ensemble with electronics that won second prize at the Getxo Jazz Ensemble Competition 2025 and opened for Grammy Award-winning vocalist Cécile McLorin Salvant.</p>
+
+            <p>He is also the co-founder of Des Visages, a saxophone and electronics duo focused on improvisation and sound exploration. The project has released two recordings and has toured across Europe, performing in cities such as London, Amsterdam, Copenhagen, Paris, Bern, Marseille, and Geneva.</p>
+
+          </div>
+        </article>
+
+      </section>
+
+    </main>
+
+    <footer class="cv-bio-footer">
+      <span>© 2026 César Vidal</span>
+      <span>cesarvidalmusic.art</span>
+    </footer>
+
+  </div>
+
+  <!-- MERCH COMING SOON -->
+
+  <script>
+    document.querySelectorAll(".cv-nav-soon > a").forEach(link => {
+      link.addEventListener("click", event => {
+        event.preventDefault();
+      });
+    });
+  </script>
+
+  <!-- TRANSICIÓN V8 -->
+
+  <script defer src="page-transition.js?v=8"></script>
+
+</body>
+</html>

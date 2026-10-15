@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Contact — César Vidal." />
+  <title>Contact — César Vidal</title>
+  <link rel="preload" href="fonts/Ronzino-BoldOblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script defer src="favicon.js?v=6"></script>
+  <link rel="stylesheet" href="css/style.css" />
+ <style>
+   @font-face {
+  font-family: 'Ronzino';
+  src: url('fonts/Ronzino-Oblique.woff2') format('woff2');
+  font-weight: 400;
+  font-style: oblique;
+  font-display: swap;
+}
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+  }
+
+  .cv-page {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+  }
+
+  .cv-contact-bg-video {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    object-position: center center;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .cv-nav {
+    background: transparent;
+  }
+
+  .cv-nav.cv-nav--dark a {
+    color: rgba(255,255,255,0.72);
+  }
+
+  .cv-nav.cv-nav--dark a:hover {
+    color: var(--accent);
+  }
+
+  .cv-nav a.active {
+    color: var(--accent);
+  }
+
+  .cv-page-content {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding-top: var(--nav-height);
+    background: transparent;
+  }
+
+ .cv-page-hero {
+  display: block;
+  border-bottom: 0;
+  background: transparent;
+}
+
+.cv-page-title {
+  color: #ffffff;
+}
+
+  .cv-contact-video-section {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    background: transparent;
+  }
+
+.cv-contact-wrap {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.cv-contact-bars {
+  --contact-left-gap: calc(var(--pad-x) + 7.5cm);
+  --contact-right-gap: calc(clamp(2rem, 4vw, 3.5rem) + 7.5cm);
+  --contact-bar-width: min(calc(58vw - 4cm), calc(1080px - 4cm));
+  width: 100%;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1cm;
+  padding: clamp(1rem, 2vh, 2rem) 0;
+}
+
+.cv-contact-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: var(--contact-bar-width);
+  max-width: calc(100vw - var(--contact-left-gap) - var(--contact-right-gap));
+  height: clamp(38px, 5vh, 48px);
+  padding: 0;
+  text-decoration: none;
+  background: transparent;
+  overflow: visible;
+  isolation: isolate;
+  box-sizing: border-box;
+  flex: none;
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.cv-contact-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(190,190,190,0.38);
+  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  transform: translate(5px, 4px);
+  z-index: 0;
+}
+
+.cv-contact-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--bar-color);
+  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  z-index: 1;
+}
+
+.cv-contact-bar:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+}
+
+.cv-contact-bar--left-group {
+  align-self: flex-start;
+  margin-left: var(--contact-left-gap);
+  margin-right: 0;
+}
+
+.cv-contact-bar--right-group {
+  align-self: flex-end;
+  margin-left: 0;
+  margin-right: var(--contact-right-gap);
+}
+
+.cv-contact-bar--1 {
+  --bar-color: rgba(36,32,23,0.76);
+  --marquee-speed: 76s;
+}
+
+.cv-contact-bar--2 {
+  --bar-color: rgba(44,85,68,0.76);
+  --marquee-speed: 76s;
+}
+
+.cv-contact-bar--3 {
+  --bar-color: rgba(237,101,81,0.76);
+  --marquee-speed: 76s;
+  margin-left: calc(var(--contact-left-gap) - 1.5cm);
+}
+
+.cv-contact-bar--4 {
+  --bar-color: rgba(239,208,111,0.76);
+  --marquee-speed: 76s;
+  margin-right: calc(var(--contact-right-gap) - 1cm);
+}
+
+.cv-contact-bar--5 {
+  --bar-color: rgba(36,32,23,0.76);
+  --marquee-speed: 76s;
+}
+
+.cv-contact-bar--6 {
+  --bar-color: rgba(44,85,68,0.76);
+  --marquee-speed: 76s;
+  margin-right: calc(var(--contact-right-gap) + 1cm);
+}
+
+.cv-contact-bar-inner {
+  position: absolute;
+  inset: 0 1.25rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 0 1.8rem;
+  box-sizing: border-box;
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+.cv-contact-marquee {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  white-space: nowrap;
+  font-family: 'Ronzino', sans-serif;
+  font-weight: 400;
+  font-style: oblique;
+  font-size: clamp(14px, 1.35vw, 17px);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: rgba(255,255,255,0.94);
+  will-change: transform;
+}
+
+.cv-contact-bar--4 .cv-contact-marquee {
+  color: #111;
+}
+
+.cv-contact-marquee-group {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  padding-right: 0;
+}
+
+.cv-contact-word {
+  display: inline-block;
+}
+
+.cv-contact-sep {
+  display: inline-block;
+  margin: 0 20ch;
+}
+
+.cv-contact-marquee--left {
+  animation: contactMarqueeLeft var(--marquee-speed) linear infinite;
+}
+
+.cv-contact-marquee--right {
+  animation: contactMarqueeRight var(--marquee-speed) linear infinite;
+}
+
+@keyframes contactMarqueeLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes contactMarqueeRight {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+ .cv-footer {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  padding: 0.55rem clamp(0.5rem, 2vw, 1.25rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 0.5px solid #E0E0E0;
+  background: #fff;
+}
+
+.cv-footer span {
+  font-family: 'Ronzino', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  color: #bbb;
+}
+</style>
+</head>
+<body>
+
+  <div class="cv-page">
+
+<video class="cv-contact-bg-video" autoplay muted loop playsinline preload="auto">
+  <source src="videos/contact-bg.mp4" type="video/mp4">
+</video>
+    
+    <nav class="cv-nav cv-nav--dark">
+      <ul>
+        <li><a href="index.html">home</a></li>
+        <li><a href="bio.html">bio</a></li>
+        <li><a href="music-projects.html">music &amp; projects</a></li>
+        <li><a href="https://syos.co/en/blogs/our-artists/cesar-vidal" target="_blank" rel="noopener">syos artist</a></li>
+        <li><a href="gonzalez-reeds.html">gonzalez reeds</a></li>
+<li class="cv-nav-soon">
+  <a href="#" aria-disabled="true">merch</a>
+  <span class="cv-nav-soon-bubble">coming soon</span>
+</li>        <li><a href="contact.html" class="active">contact</a></li>
+      </ul>
+    </nav>
+
+    <main class="cv-page-content">
+
+      <div class="cv-page-hero">
+        <h1 class="cv-page-title">contact</h1>
+      </div>
+
+      <section class="cv-contact-video-section">
+
+  <div class="cv-contact-wrap">
+    <div class="cv-contact-bars">
+
+      <a class="cv-contact-bar cv-contact-bar--left-group cv-contact-bar--1" href="https://mail.google.com/mail/?view=cm&fs=1&to=cesararturovidarojas@gmail.com" target="_blank" rel="noopener">
+  <span class="cv-contact-bar-inner">
+    <span class="cv-contact-marquee cv-contact-marquee--left">
+      <span class="cv-contact-marquee-group">
+        <span class="cv-contact-word">email</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">email</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">email</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">email</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">email</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">email</span><span class="cv-contact-sep">—</span>
+      </span>
+      <span class="cv-contact-marquee-group" aria-hidden="true">
+        <span class="cv-contact-word">email</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">email</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">email</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">email</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">email</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">email</span><span class="cv-contact-sep">—</span>
+      </span>
+    </span>
+  </span>
+</a>
+
+<a class="cv-contact-bar cv-contact-bar--right-group cv-contact-bar--2" href="https://instagram.com/cesarvidalsax" target="_blank" rel="noopener">
+  <span class="cv-contact-bar-inner">
+    <span class="cv-contact-marquee cv-contact-marquee--right">
+      <span class="cv-contact-marquee-group">
+        <span class="cv-contact-word">instagram</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">instagram</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">instagram</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">instagram</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">instagram</span><span class="cv-contact-sep">—</span>
+      </span>
+      <span class="cv-contact-marquee-group" aria-hidden="true">
+        <span class="cv-contact-word">instagram</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">instagram</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">instagram</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">instagram</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">instagram</span><span class="cv-contact-sep">—</span>
+      </span>
+    </span>
+  </span>
+</a>
+
+<a class="cv-contact-bar cv-contact-bar--left-group cv-contact-bar--3" href="https://wa.me/31684089701" target="_blank" rel="noopener">
+  <span class="cv-contact-bar-inner">
+    <span class="cv-contact-marquee cv-contact-marquee--left">
+      <span class="cv-contact-marquee-group">
+        <span class="cv-contact-word">whatsapp me</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">whatsapp me</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">whatsapp me</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">whatsapp me</span><span class="cv-contact-sep">—</span>
+      </span>
+      <span class="cv-contact-marquee-group" aria-hidden="true">
+        <span class="cv-contact-word">whatsapp me</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">whatsapp me</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">whatsapp me</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">whatsapp me</span><span class="cv-contact-sep">—</span>
+      </span>
+    </span>
+  </span>
+</a>
+
+<a class="cv-contact-bar cv-contact-bar--right-group cv-contact-bar--4" href="https://cesarvidal.bandcamp.com/" target="_blank" rel="noopener">
+  <span class="cv-contact-bar-inner">
+    <span class="cv-contact-marquee cv-contact-marquee--right">
+      <span class="cv-contact-marquee-group">
+        <span class="cv-contact-word">bandcamp</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">bandcamp</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">bandcamp</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">bandcamp</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">bandcamp</span><span class="cv-contact-sep">—</span>
+      </span>
+      <span class="cv-contact-marquee-group" aria-hidden="true">
+        <span class="cv-contact-word">bandcamp</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">bandcamp</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">bandcamp</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">bandcamp</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">bandcamp</span><span class="cv-contact-sep">—</span>
+      </span>
+    </span>
+  </span>
+</a>
+
+<a class="cv-contact-bar cv-contact-bar--left-group cv-contact-bar--5" href="https://music.apple.com/cl/artist/c%C3%A9sar-vidal/1794980592" target="_blank" rel="noopener">
+  <span class="cv-contact-bar-inner">
+    <span class="cv-contact-marquee cv-contact-marquee--left">
+      <span class="cv-contact-marquee-group">
+        <span class="cv-contact-word">apple music</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">apple music</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">apple music</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">apple music</span><span class="cv-contact-sep">—</span>
+      </span>
+      <span class="cv-contact-marquee-group" aria-hidden="true">
+        <span class="cv-contact-word">apple music</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">apple music</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">apple music</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">apple music</span><span class="cv-contact-sep">—</span>
+      </span>
+    </span>
+  </span>
+</a>
+
+<a class="cv-contact-bar cv-contact-bar--right-group cv-contact-bar--6" href="https://youtube.com/@cesarvidalsax?si=Vrq0HSzG9foZ14mA" target="_blank" rel="noopener">
+  <span class="cv-contact-bar-inner">
+    <span class="cv-contact-marquee cv-contact-marquee--right">
+      <span class="cv-contact-marquee-group">
+        <span class="cv-contact-word">youtube</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">youtube</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">youtube</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">youtube</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">youtube</span><span class="cv-contact-sep">—</span>
+      </span>
+      <span class="cv-contact-marquee-group" aria-hidden="true">
+        <span class="cv-contact-word">youtube</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">youtube</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">youtube</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">youtube</span><span class="cv-contact-sep">—</span>
+        <span class="cv-contact-word">youtube</span><span class="cv-contact-sep">—</span>
+      </span>
+    </span>
+  </span>
+</a>
+    </div>
+  </div>
+
+</section>
+    </main>
+
+    <footer class="cv-footer">
+      <span>© 2026 César Vidal</span>
+      <span>cesarvidalmusic.art</span>
+    </footer>
+
+  </div>
+<script>
+  document.querySelectorAll(".cv-nav-soon > a").forEach(link => {
+    link.addEventListener("click", event => {
+      event.preventDefault();
+    });
+  });
+</script>
+</body>
+</html>

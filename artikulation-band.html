@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="César Vidal & Artikulation Band — contemporary jazz quintet based in the Netherlands." />
+  <title>César Vidal & Artikulation Band — César Vidal</title>
+
+  <link rel="preload" href="fonts/Ronzino-BoldOblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" as="image" href="img/artikulation-video-1.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/artikulation-video-2.webp" type="image/webp" fetchpriority="high">
+  <link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script defer src="favicon.js?v=6"></script>
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .cv-page {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .cv-ab-bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      object-position: center center;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .cv-nav {
+      background: transparent;
+      z-index: 5;
+    }
+
+    .cv-nav.cv-nav--dark a {
+      color: rgba(255,255,255,0.82);
+    }
+
+    .cv-nav.cv-nav--dark a:hover {
+      color: var(--accent);
+    }
+
+    .cv-nav a.active {
+      color: #ffffff;
+      text-shadow: 0.35px 0 currentColor, -0.35px 0 currentColor;
+    }
+
+    .cv-page-content {
+      position: relative;
+      z-index: 2;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding-top: var(--nav-height);
+      box-sizing: border-box;
+      background: transparent;
+    }
+
+    .cv-ab-stage {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0 2.1rem;
+      box-sizing: border-box;
+    }
+
+    .cv-ab-panel {
+      width: 100vw;
+      height: min(74vh, 745px);
+      min-height: 535px;
+      background: rgba(0,0,0,0.62);
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: minmax(0, 0.65fr) minmax(0, 0.35fr);
+      gap: clamp(1.35rem, 2.6vw, 3.2rem);
+      align-items: center;
+      padding: clamp(1.2rem, 2.1vw, 2.25rem) var(--pad-x);
+    }
+
+    .cv-ab-text-slot {
+      width: 100%;
+      max-width: 940px;
+      min-width: 0;
+      align-self: center;
+      transform: translateY(-0.15rem);
+      font-family: 'Ronzino', sans-serif;
+      color: #ffffff;
+    }
+
+    .cv-page-title {
+      margin: 0 0 clamp(0.68rem, 1.2vh, 0.95rem);
+      color: #ffffff;
+    }
+
+    .cv-ab-copy {
+      margin: 0 0 0.54rem;
+      font-size: clamp(11.1px, 0.83vw, 12.8px);
+      line-height: 1.32;
+      letter-spacing: 0.002em;
+      color: rgba(255,255,255,0.92);
+      text-align: justify;
+      text-justify: inter-word;
+    }
+
+    .cv-ab-copy em {
+      font-style: italic;
+    }
+
+    .cv-ab-copy:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .cv-ab-video-slot {
+      width: 100%;
+      max-width: 350px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.25vh, 0.95rem);
+      justify-self: center;
+      align-self: center;
+      transform: translateY(-0.05rem);
+    }
+
+    .cv-ab-video-card {
+      display: block;
+      width: 100%;
+      text-decoration: none;
+      color: #ffffff;
+      border: 0.5px solid rgba(255,255,255,0.22);
+      background: rgba(0,0,0,0.36);
+      overflow: hidden;
+      transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+      transform-origin: center center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cv-ab-video-card:hover {
+      transform: scale(1.08);
+      background: rgba(255,255,255,0.075);
+      border-color: rgba(255,255,255,0.46);
+      z-index: 3;
+    }
+
+    .cv-ab-thumb-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #111;
+    }
+
+    .cv-ab-thumb-wrap::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(200,64,10,0.24);
+      mix-blend-mode: color;
+      opacity: 0.78;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .cv-ab-thumb {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(0.22) sepia(0.18) contrast(1.07) brightness(0.82);
+      transition: filter 0.3s ease, transform 0.3s ease;
+    }
+
+    .cv-ab-video-card:hover .cv-ab-thumb {
+      filter: saturate(1) sepia(0) contrast(1.03) brightness(0.96);
+      transform: scale(1.06);
+    }
+
+    .cv-ab-video-card:hover .cv-ab-thumb-wrap::after {
+      opacity: 0;
+    }
+
+    .cv-ab-play {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: clamp(34px, 3vw, 46px);
+      height: clamp(34px, 3vw, 46px);
+      transform: translate(-50%, -50%);
+      border: 0.5px solid rgba(255,255,255,0.72);
+      border-radius: 50%;
+      background: rgba(0,0,0,0.48);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .cv-ab-play::before {
+      content: "";
+      display: block;
+      width: 0;
+      height: 0;
+      margin-left: 3px;
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      border-left: 11px solid #ffffff;
+    }
+
+    .cv-ab-video-caption {
+      display: block;
+      padding: 0.58rem 0.9rem 0.66rem 1rem;
+      font-family: 'Ronzino', sans-serif;
+    }
+
+    .cv-ab-video-kicker {
+      display: block;
+      margin-bottom: 0.2rem;
+      font-size: clamp(8.8px, 0.68vw, 10.2px);
+      line-height: 1.1;
+      letter-spacing: 0.13em;
+      text-transform: lowercase;
+      color: rgba(255,255,255,0.58);
+    }
+
+    .cv-ab-video-title {
+      display: block;
+      font-size: clamp(11.4px, 0.82vw, 13px);
+      line-height: 1.22;
+      letter-spacing: 0.002em;
+      color: rgba(255,255,255,0.94);
+    }
+
+    .cv-ab-video-title em {
+      font-style: italic;
+    }
+
+    .cv-ab-footer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 4;
+      padding: 0.55rem clamp(0.5rem, 2vw, 1.25rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      border: 0;
+      pointer-events: none;
+    }
+
+    .cv-ab-footer span {
+      font-family: 'Ronzino', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      color: rgba(255,255,255,0.82);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cv-page">
+
+    <video class="cv-ab-bg-video" autoplay muted loop playsinline preload="auto">
+      <source src="videos/artikulation-band.mp4" type="video/mp4">
+    </video>
+
+    <nav class="cv-nav cv-nav--dark">
+      <ul>
+        <li><a href="index.html">home</a></li>
+        <li><a href="bio.html">bio</a></li>
+        <li><a href="music-projects.html" class="active">music &amp; projects</a></li>
+        <li><a href="https://syos.co/en/blogs/our-artists/cesar-vidal" target="_blank" rel="noopener">syos artist</a></li>
+        <li><a href="gonzalez-reeds.html">gonzalez reeds</a></li>
+<li class="cv-nav-soon">
+  <a href="#" aria-disabled="true">merch</a>
+  <span class="cv-nav-soon-bubble">coming soon</span>
+</li>        <li><a href="contact.html">contact</a></li>
+      </ul>
+    </nav>
+
+    <main class="cv-page-content">
+      <section class="cv-ab-stage">
+
+        <div class="cv-ab-panel">
+
+          <article class="cv-ab-text-slot">
+            <h1 class="cv-page-title">César Vidal & Artikulation Band</h1>
+
+            <p class="cv-ab-copy">
+              César Vidal &amp; Artikulation Band is a multicultural contemporary jazz quintet based in the Netherlands, bringing together musicians from Chile, Italy, Portugal, and the Basque Country. The group, consisting of alto saxophone, piano, double bass, drums and electronics, explores the intersection between acoustic and electronic sound worlds through composition and improvisation, aiming to develop new sonic landscapes that challenge the boundaries of contemporary jazz.
+            </p>
+
+            <p class="cv-ab-copy">
+              Their repertoire spans from simple, repetitive melodic patterns to intricate structures inspired by the compositional approaches of Olivier Messiaen and Iannis Xenakis, as well as by the use of virtual composition assistants such as OpenMusic. This broad spectrum reflects the band’s interest in exploring how algorithmic thinking and formal structures can coexist with the spontaneity and expressiveness of improvisation.
+            </p>
+
+            <p class="cv-ab-copy">
+              Originally conceived as a project influenced by artists who have long investigated the dialogue between modern jazz ensembles and electronic media, including Steve Lehman’s <em>Ex Machina</em> and <em>Demian as Posthuman</em>, ØKSE, Peter Evans’ <em>Ghosts</em> and <em>Destination : Void</em>, Cory Smythe’s <em>AUTOTROPHS</em>, and Benoît Delbecq’s <em>Gentle Ghosts</em>, Artikulation Band finds its own language and narrative, where structure and freedom constantly inform one another.
+            </p>
+
+            <p class="cv-ab-copy">
+              César Vidal &amp; Artikulation Band have performed across different regions, with notable appearances at JazzBer Festival in Bermeo and Getxo Jazz Festival in the Basque Country. At Getxo, they opened for the acclaimed vocalist Cécile McLorin Salvant and were awarded second place in the festival’s ensemble competition.
+            </p>
+          </article>
+
+          <aside class="cv-ab-video-slot" aria-label="Artikulation Band videos">
+
+            <a class="cv-ab-video-card" href="https://youtu.be/JKIPqN-s-ow" target="_blank" rel="noopener">
+              <div class="cv-ab-thumb-wrap">
+                <img
+                  class="cv-ab-thumb"
+                  src="img/artikulation-video-1.webp"
+                  alt="Sad People live at Getxo Jazz 2025 video thumbnail"
+                  loading="eager"
+                  decoding="async"
+                />
+                <span class="cv-ab-play" aria-hidden="true"></span>
+              </div>
+
+              <span class="cv-ab-video-caption">
+                <span class="cv-ab-video-kicker">watch live video</span>
+                <span class="cv-ab-video-title">Watch <em>Sad People</em> live at Getxo Jazz 2025</span>
+              </span>
+            </a>
+
+            <a class="cv-ab-video-card" href="https://youtu.be/fSAOIAiA0Lw" target="_blank" rel="noopener">
+              <div class="cv-ab-thumb-wrap">
+                <img
+                  class="cv-ab-thumb"
+                  src="img/artikulation-video-2.webp"
+                  alt="In Memoriam of a Star live at Getxo Jazz 2025 video thumbnail"
+                  loading="eager"
+                  decoding="async"
+                />
+                <span class="cv-ab-play" aria-hidden="true"></span>
+              </div>
+
+              <span class="cv-ab-video-caption">
+                <span class="cv-ab-video-kicker">watch live video</span>
+                <span class="cv-ab-video-title">Watch <em>In Memoriam of a Star</em> live at Getxo Jazz 2025</span>
+              </span>
+            </a>
+
+          </aside>
+
+        </div>
+
+      </section>
+    </main>
+
+    <footer class="cv-ab-footer">
+      <span>© 2026 César Vidal</span>
+      <span>cesarvidalmusic.art</span>
+    </footer>
+
+  </div>
+  <script>
+  document.querySelectorAll(".cv-nav-soon > a").forEach(link => {
+    link.addEventListener("click", event => {
+      event.preventDefault();
+    });
+  });
+</script>
+</body>
+</html>
