@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Flor de Loto — César Vidal" />
+  <title>Flor de Loto — César Vidal</title>
+
+  <link rel="preload" href="fonts/Ronzino-BoldOblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <script defer src="favicon.js?v=6"></script>
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .cv-page {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .cv-flor-bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      object-position: center center;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .cv-nav {
+      background: transparent;
+      z-index: 5;
+    }
+
+    .cv-nav.cv-nav--dark a {
+      color: rgba(255,255,255,0.84);
+    }
+
+    .cv-nav.cv-nav--dark a:hover {
+      color: var(--accent);
+    }
+
+    .cv-nav a.active {
+      color: #ffffff;
+      text-shadow: 0.35px 0 currentColor, -0.35px 0 currentColor;
+    }
+
+    .cv-page-content {
+      position: relative;
+      z-index: 2;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding-top: var(--nav-height);
+      box-sizing: border-box;
+      background: transparent;
+    }
+
+    .cv-flor-stage {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0 2.1rem;
+      box-sizing: border-box;
+    }
+
+    .cv-flor-panel {
+      width: 100vw;
+      height: min(74vh, 745px);
+      min-height: 560px;
+      background: rgba(0,0,0,0.64);
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: minmax(0, 0.42fr) minmax(0, 0.58fr);
+      gap: clamp(1.8rem, 3.8vw, 4.6rem);
+      align-items: center;
+      padding: clamp(1.4rem, 2.5vw, 2.8rem) var(--pad-x);
+    }
+
+    .cv-flor-player-slot {
+      width: 100%;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cv-flor-player {
+      width: min(350px, 100%);
+      height: 470px;
+      border: 0;
+      display: block;
+      box-shadow: 0 18px 42px rgba(0,0,0,0.28);
+    }
+
+    .cv-flor-text-slot {
+      width: 100%;
+      max-width: 760px;
+      min-width: 0;
+      font-family: 'Ronzino', sans-serif;
+      color: #ffffff;
+      justify-self: start;
+    }
+
+    .cv-page-title {
+      margin: 0 0 clamp(0.9rem, 1.7vh, 1.3rem);
+      color: #ffffff;
+    }
+
+    .cv-flor-copy {
+      margin: 0 0 0.72rem;
+      font-size: clamp(12px, 0.92vw, 14.2px);
+      line-height: 1.43;
+      letter-spacing: 0.002em;
+      color: rgba(255,255,255,0.92);
+      text-align: justify;
+      text-justify: inter-word;
+    }
+
+    .cv-flor-copy em {
+      font-style: italic;
+    }
+
+    .cv-flor-copy:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .cv-flor-footer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 4;
+      padding: 0.55rem clamp(0.5rem, 2vw, 1.25rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      border: 0;
+      pointer-events: none;
+    }
+
+    .cv-flor-footer span {
+      font-family: 'Ronzino', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      color: rgba(255,255,255,0.82);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cv-page">
+
+    <video class="cv-flor-bg-video" autoplay muted loop playsinline preload="auto">
+      <source src="videos/flor-de-loto-video.mp4" type="video/mp4">
+    </video>
+
+    <nav class="cv-nav cv-nav--dark">
+      <ul>
+        <li><a href="index.html">home</a></li>
+        <li><a href="bio.html">bio</a></li>
+        <li><a href="music-projects.html" class="active">music &amp; projects</a></li>
+        <li><a href="https://syos.co/en/blogs/our-artists/cesar-vidal" target="_blank" rel="noopener">syos artist</a></li>
+        <li><a href="gonzalez-reeds.html">gonzalez reeds</a></li>
+        <li class="cv-nav-soon">
+          <a href="#" aria-disabled="true">merch</a>
+          <span class="cv-nav-soon-bubble">coming soon</span>
+        </li>
+        <li><a href="contact.html">contact</a></li>
+      </ul>
+    </nav>
+
+    <main class="cv-page-content">
+      <section class="cv-flor-stage">
+
+        <div class="cv-flor-panel">
+
+          <div class="cv-flor-player-slot">
+            <iframe
+              class="cv-flor-player"
+              src="https://bandcamp.com/EmbeddedPlayer/album=512851481/size=large/bgcol=333333/linkcol=0f91ff/tracklist=false/transparent=true/"
+              seamless>
+              <a href="https://cesarvidal.bandcamp.com/album/flor-de-loto">Flor de Loto by César Vidal, Joaquín Fuentes</a>
+            </iframe>
+          </div>
+
+          <article class="cv-flor-text-slot">
+            <h1 class="cv-page-title"><em>Flor de Loto</em></h1>
+
+            <p class="cv-flor-copy">
+              <em>Flor de Loto</em> is a duo album by César Vidal and Chilean pianist Joaquín Fuentes, recorded during a period in which Vidal was beginning to shape his own voice through composition, improvisation, and the intimacy of small formats.
+            </p>
+
+            <p class="cv-flor-copy">
+              The album was created in Chile during a politically significant and unstable moment, marked by curfews and social tension. Despite those conditions, the two musicians were able to meet, record, and complete the project, turning the process itself into part of the album’s memory.
+            </p>
+
+            <p class="cv-flor-copy">
+              The music comes from a close friendship and a shared curiosity for melody, silence, and spontaneous interaction. Written ideas and improvisation appear naturally throughout the album, creating a sound that feels honest, fragile, and direct.
+            </p>
+
+            <p class="cv-flor-copy">
+              For Vidal, <em>Flor de Loto</em> documents an early and meaningful moment in his musical path: a quieter acoustic space where the saxophone and piano meet through trust, simplicity, and listening.
+            </p>
+          </article>
+
+        </div>
+
+      </section>
+    </main>
+
+    <footer class="cv-flor-footer">
+      <span>© 2026 César Vidal</span>
+      <span>cesarvidalmusic.art</span>
+    </footer>
+
+  </div>
+
+  <script>
+    document.querySelectorAll(".cv-nav-soon > a").forEach(link => {
+      link.addEventListener("click", event => {
+        event.preventDefault();
+      });
+    });
+  </script>
+</body>
+</html>

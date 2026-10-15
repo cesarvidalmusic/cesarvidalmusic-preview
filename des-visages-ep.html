@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Des Visages EP — César Vidal" />
+  <title>Des Visages (EP) — César Vidal</title>
+
+  <link rel="preload" href="fonts/Ronzino-BoldOblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" as="image" href="img/des-visages-caratula.webp" type="image/webp" fetchpriority="high">
+
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <script defer src="favicon.js?v=6"></script>
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+    }
+
+    .cv-page {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .cv-nav {
+      background: transparent;
+      z-index: 20;
+    }
+
+    .cv-nav.cv-nav--dark a {
+      color: rgba(255,255,255,0.76);
+    }
+
+    .cv-nav.cv-nav--dark a:hover {
+      color: var(--accent);
+    }
+
+    .cv-nav a.active {
+      color: #ffffff;
+      text-shadow: 0.35px 0 currentColor, -0.35px 0 currentColor;
+    }
+
+    .cv-nav-soon {
+      position: relative;
+    }
+
+    .cv-nav-soon > a {
+      cursor: default;
+    }
+
+    .cv-nav-soon-bubble {
+      position: absolute;
+      top: calc(100% + 0.55rem);
+      left: 50%;
+      transform: translateX(-50%) translateY(-0.15rem);
+      opacity: 0;
+      pointer-events: none;
+      padding: 0.34rem 0.52rem 0.38rem;
+      border-radius: 999px;
+      font-family: 'Ronzino', sans-serif;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
+      white-space: nowrap;
+      color: #ffffff;
+      background: var(--accent);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .cv-nav-soon:hover .cv-nav-soon-bubble {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .cv-page-content {
+      position: relative;
+      z-index: 2;
+      height: 100vh;
+      min-height: 0;
+      padding-top: var(--nav-height);
+      box-sizing: border-box;
+      background: transparent;
+    }
+
+    .cv-dv-ep-layout {
+      position: relative;
+      height: 100%;
+      min-height: 0;
+      background: transparent;
+      overflow: hidden;
+    }
+
+    .cv-dv-ep-copy-panel {
+      position: relative;
+      z-index: 4;
+      width: min(42vw, 720px);
+      margin-left: clamp(110px, 8.4vw, 165px);
+      padding-top: calc(clamp(82px, 12.2vh, 132px) + 1cm);
+      padding-bottom: 2.4rem;
+      font-family: 'Ronzino', sans-serif;
+      color: #ffffff;
+      box-sizing: border-box;
+    }
+
+    .cv-page-title {
+      margin: 0 0 clamp(0.85rem, 1.55vh, 1.1rem);
+      color: #ffffff;
+      font-size: clamp(42px, 3.25vw, 58px);
+      line-height: 0.95;
+      letter-spacing: -0.045em;
+    }
+
+    .cv-dv-ep-copy {
+      margin: 0 0 0.65rem;
+      font-size: clamp(11.7px, 0.88vw, 13.6px);
+      line-height: 1.39;
+      letter-spacing: 0.002em;
+      color: rgba(255,255,255,0.94);
+      text-align: justify;
+      text-justify: inter-word;
+      hyphens: auto;
+    }
+
+    .cv-dv-ep-copy em,
+    .cv-dv-ep-copy strong {
+      font-style: italic;
+      font-weight: 600;
+    }
+
+    .cv-dv-ep-listen-area {
+      margin-top: clamp(0.85rem, 1.6vh, 1.15rem);
+      width: min(100%, 490px);
+    }
+
+    .cv-dv-ep-release-note {
+      margin: 0 0 0.55rem;
+      font-size: clamp(11.7px, 0.88vw, 13.6px);
+      line-height: 1.35;
+      color: rgba(255,255,255,0.94);
+    }
+
+    .cv-dv-ep-bandcamp {
+      width: 100%;
+      max-width: 490px;
+    }
+
+    .cv-dv-ep-bandcamp iframe {
+      display: block;
+      width: 100%;
+      height: 120px;
+      border: 0;
+    }
+
+    .cv-dv-ep-cover-wrap {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+      pointer-events: none;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+    }
+
+    .cv-dv-ep-cover {
+      display: block;
+      height: clamp(640px, 92vh, 1120px);
+      width: auto;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      object-fit: contain;
+      object-position: right bottom;
+      user-select: none;
+    }
+
+    .cv-dv-ep-footer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10;
+      padding: 0.55rem clamp(0.5rem, 2vw, 1.25rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      border: 0;
+      pointer-events: none;
+    }
+
+    .cv-dv-ep-footer span {
+      font-family: 'Ronzino', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      color: rgba(255,255,255,0.72);
+    }
+
+    @media (max-width: 1450px) {
+      .cv-dv-ep-copy-panel {
+        width: min(45vw, 690px);
+        margin-left: 7vw;
+        padding-top: calc(clamp(76px, 11.2vh, 118px) + 1cm);
+      }
+
+      .cv-dv-ep-cover {
+        height: clamp(610px, 88vh, 980px);
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .cv-dv-ep-copy-panel {
+        width: 52vw;
+        margin-left: 6vw;
+        padding-top: calc(92px + 1cm);
+      }
+
+      .cv-dv-ep-copy {
+        font-size: 12.4px;
+        line-height: 1.38;
+      }
+
+      .cv-dv-ep-cover {
+        height: 78vh;
+      }
+    }
+
+    @media (max-width: 800px) {
+      html, body {
+        overflow: auto;
+      }
+
+      .cv-page {
+        min-height: 100vh;
+        height: auto;
+        overflow: visible;
+      }
+
+      .cv-page-content {
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .cv-dv-ep-layout {
+        height: auto;
+        min-height: calc(100vh - var(--nav-height));
+        overflow: visible;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .cv-dv-ep-copy-panel {
+        width: 86vw;
+        margin-left: 7vw;
+        margin-right: 7vw;
+        padding-top: 3.2rem;
+        padding-bottom: 2.4rem;
+      }
+
+      .cv-page-title {
+        font-size: 44px;
+      }
+
+      .cv-dv-ep-copy {
+        font-size: 15px;
+        line-height: 1.5;
+      }
+
+      .cv-dv-ep-bandcamp {
+        max-width: none;
+      }
+
+      .cv-dv-ep-cover-wrap {
+        position: relative;
+        right: auto;
+        bottom: auto;
+        width: 100%;
+        justify-content: flex-end;
+        order: 2;
+      }
+
+      .cv-dv-ep-cover {
+        width: 92vw;
+        height: auto;
+      }
+
+      .cv-dv-ep-footer {
+        position: relative;
+        margin-top: 1rem;
+        padding: 1.2rem 0.9rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cv-page">
+
+    <nav class="cv-nav cv-nav--dark">
+      <ul>
+        <li><a href="index.html">home</a></li>
+        <li><a href="bio.html">bio</a></li>
+        <li><a href="music-projects.html" class="active">music &amp; projects</a></li>
+        <li><a href="https://syos.co/en/blogs/our-artists/cesar-vidal" target="_blank" rel="noopener">syos artist</a></li>
+        <li><a href="gonzalez-reeds.html">gonzalez reeds</a></li>
+        <li class="cv-nav-soon">
+          <a href="#" aria-disabled="true">merch</a>
+          <span class="cv-nav-soon-bubble">coming soon</span>
+        </li>
+        <li><a href="contact.html">contact</a></li>
+      </ul>
+    </nav>
+
+    <main class="cv-page-content">
+      <section class="cv-dv-ep-layout">
+
+        <article class="cv-dv-ep-copy-panel">
+          <h1 class="cv-page-title"><em>des visages</em></h1>
+
+          <p class="cv-dv-ep-copy">
+            <strong>Des Visages</strong> marks the duo’s recorded debut, captured in 2025 at Studio d’enregistrement HEM in Geneva, Switzerland, and recorded, mixed, and mastered by Samuel Albert. Comprising three original pieces, the EP consolidates the group’s aesthetic vision, where acoustic and electronic elements intertwine through improvisation to form coherent and evolving musical narratives.
+          </p>
+
+          <p class="cv-dv-ep-copy">
+            Partly inspired by literary narrative structures, the works are presented as a triptych titled <em>Introduction</em>, <em>Corpo</em>, and <em>Conclusions (for Peter Evans and Sam Pluta)</em>. With this debut recording, the duo sought to allow sound to become a vehicle for the unpredictable, and for the unpredictable in turn to take shape as form, shaping a work that aims to remain precise in its conception while fluid and open in its execution.
+          </p>
+
+          <p class="cv-dv-ep-copy">
+            The EP <strong>Des Visages</strong> was premiered during the concert <em>Électrons libérés</em>, held at the Black Box of HEM in Geneva on February 21, 2025. Later that same year, the project was presented again in Geneva as part of the renowned Fête de la Musique.
+          </p>
+
+          <div class="cv-dv-ep-listen-area">
+            <p class="cv-dv-ep-release-note">
+              Listen to the EP:
+            </p>
+
+            <div class="cv-dv-ep-bandcamp">
+              <iframe
+                src="https://bandcamp.com/EmbeddedPlayer/album=3382948755/size=large/bgcol=333333/linkcol=c8400a/tracklist=false/artwork=none/transparent=true/"
+                seamless>
+                <a href="https://desvisages.bandcamp.com/album/des-visages">Des Visages by Des Visages</a>
+              </iframe>
+            </div>
+          </div>
+        </article>
+
+        <div class="cv-dv-ep-cover-wrap">
+          <img
+            class="cv-dv-ep-cover"
+            src="img/des-visages-caratula.webp"
+            alt="Des Visages EP album cover"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </div>
+
+      </section>
+    </main>
+
+    <footer class="cv-dv-ep-footer">
+      <span>© 2026 César Vidal</span>
+      <span>cesarvidalmusic.art</span>
+    </footer>
+
+  </div>
+
+  <script>
+    document.querySelectorAll(".cv-nav-soon > a").forEach(link => {
+      link.addEventListener("click", event => {
+        event.preventDefault();
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Gonzalez Reeds — César Vidal" />
+  <title>Gonzalez Reeds — César Vidal</title>
+
+  <link rel="preload" href="fonts/Ronzino-BoldOblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
+
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <script defer src="favicon.js?v=6"></script>
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .cv-page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .cv-page-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding-top: 0;
+    }
+
+    .cv-page-hero {
+      padding: calc(var(--nav-height) + 0.45rem) var(--pad-x) 0.35rem;
+      flex-shrink: 0;
+      display: flex;
+      align-items: flex-end;
+      border-bottom: 0;
+      background: #fff;
+    }
+
+    .cv-gonzalez-hero-logo {
+      display: block;
+      width: clamp(175px, 18vw, 255px);
+      height: auto;
+      opacity: 0.92;
+    }
+
+    .cv-gonzalez-stage {
+      flex: 1;
+      min-height: 0;
+      padding: 0 var(--pad-x) 0.75rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr);
+      gap: clamp(1.2rem, 3vw, 3.2rem);
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .cv-gonzalez-text {
+      max-width: 720px;
+      padding-left: clamp(0rem, 1vw, 1rem);
+      font-family: 'Ronzino', sans-serif;
+      color: #0A0A0A;
+    }
+
+    .cv-gonzalez-copy {
+      margin: 0 0 0.8rem;
+      font-size: clamp(12px, 0.92vw, 14.2px);
+      line-height: 1.43;
+      letter-spacing: 0.002em;
+      color: #222;
+      text-align: justify;
+      text-justify: inter-word;
+    }
+
+    .cv-gonzalez-quote {
+      margin: 1rem 0;
+      padding: 0 0 0 clamp(0.85rem, 1.25vw, 1.2rem);
+      border-left: 0.5px solid #C8400A;
+      font-family: 'Ronzino', sans-serif;
+      font-style: oblique;
+      font-size: clamp(12px, 0.92vw, 14.2px);
+      line-height: 1.43;
+      letter-spacing: 0.002em;
+      color: #111;
+      text-align: justify;
+      text-justify: inter-word;
+    }
+
+    .cv-gonzalez-quote cite {
+      display: block;
+      margin-top: 0.65rem;
+      font-style: normal;
+      text-align: right;
+      color: #C8400A;
+    }
+
+    .cv-gonzalez-link {
+      display: inline-block;
+      margin-top: 0.05rem;
+      font-family: 'Ronzino', sans-serif;
+      font-size: clamp(12px, 0.92vw, 14.2px);
+      line-height: 1.43;
+      letter-spacing: 0.002em;
+      text-transform: none;
+      font-weight: 400;
+      font-style: normal;
+      color: #C8400A;
+      text-decoration: none;
+      border-bottom: 0.5px solid #C8400A;
+      padding-bottom: 2px;
+
+      transition:
+        transform 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease;
+
+      transform-origin: left center;
+    }
+
+    .cv-gonzalez-link:hover {
+      transform: scale(1.04);
+      color: #0A0A0A;
+      border-color: #0A0A0A;
+    }
+
+    .cv-reeds-visuals {
+      --reed-package-height: clamp(310px, 49vh, 485px);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(0.35rem, 0.9vw, 1rem);
+      min-width: 0;
+    }
+
+    .cv-reed-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      line-height: 0;
+
+      transition:
+        transform 0.38s ease,
+        filter 0.38s ease;
+
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    .cv-reed-card:hover {
+      transform: scale(1.13);
+      filter: brightness(1.04);
+      z-index: 3;
+    }
+
+    .cv-reed-img {
+      display: block;
+      width: auto;
+      max-width: none;
+      object-fit: contain;
+    }
+
+    .cv-reed-card--local .cv-reed-img {
+      height: calc(var(--reed-package-height) * 1.16);
+    }
+
+    .cv-reed-card--malbec .cv-reed-img {
+      height: calc(var(--reed-package-height) * 1);
+    }
+
+    .cv-reed-card--malbec {
+      transform: translateX(1cm);
+    }
+
+    .cv-reed-card--malbec:hover {
+      transform: translateX(1cm) scale(1.13);
+    }
+
+    .cv-footer {
+      flex-shrink: 0;
+      padding: 0.55rem clamp(0.5rem, 2vw, 1.25rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 0.5px solid #E0E0E0;
+      background: #fff;
+    }
+
+    .cv-footer span {
+      font-family: 'Ronzino', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      color: #bbb;
+    }
+  </style>
+
+  <!-- TRANSICIÓN V8: ESTADO INICIAL DEL FADE-IN -->
+
+  <style>
+    html.cv-transition-v8-incoming .cv-page {
+      filter: blur(7px) brightness(0.90);
+      transform: scale(1.008);
+    }
+
+    html.cv-transition-v8-incoming::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 2147483600;
+      opacity: 1;
+      pointer-events: auto;
+
+      background:
+        radial-gradient(
+          ellipse at 57% 63%,
+          rgba(44,85,68,0.18),
+          transparent 75%
+        ),
+        #242017;
+    }
+
+    html.cv-transition-v8-incoming.cv-transition-v8-reveal::after {
+      opacity: 0;
+      pointer-events: none;
+
+      transition:
+        opacity 1080ms cubic-bezier(0.40, 0, 0.22, 1);
+    }
+
+    html.cv-transition-v8-incoming.cv-transition-v8-reveal .cv-page {
+      filter: blur(0) brightness(1);
+      transform: scale(1);
+
+      transition:
+        filter 1080ms cubic-bezier(0.40, 0, 0.22, 1),
+        transform 1080ms cubic-bezier(0.40, 0, 0.22, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html.cv-transition-v8-incoming.cv-transition-v8-reveal::after,
+      html.cv-transition-v8-incoming.cv-transition-v8-reveal .cv-page {
+        transition-duration: 100ms;
+      }
+    }
+  </style>
+
+  <!-- DETECTAR TRANSICIÓN ANTES DEL PRIMER RENDER -->
+
+  <script>
+    (function () {
+      try {
+        const key = "cv-soft-page-transition-v8";
+        const raw = sessionStorage.getItem(key);
+        const state = raw ? JSON.parse(raw) : null;
+        const age = state ? Date.now() - Number(state.time) : Infinity;
+
+        if (
+          state &&
+          state.target === location.pathname &&
+          age >= 0 &&
+          age < 12000
+        ) {
+          document.documentElement.classList.add(
+            "cv-transition-v8-incoming"
+          );
+
+        } else if (raw) {
+          sessionStorage.removeItem(key);
+        }
+
+      } catch (error) {
+        // La página continúa normalmente si falla el almacenamiento.
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  <div class="cv-page">
+
+    <nav class="cv-nav cv-nav--light">
+      <ul>
+        <li><a href="index.html">home</a></li>
+        <li><a href="bio.html">bio</a></li>
+        <li><a href="music-projects.html">music &amp; projects</a></li>
+        <li><a href="https://syos.co/en/blogs/our-artists/cesar-vidal" target="_blank" rel="noopener">syos artist</a></li>
+        <li><a href="gonzalez-reeds.html" class="active">gonzalez reeds</a></li>
+
+        <li class="cv-nav-soon">
+          <a href="#" aria-disabled="true">merch</a>
+          <span class="cv-nav-soon-bubble">coming soon</span>
+        </li>
+
+        <li><a href="contact.html">contact</a></li>
+      </ul>
+    </nav>
+
+    <main class="cv-page-content">
+
+      <div class="cv-page-hero">
+        <img
+          class="cv-gonzalez-hero-logo"
+          src="img/logo-gonzalez.webp"
+          alt="Gonzalez Reeds logo"
+        />
+      </div>
+
+      <section class="cv-gonzalez-stage">
+
+        <div class="cv-gonzalez-text">
+
+          <p class="cv-gonzalez-copy">
+            César Vidal proudly plays Gonzalez Reeds, an Argentine reed maker from Mendoza known for its careful cane selection, precise craftsmanship and warm, reliable response.
+          </p>
+
+          <p class="cv-gonzalez-copy">
+            Gonzalez Reeds supports César’s work as a saxophonist, improviser and composer. He has played their reeds for several years, and among their different cuts, Local Jazz 627 and Malbec have become his preferred choices for alto saxophone.
+          </p>
+
+          <blockquote class="cv-gonzalez-quote">
+            “I’ve been playing Gonzalez Reeds for several years, and they have become a real part of my sound. The Local Jazz 627 and Malbec cuts give me a response I can trust: flexible enough for jazz, sensitive enough for experimental music, and stable in many different musical situations. I also value playing reeds made in Argentina, in Latin America. For me, their quality stands naturally beside the established reeds made in Europe and the U.S., while keeping a character and identity that feel very close to me.”
+            <cite>— César Vidal</cite>
+          </blockquote>
+
+          <p class="cv-gonzalez-copy">
+            Visit their website to discover more about their work, artists and full catalogue.
+          </p>
+
+          <a
+            class="cv-gonzalez-link"
+            href="https://www.gonzalezreeds.com/"
+            target="_blank"
+            rel="noopener"
+          >
+            visit gonzalezreeds.com ↗
+          </a>
+
+        </div>
+
+        <div class="cv-reeds-visuals">
+
+          <a
+            class="cv-reed-card cv-reed-card--local"
+            href="https://www.gonzalezreeds.com/products/alto-jazz-local-627-2/"
+            target="_blank"
+            rel="noopener"
+            aria-label="Local Jazz 627 reeds"
+          >
+            <img
+              class="cv-reed-img"
+              src="img/local-jazz.avif"
+              alt="Gonzalez Reeds Local Jazz 627 for alto saxophone"
+            />
+          </a>
+
+          <a
+            class="cv-reed-card cv-reed-card--malbec"
+            href="https://www.gonzalezreeds.com/products/alto-malbec-2/"
+            target="_blank"
+            rel="noopener"
+            aria-label="Malbec reeds"
+          >
+            <img
+              class="cv-reed-img"
+              src="img/malbec.avif"
+              alt="Gonzalez Reeds Malbec for alto saxophone"
+            />
+          </a>
+
+        </div>
+
+      </section>
+
+    </main>
+
+    <footer class="cv-footer">
+      <span>© 2026 César Vidal</span>
+      <span>cesarvidalmusic.art</span>
+    </footer>
+
+  </div>
+
+  <!-- MERCH COMING SOON -->
+
+  <script>
+    document.querySelectorAll(".cv-nav-soon > a").forEach(link => {
+      link.addEventListener("click", event => {
+        event.preventDefault();
+      });
+    });
+  </script>
+
+  <!-- TRANSICIÓN V8 -->
+
+  <script defer src="page-transition.js?v=8"></script>
+
+</body>
+</html>
