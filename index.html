@@ -70,26 +70,34 @@
     .cv-hero-img {
       position: absolute;
 
-      top: -8px;
-      right: 0;
-      bottom: -8px;
-      left: -0.7cm;
+      /* Fixed crop, with enough image outside each edge for the 9px blur. */
+      top: -32px;
+      right: auto;
+      bottom: auto;
+      left: calc(-14% - 32px);
 
-      width: calc(100% + 0.7cm);
-      height: calc(100% + 16px);
+      width: calc(114% + 64px);
+      height: calc(100% + 64px);
+      max-width: none;
 
       object-fit: cover;
-      object-position: 50% 56%;
+      object-position: 50% 74%;
 
       display: block;
+    }
+
+    /* Fade a fixed blur over the sharp photo, keeping the fabric texture stable. */
+    .cv-hero-img--blurred {
+      filter: blur(9px) brightness(0.88);
+      opacity: 0;
       animation: heroBlur 50s ease-in-out infinite;
-      will-change: filter;
+      will-change: opacity;
     }
 
     @keyframes heroBlur {
-      0%   { filter: blur(0px) brightness(1); }
-      50%  { filter: blur(9px) brightness(0.88); }
-      100% { filter: blur(0px) brightness(1); }
+      0%   { opacity: 0; }
+      50%  { opacity: 1; }
+      100% { opacity: 0; }
     }
 
     .cv-hero-overlay {
@@ -239,6 +247,13 @@
           alt="César Vidal — photo by Orlando Pedroso"
           decoding="async"
           fetchpriority="high"
+        />
+        <img
+          class="cv-hero-img cv-hero-img--blurred"
+          src="img/hero-home.webp"
+          alt=""
+          aria-hidden="true"
+          decoding="async"
         />
       </div>
 
