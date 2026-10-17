@@ -69,6 +69,8 @@
     }
 
     .cv-mp-stage {
+      --cv-mp-frame-color: #E0E0E0;
+      --cv-mp-frame-width: calc(4px / 3);
       flex: none;
       min-height: 0;
       height: calc(100vh - (var(--nav-height) * 2) - 52px);
@@ -123,13 +125,23 @@
       content: "";
       position: absolute;
       inset: 0;
-      border: 0.5px solid #242017;
+      /* Shared edges belong to one card, avoiding doubled horizontal lines. */
+      box-shadow:
+        inset var(--cv-mp-frame-width) 0 0 var(--cv-mp-frame-color),
+        inset 0 var(--cv-mp-frame-width) 0 var(--cv-mp-frame-color);
       pointer-events: none;
-      transition: border-width 0.35s ease;
+      transition: opacity 0.2s ease;
+    }
+
+    .cv-mp-col:last-child .cv-mp-card::after {
+      box-shadow:
+        inset var(--cv-mp-frame-width) 0 0 var(--cv-mp-frame-color),
+        inset 0 var(--cv-mp-frame-width) 0 var(--cv-mp-frame-color),
+        inset calc(-1 * var(--cv-mp-frame-width)) 0 0 var(--cv-mp-frame-color);
     }
 
     .cv-mp-card:hover::after {
-      border-width: 2px;
+      opacity: 0;
     }
 
     .cv-mp-card--coming-soon {
@@ -588,23 +600,33 @@
 
       trackEls[0].appendChild(testCard);
 
-      cardHeight = testCard.offsetHeight;
+      // Keep fractional CSS pixels, even during the incoming page transform.
+      cardHeight = parseFloat(getComputedStyle(testCard).height);
 
       trackEls[0].removeChild(testCard);
 
-      if (!cardHeight || cardHeight < 100) {
-        cardHeight = Math.round(window.innerHeight * 0.75);
+      if (!Number.isFinite(cardHeight) || cardHeight < 100) {
+        cardHeight = window.innerHeight * 0.75;
       }
     }
 
     function buildInitialGallery() {
       const deck = shuffle(PROJECTS);
+      const visibleSlots = Math.max(2, Math.ceil(stageEl.clientHeight / cardHeight));
       let index = 0;
 
       trackEls.forEach((track, i) => {
         track.innerHTML = "";
 
-        for (let j = 0; j < 2; j++) {
+        // Two leading cards keep newly recycled nodes outside the viewport,
+        // including downward motion and fractional-frame overshoot.
+        for (let j = 2; j > 0; j--) {
+          track.appendChild(
+            createCard(deck[(index + deck.length - j) % deck.length])
+          );
+        }
+
+        for (let j = 0; j < visibleSlots; j++) {
           const project = deck[index % deck.length];
           index++;
 
@@ -613,6 +635,10 @@
           );
         }
 
+        track.appendChild(
+          createCard(deck[index % deck.length])
+        );
+
         offsets[i] = 0;
 
         applyTransform(i);
@@ -620,56 +646,33 @@
     }
 
     function applyTransform(i) {
-      let y;
-
-      if (DIRS[i] === 1) {
-        y = -offsets[i];
-      } else {
-        y = offsets[i] - cardHeight;
-      }
+      const direction = DIRS[i] === 1 ? -1 : 1;
+      const y = -2 * cardHeight + direction * offsets[i];
 
       trackEls[i].style.transform = `translateY(${y}px)`;
     }
 
     function recycleColumn(i) {
       const track = trackEls[i];
+      const departingCard = DIRS[i] === 1
+        ? track.firstElementChild
+        : track.lastElementChild;
+      const blocked = getVisibleProjectTitles(departingCard);
+      const newCard = createCard(pickProject(blocked));
+
+      if (departingCard) departingCard.remove();
 
       if (DIRS[i] === 1) {
-        const firstCard = track.firstElementChild;
-
-        if (firstCard) {
-          track.removeChild(firstCard);
-        }
-
-        const blocked = getVisibleProjectTitles();
-        const newProject = pickProject(blocked);
-
-        track.appendChild(
-          createCard(newProject)
-        );
-
-        offsets[i] -= cardHeight;
+        track.appendChild(newCard);
       } else {
-        const lastCard = track.lastElementChild;
-
-        if (lastCard) {
-          track.removeChild(lastCard);
-        }
-
-        const blocked = getVisibleProjectTitles();
-        const newProject = pickProject(blocked);
-
-        track.insertBefore(
-          createCard(newProject),
-          track.firstElementChild
-        );
-
-        offsets[i] -= cardHeight;
+        track.insertBefore(newCard, track.firstElementChild);
       }
+
+      offsets[i] -= cardHeight;
     }
 
     function animate(ts) {
-      if (!lastTime) {
+      if (lastTime === null) {
         lastTime = ts;
       }
 
@@ -689,9 +692,20 @@
       requestAnimationFrame(animate);
     }
 
+    function resizeGallery() {
+      const previousHeight = cardHeight;
+      measureCardHeight();
+
+      trackEls.forEach((track, i) => {
+        offsets[i] = offsets[i] * cardHeight / previousHeight;
+        applyTransform(i);
+      });
+    }
+
     function startGallery() {
       measureCardHeight();
       buildInitialGallery();
+      window.addEventListener("resize", resizeGallery);
       requestAnimationFrame(animate);
     }
 
