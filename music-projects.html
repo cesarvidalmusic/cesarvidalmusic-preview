@@ -69,11 +69,12 @@
     }
 
     .cv-mp-stage {
+      --cv-mp-stage-height: calc(100vh - (var(--nav-height) * 2) - 52px);
       --cv-mp-frame-color: #E0E0E0;
       --cv-mp-frame-width: calc(4px / 3);
       flex: none;
       min-height: 0;
-      height: calc(100vh - (var(--nav-height) * 2) - 52px);
+      height: var(--cv-mp-stage-height);
       padding: 0 var(--pad-x);
       display: flex;
       gap: 0;
@@ -105,6 +106,8 @@
       padding: 1rem 1rem 1.15rem;
       background: #ffffff;
       height: 75vh;
+      /* At most two reserved cards per column, including the 5% hover growth. */
+      min-height: calc((var(--cv-mp-stage-height) + 5px) / 0.95);
       box-sizing: border-box;
       text-decoration: none;
       color: #0A0A0A;
@@ -430,7 +433,9 @@
     const offsets = [0, 0, 0, 0];
 
     let cardHeight = 0;
+    let stageHeight = 0;
     let lastTime = null;
+    let reservedCards = new Set();
 
     function preloadProjectImages() {
       const loaders = PROJECTS.map(project => {
@@ -502,11 +507,11 @@
       setCardProject(card, project);
       addHover(card);
 
-      if (project.comingSoon) {
-        card.addEventListener("click", event => {
+      card.addEventListener("click", event => {
+        if (card.classList.contains("cv-mp-card--coming-soon")) {
           event.preventDefault();
-        });
-      }
+        }
+      });
 
       return card;
     }
@@ -551,36 +556,38 @@
       });
     }
 
-    function getVisibleCards() {
-      const stageRect = stageEl.getBoundingClientRect();
+    function reserveVisibleProjects() {
+      // Reserve just before entry, including the maximum hover overhang.
+      // Use layout coordinates so page fades and current hover transforms
+      // cannot change which projects are protected.
+      const margin = cardHeight * 0.025 + 2;
+      const entering = trackEls.flatMap((track, i) => {
+        const direction = DIRS[i] === 1 ? -1 : 1;
+        const y = -2 * cardHeight + direction * offsets[i];
 
-      return Array
-        .from(document.querySelectorAll(".cv-mp-card"))
-        .filter(card => {
-          const rect = card.getBoundingClientRect();
-
-          return (
-            rect.top < stageRect.bottom &&
-            rect.bottom > stageRect.top
-          );
+        return Array.from(track.children).filter((card, index) => {
+          const top = y + index * cardHeight;
+          return top < stageHeight + margin && top + cardHeight > -margin;
         });
-    }
+      });
 
-    function getVisibleProjectTitles(excludeCard = null) {
-      return getVisibleCards()
-        .filter(card => card !== excludeCard)
-        .map(card => card.dataset.project)
-        .filter(Boolean);
+      // Keep projects already on screen. Only an incoming, offscreen card
+      // may receive a different project; future buffer cards reserve nothing.
+      entering.sort((a, b) => Number(reservedCards.has(b)) - Number(reservedCards.has(a)));
+      const blocked = [];
+      entering.forEach(card => {
+        if (blocked.includes(card.dataset.project)) {
+          setCardProject(card, pickProject(blocked));
+        }
+        blocked.push(card.dataset.project);
+      });
+      reservedCards = new Set(entering);
     }
 
     function pickProject(blockedTitles = []) {
-      let available = PROJECTS.filter(project => {
+      const available = PROJECTS.filter(project => {
         return !blockedTitles.includes(project.title);
       });
-
-      if (available.length === 0) {
-        available = PROJECTS;
-      }
 
       return available[
         Math.floor(Math.random() * available.length)
@@ -602,6 +609,7 @@
 
       // Keep fractional CSS pixels, even during the incoming page transform.
       cardHeight = parseFloat(getComputedStyle(testCard).height);
+      stageHeight = parseFloat(getComputedStyle(stageEl).height);
 
       trackEls[0].removeChild(testCard);
 
@@ -643,6 +651,8 @@
 
         applyTransform(i);
       });
+
+      reserveVisibleProjects();
     }
 
     function applyTransform(i) {
@@ -657,8 +667,8 @@
       const departingCard = DIRS[i] === 1
         ? track.firstElementChild
         : track.lastElementChild;
-      const blocked = getVisibleProjectTitles(departingCard);
-      const newCard = createCard(pickProject(blocked));
+      // Buffers are assigned provisionally; reserve their project near entry.
+      const newCard = createCard(pickProject());
 
       if (departingCard) departingCard.remove();
 
@@ -689,6 +699,8 @@
         applyTransform(i);
       });
 
+      reserveVisibleProjects();
+
       requestAnimationFrame(animate);
     }
 
@@ -700,6 +712,8 @@
         offsets[i] = offsets[i] * cardHeight / previousHeight;
         applyTransform(i);
       });
+
+      reserveVisibleProjects();
     }
 
     function startGallery() {

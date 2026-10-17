@@ -33,7 +33,8 @@ window.gallerySnapshot = () => {
         if (!ids.has(card)) ids.set(card, ++nextId);
         const rect = card.getBoundingClientRect(), image = card.querySelector('img');
         const photo = image.getBoundingClientRect();
-        return { id: ids.get(card), top: rect.top, bottom: rect.bottom, height: rect.height,
+        return { id: ids.get(card), project: card.dataset.project,
+          top: rect.top, bottom: rect.bottom, height: rect.height,
           photoTop: photo.top, photoBottom: photo.bottom,
           photoReady: image.complete && image.naturalWidth > 0 };
       }))
@@ -58,12 +59,26 @@ def check_coverage(state):
         assert cursor >= state['bottom'] - 0.1, ('Empty bottom strip', cursor, state['bottom'])
 
 
+def check_unique_projects(state):
+    visible = [card for column in state['columns'] for card in column
+               if min(card['bottom'], state['bottom']) - max(card['top'], state['top']) > 0.01]
+    titles = [card['project'] for card in visible]
+    assert len(titles) <= 8, ('More visible slots than projects', titles)
+    assert len(titles) == len(set(titles)), ('Repeated visible projects', titles)
+
+
 def check_recycling(before, after, elapsed):
     """A node may be replaced only after its painted position has left view."""
     for index, (old, new) in enumerate(zip(before['columns'], after['columns'])):
         old_ids = {card['id'] for card in old}
         new_ids = {card['id'] for card in new}
         movement = DIRECTIONS[index] * SPEEDS[index] * elapsed / 1000
+        old_by_id = {card['id']: card for card in old}
+        for card in new:
+            previous = old_by_id.get(card['id'])
+            if previous and previous['project'] != card['project']:
+                visible = min(previous['bottom'], before['bottom']) - max(previous['top'], before['top'])
+                assert visible <= 0.1, ('Project changed while visible', previous, card)
         for card in old:
             if card['id'] in new_ids:
                 continue
@@ -80,6 +95,7 @@ def check_recycling(before, after, elapsed):
 async def snapshot(page):
     state = await page.evaluate('gallerySnapshot()')
     check_coverage(state)
+    check_unique_projects(state)
     return state
 
 
@@ -97,6 +113,17 @@ async def check_cycles(page):
                 time = number * cycle + offset
                 if 0 < time < duration:
                     times.add(time)
+        # Both directions: inspect the instant a card enters/leaves the
+        # reservation margin and the painted viewport, not only recycling.
+        margin = height * 0.025 + 2
+        stage_height = previous['bottom'] - previous['top']
+        for phase in (margin, height - margin, stage_height + margin,
+                      height - stage_height - margin, stage_height, height - stage_height):
+            for number in range(int(duration / cycle) + 1):
+                for offset in (-0.001, 0, 0.001):
+                    time = (number * height + phase) / speed + offset
+                    if 0 < time < duration:
+                        times.add(time)
     last = 0
     for time in sorted(times):
         elapsed = (time - last) * 1000
@@ -123,11 +150,31 @@ async def check_hover(page):
     grown = await card.bounding_box()
     assert abs(grown['width'] / box['width'] - 1.05) < 0.001
     assert await card.evaluate("card => getComputedStyle(card, '::after').opacity") == '0'
-    await page.mouse.move(box['x'] - 3, (top + bottom) / 2)
+    await snapshot(page)
+    await page.mouse.move(box['x'] - (grown['width'] - box['width']) / 4, (top + bottom) / 2)
     assert await card.evaluate("card => card.matches(':hover')"), 'Expanded hit area is clipped'
     await page.mouse.move(10, 10)
     await page.wait_for_timeout(400)
     assert await card.evaluate("card => getComputedStyle(card, '::after').opacity") == '1'
+
+
+async def check_hover_motion(page):
+    stage = await page.locator('#stage').bounding_box()
+    previous = await snapshot(page)
+    for step in range(240):
+        if step % 10 == 0:
+            # Grow cards right beside either crop boundary during both motions.
+            column = (step // 10) % 4
+            x = stage['x'] + stage['width'] * (column + 0.5) / 4
+            y = stage['y'] + (2 if step % 20 == 0 else stage['height'] - 2)
+            await page.mouse.move(x, y)
+            await page.wait_for_timeout(60)
+        await page.evaluate('stepGallery(200)')
+        current = await snapshot(page)
+        check_recycling(previous, current, 200)
+        previous = current
+    await page.mouse.move(10, 10)
+    await page.wait_for_timeout(400)
 
 
 async def check_resize(page, width, height):
@@ -150,9 +197,14 @@ async def run(base):
     results = []
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(executable_path='/usr/bin/chromium', headless=True)
-        for width, height in [(1512, 770), (1440, 773), (1280, 900)]:
+        for width, height in [(1512, 770), (1440, 773), (1280, 900), (1920, 1080), (390, 844)]:
             page = await browser.new_page(viewport={'width': width, 'height': height}, device_scale_factor=2)
             await page.add_init_script(CLOCK)
+            # Reproduce each shuffle while exercising several different decks.
+            await page.add_init_script(f"""
+                let projectSeed = {width + height};
+                Math.random = () => ((projectSeed = (1664525 * projectSeed + 1013904223) >>> 0) / 4294967296);
+            """)
             errors = []
             page.on('pageerror', lambda error: errors.append(str(error)))
             if width == 1512:
@@ -168,12 +220,14 @@ async def run(base):
             samples = await check_cycles(page)
             await check_hover(page)
             if width == 1512:
+                await check_hover_motion(page)
                 await check_resize(page, 1440, 900)
             assert not errors, errors
             results.append({'viewport': [width, height], 'cycle_samples': samples})
             await page.close()
         await browser.close()
-    print(json.dumps({'status': 'passed', 'gallery_motion': results, 'resize_samples': 200}))
+    print(json.dumps({'status': 'passed', 'gallery_motion': results,
+                      'hover_motion_samples': 240, 'resize_samples': 200}))
 
 
 if __name__ == '__main__':
