@@ -114,14 +114,22 @@
       left: 0;
       bottom: 0;
       display: block;
-      width: min(52vw, 650px);
-      max-width: none;
+      width: min(56vw, 700px);
+      max-width: calc((100vw - var(--pad-x)) * 0.53);
       height: auto;
       object-fit: contain;
       background: transparent;
       z-index: 1;
       pointer-events: none;
       user-select: none;
+      animation: spamPhotoBlur 50s ease-in-out infinite;
+      will-change: filter;
+    }
+
+    @keyframes spamPhotoBlur {
+      0%   { filter: blur(0px) brightness(1); }
+      50%  { filter: blur(9px) brightness(0.88); }
+      100% { filter: blur(0px) brightness(1); }
     }
 
     .cv-spam-text-panel {
