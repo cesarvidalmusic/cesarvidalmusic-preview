@@ -41,14 +41,27 @@ new MutationObserver(() => {
     window.fadeRuns.push({duration: seconds, background: style.backgroundColor,
       gradient: style.backgroundImage,
       cards: document.querySelectorAll('.cv-mp-card').length});
-    animation.finished.then(() => fadeEnds.push(seconds), () => {});
+    animation.finished.then(() => {
+      if (!fadeEnds.includes(seconds)) fadeEnds.push(seconds);
+    }, () => {});
   }
 }).observe(document, {subtree: true, attributes: true, attributeFilter: ['class']});
 document.addEventListener('transitionend', event => {
+  if (event.target.classList.contains('cv-transition-entering') &&
+      event.propertyName === 'opacity' && !fadeEnds.includes(event.elapsedTime)) {
+    // CSS fallbacks may be cleaned up before their finished promise resolves.
+    fadeEnds.push(event.elapsedTime);
+  }
   if (event.target.classList.contains('cv-transition-curtain') &&
       event.propertyName === 'opacity') {
     console.debug('__cv_exit__' + JSON.stringify({duration: event.elapsedTime,
       opacity: getComputedStyle(event.target).opacity}));
+  }
+});
+document.addEventListener('animationend', event => {
+  if (event.target.classList.contains('cv-transition-entering') &&
+      event.animationName === 'cv-transition-overlay-in' && !fadeEnds.includes(event.elapsedTime)) {
+    fadeEnds.push(event.elapsedTime);
   }
 });
 function sample() {
@@ -86,8 +99,9 @@ def check_installation():
     assert not (ROOT / 'CNAME').exists(), 'The preview must not bind the official domain'
     for name in PAGES:
         html = (ROOT / name).read_text()
-        assert html.count('src="page-transition.js?v=10"') == 1, name
-        assert html.count('href="css/page-transition.css?v=10"') == 1, name
+        version = 11 if name in ('music-projects.html', 'des-visages.html') else 10
+        assert html.count(f'src="page-transition.js?v={version}"') == 1, name
+        assert html.count(f'href="css/page-transition.css?v={version}"') == 1, name
         assert html.count('data-page-transition-content') == 1, name
         assert html.count('class="cv-transition-entering"') == 1, name
         assert html.index('cv-page-transition') < html.index('<link'), name
@@ -131,7 +145,7 @@ async def direct(page, base, name):
     assert not await page.evaluate('window.fadeRuns.length'), name
 
 
-async def check_entry(page, destination, *, reduced=False):
+async def check_entry(page, destination, *, reduced=False, color=False):
     await page.wait_for_url('**/' + destination, wait_until='domcontentloaded', timeout=25000)
     await page.wait_for_function('window.fadeEnds.length === 1', timeout=6000)
     await page.wait_for_function("!document.documentElement.classList.contains('cv-transition-incoming')")
@@ -142,8 +156,12 @@ async def check_entry(page, destination, *, reduced=False):
       transform:getComputedStyle(document.querySelector('[data-page-transition-content]')).transform})""")
     duration = 0.1 if reduced else 0.65
     assert len(result['runs']) == 1 and result['ends'] == [duration], (destination, result)
-    assert result['runs'][0]['background'] == 'rgb(36, 32, 23)', result
-    assert 'rgba(44, 85, 68, 0.18)' in result['runs'][0]['gradient'], result
+    if color:
+        assert result['runs'][0]['background'] == 'rgb(196, 15, 20)', result
+        assert result['runs'][0]['gradient'] == 'none', result
+    else:
+        assert result['runs'][0]['background'] == 'rgb(36, 32, 23)', result
+        assert 'rgba(44, 85, 68, 0.18)' in result['runs'][0]['gradient'], result
     assert result['runs'][0]['duration'] == duration, result
     if not reduced:
         assert any(0 < value < 1 for value in result['samples']), result
@@ -188,7 +206,7 @@ async def navigation_graph(browser, base, sources, worker):
                 await link.evaluate('(link) => link.click()')
             else:
                 await link.click()
-            await check_entry(page, destination)
+            await check_entry(page, destination, color=(source == 'music-projects.html' and destination == 'des-visages.html'))
             assert page.exits and abs(page.exits[-1]['duration'] - 0.5) < 0.005, (source, destination, page.exits)
             assert page.exits[-1]['opacity'] == '1'
             checked.append([source, destination])
@@ -310,7 +328,7 @@ async def warm_cache_and_gallery(browser, base):
     }""")
     assert card, 'Expected a visible gallery card'
     await page.mouse.click(card['x'], card['y'])
-    await check_entry(page, card['destination'])
+    await check_entry(page, card['destination'], color=(card['destination'] == 'des-visages.html'))
     await context.close()
     return {'warm_cache_navigations': 5, 'visible_gallery_card': card['destination']}
 

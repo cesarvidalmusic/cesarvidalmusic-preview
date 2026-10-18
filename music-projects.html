@@ -20,8 +20,8 @@
       }
     })();
   </script>
-  <link rel="stylesheet" href="css/page-transition.css?v=10" />
-  <script defer src="page-transition.js?v=10" onerror="document.documentElement.classList.remove('cv-transition-incoming')"></script>
+  <link rel="stylesheet" href="css/page-transition.css?v=11" />
+  <script defer src="page-transition.js?v=11" onerror="document.documentElement.classList.remove('cv-transition-incoming')"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Music & Projects — César Vidal." />
@@ -53,7 +53,7 @@
     html, body {
       height: 100%;
       overflow: hidden;
-      background: #c5c4b4;
+      background: #ffffff;
     }
 
     .cv-page {
@@ -61,24 +61,10 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      background: transparent;
-    }
-
-    .cv-mp-bg-video {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-      object-position: center center;
-      filter: grayscale(1);
-      z-index: 0;
-      pointer-events: none;
+      background: #ffffff;
     }
 
     .cv-page-content {
-      position: relative;
-      z-index: 2;
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -124,7 +110,7 @@
       flex-direction: column;
       align-items: flex-start;
       padding: 1rem 1rem 1.15rem;
-      background: transparent;
+      background: #ffffff;
       height: 75vh;
       /* At most two reserved cards per column, including the 5% hover growth. */
       min-height: calc((var(--cv-mp-stage-height) + 5px) / 0.95);
@@ -147,7 +133,7 @@
     .cv-mp-card::after {
       content: "";
       position: absolute;
-      inset: 0;
+      inset: 0 1rem;
       /* Each shared horizontal edge is drawn once, with no side borders. */
       box-shadow: inset 0 var(--cv-mp-frame-width) 0 var(--cv-mp-frame-color);
       pointer-events: none;
@@ -242,15 +228,13 @@
     }
 
     .cv-mp-footer {
-      position: relative;
-      z-index: 2;
       flex-shrink: 0;
       padding: 0.55rem clamp(0.5rem, 2vw, 1.25rem);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 0.5px solid transparent;
-      background: transparent;
+      border-top: 0.5px solid #E0E0E0;
+      background: #fff;
     }
 
     .cv-mp-footer span {
@@ -258,13 +242,12 @@
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: lowercase;
-      color: rgba(10,10,10,0.48);
+      color: #bbb;
     }
 
     .cv-page-hero {
       padding-top: calc(var(--nav-height) + 0.75rem);
       flex-shrink: 0;
-      border-bottom-color: transparent;
     }
 
     .cv-nav-soon {
@@ -311,10 +294,6 @@
 <body>
   <div class="cv-transition-entering" aria-hidden="true"></div>
   <div class="cv-page" data-page-transition-content>
-
-    <video class="cv-mp-bg-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
-      <source src="videos/music-projects-final-HD.mp4" type="video/mp4">
-    </video>
 
     <nav class="cv-nav cv-nav--light">
       <ul>

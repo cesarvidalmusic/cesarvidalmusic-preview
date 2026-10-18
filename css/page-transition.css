@@ -33,6 +33,22 @@ html.cv-transition-incoming .cv-transition-entering {
   pointer-events: auto;
 }
 
+/* Preview only: Music & Projects white becomes Des Visages red. */
+html.cv-transition-gallery-to-des-visages .cv-transition-entering {
+  background: #C40F14;
+}
+
+html.cv-transition-gallery-to-des-visages .cv-transition-curtain {
+  background: #ffffff;
+  transition:
+    opacity var(--cv-transition-out-duration) cubic-bezier(0.40, 0, 0.22, 1),
+    background-color var(--cv-transition-out-duration) cubic-bezier(0.40, 0, 0.22, 1);
+}
+
+html.cv-transition-gallery-to-des-visages .cv-transition-curtain.is-covered {
+  background-color: #C40F14;
+}
+
 html.cv-transition-leaving [data-page-transition-content],
 html.cv-transition-incoming [data-page-transition-content] {
   filter: blur(7px) brightness(0.90);
@@ -60,8 +76,30 @@ html.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] 
     transform var(--cv-transition-in-duration) cubic-bezier(0.40, 0, 0.22, 1);
 }
 
+/* Explicit starting frames also work before a fast page's first paint. */
+html.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal .cv-transition-entering {
+  transition: none;
+  animation: cv-transition-overlay-in var(--cv-transition-css-duration) cubic-bezier(0.40, 0, 0.22, 1) both;
+}
+
+html.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
+  transition: none;
+  animation: cv-transition-content-in var(--cv-transition-css-duration) cubic-bezier(0.40, 0, 0.22, 1) both;
+}
+
+@keyframes cv-transition-overlay-in {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes cv-transition-content-in {
+  from { filter: blur(7px) brightness(0.90); transform: scale(1.008); }
+  to { filter: blur(0px) brightness(1); transform: scale(1); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cv-transition-curtain,
+  html.cv-transition-gallery-to-des-visages .cv-transition-curtain,
   html.cv-transition-leaving [data-page-transition-content] {
     transition-duration: var(--cv-transition-reduced-out-duration);
   }
