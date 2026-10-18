@@ -33,31 +33,39 @@ html.cv-transition-incoming .cv-transition-entering {
   pointer-events: auto;
 }
 
-/* Preview only: gallery white becomes the selected project's background. */
+/* Preview only: match the gallery and project backgrounds in both directions. */
 html.cv-transition-gallery-to-des-visages {
-  --cv-transition-destination-color: #C40F14;
+  --cv-transition-project-color: #C40F14;
+  --cv-transition-destination-color: var(--cv-transition-project-color);
 }
 
 html.cv-transition-gallery-to-spam {
-  --cv-transition-destination-color: #E6DFC5;
+  --cv-transition-project-color: #E6DFC5;
+  --cv-transition-destination-color: var(--cv-transition-project-color);
 }
 
 html.cv-transition-gallery-to-black {
-  --cv-transition-destination-color: #000000;
+  --cv-transition-project-color: #000000;
+  --cv-transition-destination-color: var(--cv-transition-project-color);
 }
 
-html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black) .cv-transition-entering {
+html.cv-transition-project-to-gallery {
+  --cv-transition-source-color: var(--cv-transition-project-color);
+  --cv-transition-destination-color: #ffffff;
+}
+
+html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black, .cv-transition-project-to-gallery) .cv-transition-entering {
   background: var(--cv-transition-destination-color);
 }
 
-html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black) .cv-transition-curtain {
-  background: #ffffff;
+html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black, .cv-transition-project-to-gallery) .cv-transition-curtain {
+  background: var(--cv-transition-source-color, #ffffff);
   transition:
     opacity var(--cv-transition-out-duration) cubic-bezier(0.40, 0, 0.22, 1),
     background-color var(--cv-transition-out-duration) cubic-bezier(0.40, 0, 0.22, 1);
 }
 
-html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black) .cv-transition-curtain.is-covered {
+html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black, .cv-transition-project-to-gallery) .cv-transition-curtain.is-covered {
   background-color: var(--cv-transition-destination-color);
 }
 
@@ -111,7 +119,7 @@ html.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [dat
 
 @media (prefers-reduced-motion: reduce) {
   .cv-transition-curtain,
-  html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black) .cv-transition-curtain,
+  html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black, .cv-transition-project-to-gallery) .cv-transition-curtain,
   html.cv-transition-leaving [data-page-transition-content] {
     transition-duration: var(--cv-transition-reduced-out-duration);
   }

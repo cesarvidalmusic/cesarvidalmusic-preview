@@ -1,4 +1,4 @@
-"""Exercise the gallery's four destination colors in a real browser."""
+"""Exercise all seven project color transitions in both directions in a real browser."""
 
 import asyncio
 import functools
@@ -40,6 +40,29 @@ requestAnimationFrame(colorLoop);
 """
 
 
+def check_colors(samples, source_rgb, target_rgb, reduced):
+    assert samples and samples[0], samples
+    frames = samples[0]
+    rgb = [tuple(map(int, re.findall(r'\d+', frame['background']))) for frame in frames]
+    assert rgb[0] == source_rgb and rgb[-1] == target_rgb, rgb
+    assert frames[-1]['opacity'] == '1' and all(f['gradient'] == 'none' for f in frames), frames
+    if not reduced:
+        assert len({color for color in rgb if color not in (source_rgb, target_rgb)}) >= 2, rgb
+    for channel in range(3):
+        direction = 1 if target_rgb[channel] >= source_rgb[channel] else -1
+        assert all(direction * (b[channel] - a[channel]) >= 0 for a, b in zip(rgb, rgb[1:])), rgb
+    return len(frames)
+
+
+async def early_cover(page, destination, color):
+    await page.wait_for_url('**/' + destination, wait_until='commit')
+    await page.wait_for_function("""expected => {
+      const overlay=document.querySelector('.cv-transition-entering');
+      return overlay && getComputedStyle(overlay).backgroundColor===expected &&
+        getComputedStyle(overlay).opacity==='1' && overlay.getAnimations().length===0;
+    }""", arg=color)
+
+
 async def color_route(browser, base, destination='des-visages.html', *, mobile=False, reduced=False, fallback=False, delayed=False):
     target_color = GALLERY_COLORS[destination]
     target_rgb = tuple(map(int, re.findall(r'\d+', target_color)))
@@ -53,31 +76,26 @@ async def color_route(browser, base, destination='des-visages.html', *, mobile=F
         async def delay_script(route):
             await asyncio.sleep(0.8)
             await route.continue_()
-        await page.route('**/page-transition.js?v=12', delay_script)
+        await page.route('**/page-transition.js?v=13', delay_script)
     await page.locator(f'.cv-mp-card[href="{destination}"]').first.evaluate('(link)=>link.click()')
     if delayed:
-        await page.wait_for_url('**/' + destination, wait_until='commit')
-        await page.wait_for_function("""expected => {
-          const overlay=document.querySelector('.cv-transition-entering');
-          return overlay && getComputedStyle(overlay).backgroundColor===expected &&
-            getComputedStyle(overlay).opacity==='1' && overlay.getAnimations().length===0;
-        }""", arg=target_color)
+        await early_cover(page, destination, target_color)
     await check_entry(page, destination, reduced=reduced, color=target_color)
-    if delayed:
-        await page.unroute('**/page-transition.js?v=12', delay_script)
-    assert samples and samples[0], samples
-    frames = samples[0]
-    rgb = [tuple(map(int, re.findall(r'\d+', frame['background']))) for frame in frames]
-    assert rgb[0] == (255, 255, 255) and rgb[-1] == target_rgb, rgb
-    assert frames[-1]['opacity'] == '1' and all(f['gradient'] == 'none' for f in frames), frames
-    if not reduced:
-        assert len({color for color in rgb if color not in ((255, 255, 255), target_rgb)}) >= 2, rgb
-    assert all(a[1] >= b[1] for a, b in zip(rgb, rgb[1:])), rgb
+    forward_samples = check_colors(samples, (255, 255, 255), target_rgb, reduced)
     assert abs(page.exits[-1]['duration'] - (0.08 if reduced else 0.5)) < 0.005, page.exits
     assert not await page.evaluate("document.documentElement.className.includes('cv-transition-')")
-    # The reverse route and a later visit from Bio keep the original wash.
+    # Every project returns through its own color to an opaque white gallery cover.
+    samples.clear()
     await page.locator('nav a[href="music-projects.html"]').click()
-    await check_entry(page, 'music-projects.html', reduced=reduced)
+    if delayed:
+        await early_cover(page, 'music-projects.html', 'rgb(255, 255, 255)')
+    await check_entry(page, 'music-projects.html', reduced=reduced, color='rgb(255, 255, 255)')
+    reverse_samples = check_colors(samples, target_rgb, (255, 255, 255), reduced)
+    assert abs(page.exits[-1]['duration'] - (0.08 if reduced else 0.5)) < 0.005, page.exits
+    assert not await page.evaluate("document.documentElement.className.includes('cv-transition-')")
+    if delayed:
+        await page.unroute('**/page-transition.js?v=13', delay_script)
+    # A subsequent navigation and a visit from Bio keep the original wash.
     await page.locator('nav a[href="bio.html"]').click()
     await check_entry(page, 'bio.html', reduced=reduced)
     await page.evaluate("""destination => {
@@ -90,15 +108,18 @@ async def color_route(browser, base, destination='des-visages.html', *, mobile=F
     assert not page.errors, page.errors
     await context.close()
     return {'destination':destination, 'mobile':mobile, 'reduced':reduced, 'css_fallback':fallback,
-            'early_color_cover':delayed, 'color_samples':len(frames)}
+            'early_color_cover':delayed, 'forward_color_samples':forward_samples,
+            'reverse_color_samples':reverse_samples}
 
 
-async def failures(browser, base, destination):
+async def failures(browser, base, source, destination):
+    selector = (f'.cv-mp-card[href="{destination}"]' if source == 'music-projects.html'
+                else 'nav a[href="music-projects.html"]')
     for pattern in ('**/page-transition.js?*', '**/css/page-transition.css?*'):
         context, page = await new_page(browser, base)
-        await direct(page, base, 'music-projects.html')
+        await direct(page, base, source)
         await page.route(pattern, lambda route: route.abort())
-        await page.locator(f'.cv-mp-card[href="{destination}"]').first.evaluate('(link)=>link.click()')
+        await page.locator(selector).first.evaluate('(link)=>link.click()')
         await page.wait_for_url('**/' + destination, wait_until='domcontentloaded')
         await page.wait_for_function("!document.documentElement.className.includes('cv-transition-')")
         overlay = await page.locator('.cv-transition-entering').evaluate('''el=>({
@@ -112,8 +133,8 @@ async def failures(browser, base, destination):
         assert not page.errors, page.errors
         await context.close()
     context, page = await new_page(browser, base, init="Storage.prototype.setItem=()=>{throw new DOMException('Blocked','SecurityError')}")
-    await direct(page, base, 'music-projects.html')
-    await page.locator(f'.cv-mp-card[href="{destination}"]').first.evaluate('(link)=>link.click()')
+    await direct(page, base, source)
+    await page.locator(selector).first.evaluate('(link)=>link.click()')
     await page.wait_for_url('**/' + destination, wait_until='domcontentloaded')
     assert not await page.evaluate('fadeRuns.length') and not page.errors
     await context.close()
@@ -132,9 +153,10 @@ async def run(base):
                 case = await color_route(browser, base, destination, **option)
                 cases.append(case)
                 print(json.dumps(case), flush=True)
-            await failures(browser, base, destination)
+            await failures(browser, base, 'music-projects.html', destination)
+            await failures(browser, base, destination, 'music-projects.html')
         await browser.close()
-    result = {'status':'passed', 'cases':cases, 'failure_paths':3 * len(GALLERY_COLORS)}
+    result = {'status':'passed', 'cases':cases, 'failure_paths':6 * len(GALLERY_COLORS)}
     print(json.dumps(result), flush=True)
     return result
 

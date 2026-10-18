@@ -22,7 +22,20 @@ GALLERY_COLORS = {
     'spam.html': 'rgb(230, 223, 197)',
     'des-visages-ep.html': 'rgb(0, 0, 0)',
     'nubes.html': 'rgb(0, 0, 0)',
+    'flor-de-loto.html': 'rgb(0, 0, 0)',
+    'aleas.html': 'rgb(0, 0, 0)',
+    'artikulation-band.html': 'rgb(0, 0, 0)',
 }
+
+
+def route_color(source, destination):
+    if source == 'music-projects.html':
+        return GALLERY_COLORS.get(destination)
+    if source in GALLERY_COLORS and destination == 'music-projects.html':
+        return 'rgb(255, 255, 255)'
+    return None
+
+
 INSTRUMENT = """
 window.fadeRuns = [];
 window.fadeEnds = [];
@@ -105,7 +118,7 @@ def check_installation():
     assert not (ROOT / 'CNAME').exists(), 'The preview must not bind the official domain'
     for name in PAGES:
         html = (ROOT / name).read_text()
-        version = 12 if name == 'music-projects.html' or name in GALLERY_COLORS else 10
+        version = 13 if name == 'music-projects.html' or name in GALLERY_COLORS else 10
         assert html.count(f'src="page-transition.js?v={version}"') == 1, name
         assert html.count(f'href="css/page-transition.css?v={version}"') == 1, name
         assert html.count('data-page-transition-content') == 1, name
@@ -212,7 +225,7 @@ async def navigation_graph(browser, base, sources, worker):
                 await link.evaluate('(link) => link.click()')
             else:
                 await link.click()
-            await check_entry(page, destination, color=(GALLERY_COLORS.get(destination) if source == 'music-projects.html' else None))
+            await check_entry(page, destination, color=route_color(source, destination))
             assert page.exits and abs(page.exits[-1]['duration'] - 0.5) < 0.005, (source, destination, page.exits)
             assert page.exits[-1]['opacity'] == '1'
             checked.append([source, destination])
@@ -228,14 +241,14 @@ async def mobile_cycle(browser, base, *, reduced=False):
               'des-visages-ep.html', 'aleas.html', 'flor-de-loto.html',
               'artikulation-band.html', 'merch.html', 'index.html']
     await direct(page, base, visits[0])
-    for destination in visits[1:]:
+    for source, destination in zip(visits, visits[1:]):
         await page.wait_for_timeout(80)
         # Some existing mobile menu entries are off-screen; layout is outside scope.
         await page.evaluate("""name => {
           const link = document.createElement('a'); link.href = name;
           document.body.appendChild(link); link.click(); link.remove();
         }""", destination)
-        await check_entry(page, destination, reduced=reduced)
+        await check_entry(page, destination, reduced=reduced, color=route_color(source, destination))
     await page.go_back(wait_until='domcontentloaded')
     await page.wait_for_function("!document.documentElement.className.includes('cv-transition-') && !document.querySelector('.cv-transition-curtain')")
     assert not page.errors, page.errors
