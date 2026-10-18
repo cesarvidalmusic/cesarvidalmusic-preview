@@ -17,6 +17,12 @@ from playwright.async_api import async_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 PAGES = sorted(p.name for p in ROOT.glob('*.html'))
+GALLERY_COLORS = {
+    'des-visages.html': 'rgb(196, 15, 20)',
+    'spam.html': 'rgb(230, 223, 197)',
+    'des-visages-ep.html': 'rgb(0, 0, 0)',
+    'nubes.html': 'rgb(0, 0, 0)',
+}
 INSTRUMENT = """
 window.fadeRuns = [];
 window.fadeEnds = [];
@@ -99,7 +105,7 @@ def check_installation():
     assert not (ROOT / 'CNAME').exists(), 'The preview must not bind the official domain'
     for name in PAGES:
         html = (ROOT / name).read_text()
-        version = 11 if name in ('music-projects.html', 'des-visages.html') else 10
+        version = 12 if name == 'music-projects.html' or name in GALLERY_COLORS else 10
         assert html.count(f'src="page-transition.js?v={version}"') == 1, name
         assert html.count(f'href="css/page-transition.css?v={version}"') == 1, name
         assert html.count('data-page-transition-content') == 1, name
@@ -145,7 +151,7 @@ async def direct(page, base, name):
     assert not await page.evaluate('window.fadeRuns.length'), name
 
 
-async def check_entry(page, destination, *, reduced=False, color=False):
+async def check_entry(page, destination, *, reduced=False, color=None):
     await page.wait_for_url('**/' + destination, wait_until='domcontentloaded', timeout=25000)
     await page.wait_for_function('window.fadeEnds.length === 1', timeout=6000)
     await page.wait_for_function("!document.documentElement.classList.contains('cv-transition-incoming')")
@@ -157,7 +163,7 @@ async def check_entry(page, destination, *, reduced=False, color=False):
     duration = 0.1 if reduced else 0.65
     assert len(result['runs']) == 1 and result['ends'] == [duration], (destination, result)
     if color:
-        assert result['runs'][0]['background'] == 'rgb(196, 15, 20)', result
+        assert result['runs'][0]['background'] == color, result
         assert result['runs'][0]['gradient'] == 'none', result
     else:
         assert result['runs'][0]['background'] == 'rgb(36, 32, 23)', result
@@ -206,7 +212,7 @@ async def navigation_graph(browser, base, sources, worker):
                 await link.evaluate('(link) => link.click()')
             else:
                 await link.click()
-            await check_entry(page, destination, color=(source == 'music-projects.html' and destination == 'des-visages.html'))
+            await check_entry(page, destination, color=(GALLERY_COLORS.get(destination) if source == 'music-projects.html' else None))
             assert page.exits and abs(page.exits[-1]['duration'] - 0.5) < 0.005, (source, destination, page.exits)
             assert page.exits[-1]['opacity'] == '1'
             checked.append([source, destination])
@@ -328,7 +334,7 @@ async def warm_cache_and_gallery(browser, base):
     }""")
     assert card, 'Expected a visible gallery card'
     await page.mouse.click(card['x'], card['y'])
-    await check_entry(page, card['destination'], color=(card['destination'] == 'des-visages.html'))
+    await check_entry(page, card['destination'], color=GALLERY_COLORS.get(card['destination']))
     await context.close()
     return {'warm_cache_navigations': 5, 'visible_gallery_card': card['destination']}
 

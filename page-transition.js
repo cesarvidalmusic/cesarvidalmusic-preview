@@ -1,14 +1,22 @@
 /*
- * César Vidal — page transition v11 (preview)
+ * César Vidal — page transition v12 (preview)
  * Transición compartida para todas las páginas del sitio.
- * Wash oscuro compartido y prueba blanco a rojo de la galería a Des Visages.
+ * Wash oscuro compartido y colores de destino para cuatro proyectos desde la galería.
  */
 
 (function () {
   "use strict";
 
   const STORAGE_KEY = "cv-page-transition";
-  const COLOR_TRANSITION_CLASS = "cv-transition-gallery-to-des-visages";
+  const GALLERY_THEMES = {
+    "des-visages.html": "des-visages",
+    "spam.html": "spam",
+    "des-visages-ep.html": "black",
+    "nubes.html": "black"
+  };
+  const COLOR_TRANSITION_CLASSES = ["des-visages", "spam", "black"].map(
+    (theme) => "cv-transition-gallery-to-" + theme
+  );
   const CSS_FALLBACK_CLASS = "cv-transition-css-fallback";
 
   const SITE_ROOT = new URL(".", document.currentScript.src).pathname;
@@ -31,7 +39,7 @@
   const root = document.documentElement;
   const settings = getComputedStyle(root);
   if (settings.getPropertyValue("--cv-transition-ready").trim() !== "1") {
-    root.classList.remove("cv-transition-incoming", COLOR_TRANSITION_CLASS, CSS_FALLBACK_CLASS);
+    root.classList.remove("cv-transition-incoming", ...COLOR_TRANSITION_CLASSES, CSS_FALLBACK_CLASS);
     return;
   }
 
@@ -73,9 +81,10 @@
     const overlayFrames = closing
       ? [{ opacity: 0 }, { opacity: 1 }]
       : [{ opacity: 1 }, { opacity: 0 }];
-    if (root.classList.contains(COLOR_TRANSITION_CLASS)) {
-      overlayFrames[0].backgroundColor = closing ? "#ffffff" : "#C40F14";
-      overlayFrames[1].backgroundColor = "#C40F14";
+    const destinationColor = getComputedStyle(root).getPropertyValue("--cv-transition-destination-color").trim();
+    if (destinationColor) {
+      overlayFrames[0].backgroundColor = closing ? "#ffffff" : destinationColor;
+      overlayFrames[1].backgroundColor = destinationColor;
     }
     const animations = [
       overlay.animate(overlayFrames, timing),
@@ -132,14 +141,14 @@
     );
   }
 
-  function saveIntent(destination, colorTransition) {
+  function saveIntent(destination, colorTheme) {
     try {
       sessionStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
           target: new URL(destination, location.href).pathname,
           time: Date.now(),
-          theme: colorTransition ? "gallery-to-des-visages" : undefined
+          theme: colorTheme ? "gallery-to-" + colorTheme : undefined
         })
       );
 
@@ -166,8 +175,8 @@
 
     if (incomingAnimation) incomingAnimation.cancel();
     incomingAnimation = null;
-    // Keep the opaque red cover until an outgoing navigation has painted its destination.
-    if (!isNavigating) root.classList.remove(COLOR_TRANSITION_CLASS);
+    // Keep the opaque destination color until the new page has painted.
+    if (!isNavigating) root.classList.remove(...COLOR_TRANSITION_CLASSES);
   }
 
   function navigate(destination) {
@@ -175,19 +184,21 @@
       return;
     }
 
-    const colorTransition = pageName(location.href) === "music-projects.html" &&
-      pageName(destination) === "des-visages.html";
+    const colorTheme = pageName(location.href) === "music-projects.html"
+      ? GALLERY_THEMES[pageName(destination)]
+      : undefined;
 
     // Si el navegador bloquea sessionStorage, conservar la navegación normal
     // en lugar de mostrar solamente la mitad de la transición.
-    if (!saveIntent(destination, colorTransition)) {
+    if (!saveIntent(destination, colorTheme)) {
       location.assign(destination);
       return;
     }
 
     isNavigating = true;
     finishIncomingPage();
-    root.classList.toggle(COLOR_TRANSITION_CLASS, colorTransition);
+    root.classList.remove(...COLOR_TRANSITION_CLASSES);
+    if (colorTheme) root.classList.add("cv-transition-gallery-to-" + colorTheme);
 
     outgoingOverlay = document.createElement("div");
     outgoingOverlay.className = "cv-transition-curtain";

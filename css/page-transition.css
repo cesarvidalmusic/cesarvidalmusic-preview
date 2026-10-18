@@ -33,20 +33,32 @@ html.cv-transition-incoming .cv-transition-entering {
   pointer-events: auto;
 }
 
-/* Preview only: Music & Projects white becomes Des Visages red. */
-html.cv-transition-gallery-to-des-visages .cv-transition-entering {
-  background: #C40F14;
+/* Preview only: gallery white becomes the selected project's background. */
+html.cv-transition-gallery-to-des-visages {
+  --cv-transition-destination-color: #C40F14;
 }
 
-html.cv-transition-gallery-to-des-visages .cv-transition-curtain {
+html.cv-transition-gallery-to-spam {
+  --cv-transition-destination-color: #E6DFC5;
+}
+
+html.cv-transition-gallery-to-black {
+  --cv-transition-destination-color: #000000;
+}
+
+html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black) .cv-transition-entering {
+  background: var(--cv-transition-destination-color);
+}
+
+html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black) .cv-transition-curtain {
   background: #ffffff;
   transition:
     opacity var(--cv-transition-out-duration) cubic-bezier(0.40, 0, 0.22, 1),
     background-color var(--cv-transition-out-duration) cubic-bezier(0.40, 0, 0.22, 1);
 }
 
-html.cv-transition-gallery-to-des-visages .cv-transition-curtain.is-covered {
-  background-color: #C40F14;
+html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black) .cv-transition-curtain.is-covered {
+  background-color: var(--cv-transition-destination-color);
 }
 
 html.cv-transition-leaving [data-page-transition-content],
@@ -99,7 +111,7 @@ html.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [dat
 
 @media (prefers-reduced-motion: reduce) {
   .cv-transition-curtain,
-  html.cv-transition-gallery-to-des-visages .cv-transition-curtain,
+  html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black) .cv-transition-curtain,
   html.cv-transition-leaving [data-page-transition-content] {
     transition-duration: var(--cv-transition-reduced-out-duration);
   }
