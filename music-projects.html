@@ -53,6 +53,7 @@
     html, body {
       height: 100%;
       overflow: hidden;
+      background: #c5c4b4;
     }
 
     .cv-page {
@@ -60,9 +61,23 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      background: transparent;
+    }
+
+    .cv-mp-bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      object-position: center center;
+      z-index: 0;
+      pointer-events: none;
     }
 
     .cv-page-content {
+      position: relative;
+      z-index: 2;
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -74,6 +89,7 @@
       --cv-mp-stage-height: calc(100vh - (var(--nav-height) * 2) - 52px);
       --cv-mp-frame-color: #E0E0E0;
       --cv-mp-frame-width: calc(4px / 3);
+      position: relative;
       flex: none;
       min-height: 0;
       height: var(--cv-mp-stage-height);
@@ -83,9 +99,31 @@
       overflow: hidden;
     }
 
+    /* One stationary glass layer behind the entire gallery. Its mask feathers
+       all four edges; neither the moving cards nor their text is blurred. */
+    .cv-mp-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0 var(--pad-x);
+      z-index: 0;
+      pointer-events: none;
+      background: rgba(255,255,255,0.38);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      -webkit-mask-image:
+        linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent),
+        linear-gradient(to bottom, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+      mask-image:
+        linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent),
+        linear-gradient(to bottom, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+      -webkit-mask-composite: source-in;
+      mask-composite: intersect;
+    }
+
     .cv-mp-col {
       flex: 1;
       position: relative;
+      z-index: 1;
       overflow: visible;
     }
 
@@ -106,7 +144,7 @@
       flex-direction: column;
       align-items: flex-start;
       padding: 1rem 1rem 1.15rem;
-      background: #ffffff;
+      background: transparent;
       height: 75vh;
       /* At most two reserved cards per column, including the 5% hover growth. */
       min-height: calc((var(--cv-mp-stage-height) + 5px) / 0.95);
@@ -233,13 +271,15 @@
     }
 
     .cv-mp-footer {
+      position: relative;
+      z-index: 2;
       flex-shrink: 0;
       padding: 0.55rem clamp(0.5rem, 2vw, 1.25rem);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 0.5px solid #E0E0E0;
-      background: #fff;
+      border-top: 0.5px solid transparent;
+      background: transparent;
     }
 
     .cv-mp-footer span {
@@ -247,12 +287,13 @@
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: lowercase;
-      color: #bbb;
+      color: rgba(10,10,10,0.48);
     }
 
     .cv-page-hero {
       padding-top: calc(var(--nav-height) + 0.75rem);
       flex-shrink: 0;
+      border-bottom-color: transparent;
     }
 
     .cv-nav-soon {
@@ -299,6 +340,10 @@
 <body>
   <div class="cv-transition-entering" aria-hidden="true"></div>
   <div class="cv-page" data-page-transition-content>
+
+    <video class="cv-mp-bg-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+      <source src="videos/music-projects-final-HD.mp4" type="video/mp4">
+    </video>
 
     <nav class="cv-nav cv-nav--light">
       <ul>
