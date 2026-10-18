@@ -38,6 +38,8 @@
   <script defer src="favicon.js?v=6"></script>
 
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="preload" as="image" href="img/title-lettering-v1.png" fetchpriority="high" />
+  <link rel="stylesheet" href="css/title-lettering.css?v=1" />
 
   <style>
     html, body {
@@ -261,7 +263,12 @@
       </nav>
 
       <div class="cv-hero-content">
-        <div class="cv-hero-name">césar vidal</div>
+        <div class="cv-hero-name cv-graphic-title cv-title-white">
+          <span class="cv-title-text">césar vidal</span>
+          <span class="cv-title-art cv-title-art--index" aria-hidden="true">
+            <img src="img/title-lettering-v1.png" width="2056" height="765" alt="" decoding="async" onerror="this.closest('.cv-graphic-title').classList.add('cv-title-fallback')" />
+          </span>
+        </div>
         <div class="cv-hero-spacer"></div>
       </div>
 

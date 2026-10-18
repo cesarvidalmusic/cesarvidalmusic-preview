@@ -34,6 +34,8 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script defer src="favicon.js?v=6"></script>
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="preload" as="image" href="img/title-lettering-v1.png" fetchpriority="high" />
+  <link rel="stylesheet" href="css/title-lettering.css?v=1" />
  <style>
    @font-face {
   font-family: 'Ronzino';
@@ -341,7 +343,12 @@
     <main class="cv-page-content">
 
       <div class="cv-page-hero">
-        <h1 class="cv-page-title">contact</h1>
+        <h1 class="cv-page-title cv-graphic-title cv-title-white">
+          <span class="cv-title-text">contact</span>
+          <span class="cv-title-art cv-title-art--contact" aria-hidden="true">
+            <img src="img/title-lettering-v1.png" width="2056" height="765" alt="" decoding="async" onerror="this.closest('.cv-graphic-title').classList.add('cv-title-fallback')" />
+          </span>
+        </h1>
       </div>
 
       <section class="cv-contact-video-section">
