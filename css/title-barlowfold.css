@@ -1,0 +1,30 @@
+/* Barlowfold is reserved for the four headings in this preview. */
+.cv-hero-name.cv-title-barlowfold,
+.cv-page-title.cv-title-barlowfold {
+  font-family: 'Barlowfold', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-synthesis: none;
+  font-size: clamp(36px, 7.5vw, 86px);
+  letter-spacing: normal;
+  text-transform: uppercase;
+}
+
+.cv-page-title.cv-title-barlowfold {
+  /* The larger glyphs fit in the existing title bar and its vertical padding. */
+  line-height: clamp(28px, 5vw, 52px);
+}
+
+.cv-title-barlowfold.cv-title-barlowfold--black {
+  color: #000000;
+}
+
+.cv-title-barlowfold.cv-title-barlowfold--white {
+  color: #ffffff;
+}
+
+@media (max-width: 360px) {
+  .cv-page-title.cv-title-barlowfold {
+    font-size: min(36px, calc((100vw - (2 * var(--pad-x))) / 8.5));
+  }
+}
