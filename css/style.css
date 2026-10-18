@@ -33,6 +33,33 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Fluxisch Else';
+  src: url('../fonts/FluxischElse-Light.woff') format('woff'),
+       url('../fonts/FluxischElse-Light.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fluxisch Else';
+  src: url('../fonts/FluxischElse-Regular.woff') format('woff'),
+       url('../fonts/FluxischElse-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fluxisch Else';
+  src: url('../fonts/FluxischElse-Bold.woff') format('woff'),
+       url('../fonts/FluxischElse-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* RESET & BASE */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
