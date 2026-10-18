@@ -8,6 +8,8 @@
   font-size: clamp(36px, 7.5vw, 86px);
   letter-spacing: normal;
   text-transform: uppercase;
+  -webkit-text-stroke: var(--cv-title-stroke, 0) currentColor;
+  paint-order: stroke fill;
 }
 
 .cv-page-title.cv-title-barlowfold {
@@ -23,8 +25,39 @@
   color: #ffffff;
 }
 
+.cv-hero-name.cv-title-barlowfold--home {
+  --cv-title-stroke: 0.012em;
+  font-size: clamp(40px, 8.5vw, 104px);
+  letter-spacing: -0.01em;
+  margin-top: clamp(1.8rem, 3.3vw, 2.8rem);
+  /* Compensate for the L's sidebearing, tracking and stroke to align its ink
+     with the end of the menu's contact link. Both use the same right padding. */
+  margin-right: calc(0.4px - 0.03125em);
+}
+
+.cv-page-title.cv-title-barlowfold--bio {
+  --cv-title-stroke: 0.026em;
+  width: fit-content;
+  font-size: clamp(44px, 8.5vw, 98px);
+  transform-origin: left bottom;
+  transform: translateY(-0.045em) scaleX(1.4);
+}
+
+.cv-page-title.cv-title-barlowfold--music {
+  --cv-title-stroke: 0.024em;
+  letter-spacing: -0.022em;
+}
+
+.cv-page-title.cv-title-barlowfold--contact {
+  --cv-title-stroke: 0.018em;
+  position: relative;
+  top: 0.05em;
+  font-size: clamp(42px, 8.3vw, 98px);
+  letter-spacing: -0.012em;
+}
+
 @media (max-width: 360px) {
-  .cv-page-title.cv-title-barlowfold {
+  .cv-page-title.cv-title-barlowfold--music {
     font-size: min(36px, calc((100vw - (2 * var(--pad-x))) / 8.5));
   }
 }
