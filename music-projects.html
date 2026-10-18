@@ -71,6 +71,7 @@
       height: 100vh;
       object-fit: cover;
       object-position: center center;
+      filter: grayscale(1);
       z-index: 0;
       pointer-events: none;
     }
@@ -88,7 +89,7 @@
     .cv-mp-stage {
       --cv-mp-stage-height: calc(100vh - (var(--nav-height) * 2) - 52px);
       --cv-mp-frame-color: #E0E0E0;
-      --cv-mp-frame-width: calc(4px / 3);
+      --cv-mp-frame-width: 1px;
       position: relative;
       flex: none;
       min-height: 0;
@@ -97,27 +98,6 @@
       display: flex;
       gap: 0;
       overflow: hidden;
-    }
-
-    /* One stationary glass layer behind the entire gallery. Its mask feathers
-       all four edges; neither the moving cards nor their text is blurred. */
-    .cv-mp-stage::before {
-      content: "";
-      position: absolute;
-      inset: 0 var(--pad-x);
-      z-index: 0;
-      pointer-events: none;
-      background: rgba(255,255,255,0.38);
-      -webkit-backdrop-filter: blur(8px);
-      backdrop-filter: blur(8px);
-      -webkit-mask-image:
-        linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent),
-        linear-gradient(to bottom, transparent, #000 24px, #000 calc(100% - 24px), transparent);
-      mask-image:
-        linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent),
-        linear-gradient(to bottom, transparent, #000 24px, #000 calc(100% - 24px), transparent);
-      -webkit-mask-composite: source-in;
-      mask-composite: intersect;
     }
 
     .cv-mp-col {
@@ -168,19 +148,10 @@
       content: "";
       position: absolute;
       inset: 0;
-      /* Shared edges belong to one card, avoiding doubled horizontal lines. */
-      box-shadow:
-        inset var(--cv-mp-frame-width) 0 0 var(--cv-mp-frame-color),
-        inset 0 var(--cv-mp-frame-width) 0 var(--cv-mp-frame-color);
+      /* Each shared horizontal edge is drawn once, with no side borders. */
+      box-shadow: inset 0 var(--cv-mp-frame-width) 0 var(--cv-mp-frame-color);
       pointer-events: none;
       transition: opacity 0.2s ease;
-    }
-
-    .cv-mp-col:last-child .cv-mp-card::after {
-      box-shadow:
-        inset var(--cv-mp-frame-width) 0 0 var(--cv-mp-frame-color),
-        inset 0 var(--cv-mp-frame-width) 0 var(--cv-mp-frame-color),
-        inset calc(-1 * var(--cv-mp-frame-width)) 0 0 var(--cv-mp-frame-color);
     }
 
     .cv-mp-card:hover::after {
