@@ -60,6 +60,12 @@
   display: none;
 }
 
+.cv-mp-card-text,
+.cv-mp-morph-text {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
 .cv-mp-stage--overview > .cv-mp-col {
   display: none;
 }
