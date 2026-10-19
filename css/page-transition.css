@@ -5,6 +5,10 @@
   --cv-transition-in-duration: 650ms;
   --cv-transition-reduced-out-duration: 80ms;
   --cv-transition-reduced-in-duration: 100ms;
+  --cv-transition-color-des-visages: #C40F14;
+  --cv-transition-color-spam: #E6DFC5;
+  --cv-transition-color-black: #000000;
+  --cv-transition-color-white: #ffffff;
 }
 
 .cv-transition-entering,
@@ -33,39 +37,51 @@ html.cv-transition-incoming .cv-transition-entering {
   pointer-events: auto;
 }
 
-/* Preview only: match the gallery and project backgrounds in both directions. */
-html.cv-transition-gallery-to-des-visages {
-  --cv-transition-project-color: #C40F14;
-  --cv-transition-destination-color: var(--cv-transition-project-color);
+/* Preview only: match each page's background in both directions. */
+html.cv-transition-from-des-visages {
+  --cv-transition-source-color: var(--cv-transition-color-des-visages);
 }
 
-html.cv-transition-gallery-to-spam {
-  --cv-transition-project-color: #E6DFC5;
-  --cv-transition-destination-color: var(--cv-transition-project-color);
+html.cv-transition-to-des-visages {
+  --cv-transition-destination-color: var(--cv-transition-color-des-visages);
 }
 
-html.cv-transition-gallery-to-black {
-  --cv-transition-project-color: #000000;
-  --cv-transition-destination-color: var(--cv-transition-project-color);
+html.cv-transition-from-spam {
+  --cv-transition-source-color: var(--cv-transition-color-spam);
 }
 
-html.cv-transition-project-to-gallery {
-  --cv-transition-source-color: var(--cv-transition-project-color);
-  --cv-transition-destination-color: #ffffff;
+html.cv-transition-to-spam {
+  --cv-transition-destination-color: var(--cv-transition-color-spam);
 }
 
-html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black, .cv-transition-project-to-gallery) .cv-transition-entering {
+html.cv-transition-from-black {
+  --cv-transition-source-color: var(--cv-transition-color-black);
+}
+
+html.cv-transition-to-black {
+  --cv-transition-destination-color: var(--cv-transition-color-black);
+}
+
+html.cv-transition-from-white {
+  --cv-transition-source-color: var(--cv-transition-color-white);
+}
+
+html.cv-transition-to-white {
+  --cv-transition-destination-color: var(--cv-transition-color-white);
+}
+
+html:is(.cv-transition-to-des-visages, .cv-transition-to-spam, .cv-transition-to-black, .cv-transition-to-white) .cv-transition-entering {
   background: var(--cv-transition-destination-color);
 }
 
-html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black, .cv-transition-project-to-gallery) .cv-transition-curtain {
+html:is(.cv-transition-to-des-visages, .cv-transition-to-spam, .cv-transition-to-black, .cv-transition-to-white) .cv-transition-curtain {
   background: var(--cv-transition-source-color, #ffffff);
   transition:
     opacity var(--cv-transition-out-duration) cubic-bezier(0.40, 0, 0.22, 1),
     background-color var(--cv-transition-out-duration) cubic-bezier(0.40, 0, 0.22, 1);
 }
 
-html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black, .cv-transition-project-to-gallery) .cv-transition-curtain.is-covered {
+html:is(.cv-transition-to-des-visages, .cv-transition-to-spam, .cv-transition-to-black, .cv-transition-to-white) .cv-transition-curtain.is-covered {
   background-color: var(--cv-transition-destination-color);
 }
 
@@ -119,7 +135,7 @@ html.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [dat
 
 @media (prefers-reduced-motion: reduce) {
   .cv-transition-curtain,
-  html:is(.cv-transition-gallery-to-des-visages, .cv-transition-gallery-to-spam, .cv-transition-gallery-to-black, .cv-transition-project-to-gallery) .cv-transition-curtain,
+  html:is(.cv-transition-to-des-visages, .cv-transition-to-spam, .cv-transition-to-black, .cv-transition-to-white) .cv-transition-curtain,
   html.cv-transition-leaving [data-page-transition-content] {
     transition-duration: var(--cv-transition-reduced-out-duration);
   }

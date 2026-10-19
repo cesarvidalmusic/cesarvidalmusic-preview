@@ -26,14 +26,19 @@ GALLERY_COLORS = {
     'aleas.html': 'rgb(0, 0, 0)',
     'artikulation-band.html': 'rgb(0, 0, 0)',
 }
+PAGE_COLORS = {
+    **GALLERY_COLORS,
+    'index.html': 'rgb(0, 0, 0)',
+    'bio.html': 'rgb(255, 255, 255)',
+    'contact.html': 'rgb(0, 0, 0)',
+    'music-projects.html': 'rgb(255, 255, 255)',
+    'gonzalez-reeds.html': 'rgb(255, 255, 255)',
+    'merch.html': 'rgb(255, 255, 255)',
+}
 
 
 def route_color(source, destination):
-    if source == 'music-projects.html':
-        return GALLERY_COLORS.get(destination)
-    if source in GALLERY_COLORS and destination == 'music-projects.html':
-        return 'rgb(255, 255, 255)'
-    return None
+    return PAGE_COLORS[destination]
 
 
 INSTRUMENT = """
@@ -118,7 +123,7 @@ def check_installation():
     assert not (ROOT / 'CNAME').exists(), 'The preview must not bind the official domain'
     for name in PAGES:
         html = (ROOT / name).read_text()
-        version = 13 if name == 'music-projects.html' or name in GALLERY_COLORS else 10
+        version = 14
         assert html.count(f'src="page-transition.js?v={version}"') == 1, name
         assert html.count(f'href="css/page-transition.css?v={version}"') == 1, name
         assert html.count('data-page-transition-content') == 1, name
@@ -165,6 +170,8 @@ async def direct(page, base, name):
 
 
 async def check_entry(page, destination, *, reduced=False, color=None):
+    if color is None:
+        color = PAGE_COLORS[destination]
     await page.wait_for_url('**/' + destination, wait_until='domcontentloaded', timeout=25000)
     await page.wait_for_function('window.fadeEnds.length === 1', timeout=6000)
     await page.wait_for_function("!document.documentElement.classList.contains('cv-transition-incoming')")
@@ -175,12 +182,8 @@ async def check_entry(page, destination, *, reduced=False, color=None):
       transform:getComputedStyle(document.querySelector('[data-page-transition-content]')).transform})""")
     duration = 0.1 if reduced else 0.65
     assert len(result['runs']) == 1 and result['ends'] == [duration], (destination, result)
-    if color:
-        assert result['runs'][0]['background'] == color, result
-        assert result['runs'][0]['gradient'] == 'none', result
-    else:
-        assert result['runs'][0]['background'] == 'rgb(36, 32, 23)', result
-        assert 'rgba(44, 85, 68, 0.18)' in result['runs'][0]['gradient'], result
+    assert result['runs'][0]['background'] == color, result
+    assert result['runs'][0]['gradient'] == 'none', result
     assert result['runs'][0]['duration'] == duration, result
     if not reduced:
         assert any(0 < value < 1 for value in result['samples']), result

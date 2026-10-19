@@ -1,14 +1,20 @@
 /*
- * César Vidal — page transition v13 (preview)
+ * César Vidal — page transition v14 (preview)
  * Transición compartida para todas las páginas del sitio.
- * Wash oscuro compartido y colores de fondo entre la galería y sus siete proyectos.
+ * Transiciones adaptadas al fondo de origen y destino en todo el sitio.
  */
 
 (function () {
   "use strict";
 
   const STORAGE_KEY = "cv-page-transition";
-  const GALLERY_THEMES = {
+  const PAGE_THEMES = {
+    "index.html": "black",
+    "bio.html": "white",
+    "contact.html": "black",
+    "music-projects.html": "white",
+    "gonzalez-reeds.html": "white",
+    "merch.html": "white",
     "des-visages.html": "des-visages",
     "spam.html": "spam",
     "des-visages-ep.html": "black",
@@ -17,10 +23,9 @@
     "aleas.html": "black",
     "artikulation-band.html": "black"
   };
-  const RETURN_TRANSITION_CLASS = "cv-transition-project-to-gallery";
-  const COLOR_TRANSITION_CLASSES = [RETURN_TRANSITION_CLASS, ...["des-visages", "spam", "black"].map(
-    (theme) => "cv-transition-gallery-to-" + theme
-  )];
+  const COLOR_TRANSITION_CLASSES = ["des-visages", "spam", "black", "white"].flatMap(
+    (theme) => ["cv-transition-from-" + theme, "cv-transition-to-" + theme]
+  );
   const CSS_FALLBACK_CLASS = "cv-transition-css-fallback";
 
   const SITE_ROOT = new URL(".", document.currentScript.src).pathname;
@@ -146,14 +151,14 @@
     );
   }
 
-  function saveIntent(destination, colorTheme, returningToGallery) {
+  function saveIntent(destination, colorTheme) {
     try {
       sessionStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
           target: new URL(destination, location.href).pathname,
           time: Date.now(),
-          theme: returningToGallery ? "project-to-gallery" : colorTheme ? "gallery-to-" + colorTheme : undefined
+          theme: colorTheme
         })
       );
 
@@ -191,14 +196,12 @@
 
     const sourcePage = pageName(location.href);
     const destinationPage = pageName(destination);
-    const returningToGallery = destinationPage === "music-projects.html" && Boolean(GALLERY_THEMES[sourcePage]);
-    const colorTheme = sourcePage === "music-projects.html"
-      ? GALLERY_THEMES[destinationPage]
-      : returningToGallery ? GALLERY_THEMES[sourcePage] : undefined;
+    const sourceTheme = PAGE_THEMES[sourcePage];
+    const colorTheme = PAGE_THEMES[destinationPage];
 
     // Si el navegador bloquea sessionStorage, conservar la navegación normal
     // en lugar de mostrar solamente la mitad de la transición.
-    if (!saveIntent(destination, colorTheme, returningToGallery)) {
+    if (!saveIntent(destination, colorTheme)) {
       location.assign(destination);
       return;
     }
@@ -206,8 +209,8 @@
     isNavigating = true;
     finishIncomingPage();
     root.classList.remove(...COLOR_TRANSITION_CLASSES);
-    if (colorTheme) root.classList.add("cv-transition-gallery-to-" + colorTheme);
-    if (returningToGallery) root.classList.add(RETURN_TRANSITION_CLASS);
+    if (sourceTheme) root.classList.add("cv-transition-from-" + sourceTheme);
+    if (colorTheme) root.classList.add("cv-transition-to-" + colorTheme);
 
     outgoingOverlay = document.createElement("div");
     outgoingOverlay.className = "cv-transition-curtain";

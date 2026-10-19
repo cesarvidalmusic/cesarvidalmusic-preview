@@ -14,14 +14,17 @@
         const age = state ? Date.now() - Number(state.time) : Infinity;
         if (state && state.target === location.pathname && age >= 0 && age < 60000) {
           document.documentElement.classList.add("cv-transition-incoming");
+          if (state.theme === "black") {
+            document.documentElement.classList.add("cv-transition-to-black");
+          }
         }
       } catch (error) {
         // Navigation remains available when storage is blocked.
       }
     })();
   </script>
-  <link rel="stylesheet" href="css/page-transition.css?v=10" />
-  <script defer src="page-transition.js?v=10" onerror="document.documentElement.classList.remove('cv-transition-incoming')"></script>
+  <link rel="stylesheet" href="css/page-transition.css?v=14" />
+  <script defer src="page-transition.js?v=14" onerror="document.documentElement.classList.remove('cv-transition-incoming', 'cv-transition-to-black')"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Contact — César Vidal." />
