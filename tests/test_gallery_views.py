@@ -118,11 +118,12 @@ async def motion_and_hover(browser, base, out):
     await page.evaluate('stepGallery(30000)')
     assert transforms==await page.locator('.cv-mp-track').evaluate_all('els=>els.map(el=>el.style.transform)')
     card=page.locator('.cv-mp-overview .cv-mp-card').first
-    box=await card.bounding_box();await card.hover();await page.wait_for_timeout(400)
-    grown=await card.bounding_box()
+    visual=card.locator('.cv-mp-card-visual')
+    box=await visual.bounding_box();await card.hover();await page.wait_for_timeout(400)
+    grown=await visual.bounding_box()
     assert abs(grown['width']/box['width']-1.05)<0.002
-    assert await card.evaluate("el=>getComputedStyle(el,'::after').opacity")=='0'
-    assert await card.evaluate("el=>getComputedStyle(el).backgroundColor") in ['rgb(36, 32, 23)','rgb(44, 85, 68)','rgb(237, 101, 81)','rgb(239, 208, 111)']
+    assert await visual.evaluate("el=>getComputedStyle(el,'::after').opacity")=='0'
+    assert await visual.evaluate("el=>getComputedStyle(el).backgroundColor") in ['rgb(36, 32, 23)','rgb(44, 85, 68)','rgb(237, 101, 81)','rgb(239, 208, 111)']
     await page.mouse.move(10,10);await page.wait_for_timeout(400)
     if out:await page.screenshot(path=str(out/'overview.png'))
     await toggle(page,'moving')
@@ -198,7 +199,7 @@ async def hover_stability(browser,base):
     await page.evaluate("""() => {
       Math.random=()=>0.99;
       window.exitSamples=[];window.sampleExit=true;
-      const card=document.querySelector('.cv-mp-overview .cv-mp-card');
+      const card=document.querySelector('.cv-mp-overview .cv-mp-card-visual');
       function sample(){if(!sampleExit)return;exitSamples.push(getComputedStyle(card).backgroundColor);requestAnimationFrame(sample)}sample();
     }""")
     await second.hover();await page.wait_for_timeout(80)
@@ -221,7 +222,7 @@ async def hover_stability(browser,base):
     await page.mouse.move(box['x']+box['width']/2,box['y']+box['height']/2)
     assert await first.evaluate("el=>el.style.getPropertyValue('--hover-color')")==next_color
     await page.wait_for_timeout(400)
-    assert await first.evaluate("el=>getComputedStyle(el).backgroundColor")=='rgb(239, 208, 111)'
+    assert await first.locator('.cv-mp-card-visual').evaluate("el=>getComputedStyle(el).backgroundColor")=='rgb(239, 208, 111)'
     assert not page.errors,page.errors
     await context.close()
     return {'same_column_exit_fades_to_white':True,'rapid_reentry_keeps_color':True}

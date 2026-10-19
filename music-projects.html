@@ -51,7 +51,7 @@
   <link rel="stylesheet" href="css/style.css?v=barlowfold-1" />
   <link rel="preload" href="fonts/barlowfold.otf" as="font" type="font/otf" crossorigin />
   <link rel="stylesheet" href="css/title-barlowfold.css?v=2" />
-  <link rel="stylesheet" href="css/music-projects-views.css?v=2" />
+  <link rel="stylesheet" href="css/music-projects-views.css?v=3" />
 
   <style>
     html, body {
@@ -356,7 +356,7 @@
 
   </div>
 
-  <script src="music-projects-views.js?v=2"></script>
+  <script src="music-projects-views.js?v=3"></script>
   <script>
     const SPEEDS = [22, 30, 18, 26];
 
@@ -556,7 +556,10 @@
 
     function addHover(card) {
       let lastLeave = -Infinity;
+      let leaveTimer;
       card.addEventListener("mouseenter", () => {
+        clearTimeout(leaveTimer);
+        card.classList.remove("cv-mp-card--leaving");
         // A shrinking card can briefly regain the pointer at a shared edge.
         // Keep its own color until its exit has finished, rather than flashing
         // a fresh random color during that same interaction.
@@ -572,6 +575,10 @@
 
       card.addEventListener("mouseleave", () => {
         lastLeave = performance.now();
+        // Let the previous visual finish shrinking above resting cards. The
+        // newly hovered card sits one layer higher throughout the handoff.
+        card.classList.add("cv-mp-card--leaving");
+        leaveTimer = setTimeout(() => card.classList.remove("cv-mp-card--leaving"), 360);
         // :hover restores white. Keep the color variable stable while the
         // background fades out; removing it can invalidate an in-flight style.
         clearHoverTextColor(card);
@@ -794,6 +801,7 @@
           },
           resize: resizeGallery,
           resetHover(card) {
+            card.classList.remove("cv-mp-card--leaving");
             card.style.removeProperty("--hover-color");
             clearHoverTextColor(card);
           }

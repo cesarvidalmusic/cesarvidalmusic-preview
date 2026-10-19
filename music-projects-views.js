@@ -92,7 +92,8 @@
       const cards = view === "overview" ? Array.from(overview.children) : tracks.flatMap(track => Array.from(track.children));
       const result = new Map();
       cards.forEach(card => {
-        const box = rect(card);
+        const visual = card.querySelector(".cv-mp-card-visual") || card;
+        const box = rect(visual);
         const visible = Math.max(0, Math.min(box.y + box.height, stage.clientHeight) - Math.max(box.y, 0));
         const distance = visible ? -visible : Math.max(-box.y - box.height, box.y - stage.clientHeight, 0);
         const previous = result.get(card.dataset.project);
@@ -111,7 +112,7 @@
         });
         result.set(card.dataset.project, { element: card, box, blocks, distance, priority,
           column: tracks.indexOf(card.parentElement),
-          background: getComputedStyle(card).backgroundColor });
+          background: getComputedStyle(visual).backgroundColor });
       });
       return result;
     }
@@ -121,9 +122,21 @@
       if (next === "overview") {
         savedTracks = tracks.map(track => Array.from(track.children));
         overview.replaceChildren(...projects.map(project => before.get(project.title)?.element || createCard(project)));
+        Array.from(overview.children).forEach(card => {
+          // The link stays fixed in the grid. Its visual content can grow
+          // without moving the pointer's target or disturbing its neighbors.
+          const visual = document.createElement("span");
+          visual.className = "cv-mp-card-visual";
+          visual.append(...card.childNodes);
+          card.appendChild(visual);
+        });
         stage.classList.add("cv-mp-stage--overview");
       } else {
         stage.classList.remove("cv-mp-stage--overview");
+        Array.from(overview.children).forEach(card => {
+          const visual = card.querySelector(".cv-mp-card-visual");
+          if (visual) card.replaceChildren(...visual.childNodes);
+        });
         tracks.forEach((track, index) => track.replaceChildren(...savedTracks[index]));
         overview.replaceChildren();
         savedTracks = null;
