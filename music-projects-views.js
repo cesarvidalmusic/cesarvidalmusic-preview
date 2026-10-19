@@ -13,7 +13,7 @@
     soon: ".cv-mp-coming-soon"
   };
 
-  window.cvInitProjectViews = function ({ stage, tracks, projects, createCard, pause, resume, prepareMotion, followMotion, resize, resetHover }) {
+  window.cvInitProjectViews = function ({ stage, tracks, projects, createCard, pause, resume, prepareMotion, followMotion, resize, resetHover, hoverStyle }) {
     if (getComputedStyle(stage).getPropertyValue("--cv-mp-views-ready").trim() !== "1") return;
     const hero = document.querySelector(".cv-page-hero");
     const title = hero.querySelector("h1");
@@ -33,6 +33,102 @@
     let stopFollowing = null;
     let releaseMotion = null;
     let generation = 0;
+    let hoveredCard = null;
+    const hoverStates = new Map();
+
+    function animateHover(card, active) {
+      const state = hoverStates.get(card);
+      const transform = getComputedStyle(state.visual).transform;
+      const opacity = Number(getComputedStyle(state.tint).opacity);
+      const scale = new DOMMatrixReadOnly(transform).a;
+      const targetScale = active ? 1.05 : 1;
+      const targetOpacity = active ? 1 : 0;
+      const generation = ++state.generation;
+      state.animations.forEach(animation => animation.cancel());
+      const finish = () => {
+        if (state.generation !== generation) return;
+        state.visual.style.transform = `scale(${targetScale})`;
+        state.tint.style.opacity = String(targetOpacity);
+        state.animations.forEach(animation => animation.cancel());
+        state.animations = [];
+        if (!active) card.classList.remove("cv-mp-card--leaving");
+      };
+      if (typeof state.visual.animate !== "function") {
+        finish();
+        return;
+      }
+      const distance = Math.max(Math.abs(targetOpacity - opacity), Math.abs(targetScale - scale) / 0.05);
+      const timing = { duration: Math.max(60, 350 * distance), easing: "ease", fill: "both" };
+      // Explicit animations replace the previous pair together, avoiding the
+      // browser's independent CSS-transition reversal and stale completion.
+      state.animations = [
+        state.visual.animate([{ transform }, { transform: `scale(${targetScale})` }], timing),
+        state.tint.animate([{ opacity }, { opacity: targetOpacity }], timing)
+      ];
+      Promise.all(state.animations.map(animation => animation.finished)).then(finish, () => {});
+    }
+
+    function hoverCard(next) {
+      if (next === hoveredCard) return;
+      const previous = hoveredCard;
+      hoveredCard = next;
+      if (previous) {
+        previous.classList.remove("cv-mp-card--active");
+        previous.classList.add("cv-mp-card--leaving");
+        hoverStyle.clearText(previous);
+        animateHover(previous, false);
+      }
+      if (!next) return;
+      const state = hoverStates.get(next);
+      // A visible tint belongs to this card until it has completely faded.
+      // Selecting another project never changes this layer's color.
+      if (!state.color || Number(getComputedStyle(state.tint).opacity) < 0.001) {
+        state.color = hoverStyle.colors[Math.floor(Math.random() * hoverStyle.colors.length)];
+        state.tint.style.backgroundColor = state.color;
+      }
+      next.classList.remove("cv-mp-card--leaving");
+      next.classList.add("cv-mp-card--active");
+      hoverStyle.setText(next, state.color);
+      animateHover(next, true);
+    }
+
+    function attachHover(card, visual) {
+      const tint = document.createElement("span");
+      tint.className = "cv-mp-card-tint";
+      tint.setAttribute("aria-hidden", "true");
+      visual.prepend(tint);
+      hoverStates.set(card, { visual, tint, color: null, animations: [], generation: 0 });
+    }
+
+    function clearOverviewHover() {
+      hoveredCard = null;
+      hoverStates.forEach((state, card) => {
+        state.generation++;
+        state.animations.forEach(animation => animation.cancel());
+        state.tint.remove();
+        card.classList.remove("cv-mp-card--active", "cv-mp-card--leaving");
+        hoverStyle.clearText(card);
+      });
+      hoverStates.clear();
+    }
+
+    function pointerHover(event) {
+      if (switching || event.pointerType === "touch") return;
+      const card = event.target.closest(".cv-mp-card");
+      hoverCard(card?.parentElement === overview ? card : null);
+    }
+    overview.addEventListener("pointerover", pointerHover);
+    overview.addEventListener("pointermove", pointerHover);
+    overview.addEventListener("pointerleave", () => hoverCard(null));
+
+    function snapshotBackground(card, visual) {
+      const tint = card.querySelector(".cv-mp-card-tint");
+      if (!tint) return getComputedStyle(visual).backgroundColor;
+      const css = getComputedStyle(tint);
+      const channels = css.backgroundColor.match(/[\d.]+/g).map(Number);
+      const opacity = Number(css.opacity) * (channels[3] ?? 1);
+      return `rgb(${channels.slice(0, 3).map(channel => Math.round(255 + (channel - 255) * opacity)).join(", ")})`;
+    }
 
     function readView() {
       try {
@@ -119,7 +215,7 @@
         });
         result.set(card.dataset.project, { element: card, box, text, blocks, distance, priority,
           column: tracks.indexOf(card.parentElement),
-          background: getComputedStyle(visual).backgroundColor });
+          background: snapshotBackground(card, visual) });
       });
       return result;
     }
@@ -136,9 +232,11 @@
           visual.className = "cv-mp-card-visual";
           visual.append(...card.childNodes);
           card.appendChild(visual);
+          attachHover(card, visual);
         });
         stage.classList.add("cv-mp-stage--overview");
       } else {
+        clearOverviewHover();
         stage.classList.remove("cv-mp-stage--overview");
         Array.from(overview.children).forEach(card => {
           const visual = card.querySelector(".cv-mp-card-visual");
@@ -249,6 +347,7 @@
         const from = before.get(project.title) || outside(firstBefore, index);
         const to = after.get(project.title) || outside(firstAfter, index);
         const clone = (to.element || from.element).cloneNode(true);
+        clone.querySelectorAll(".cv-mp-card-tint").forEach(tint => tint.remove());
         clone.querySelectorAll("img").forEach(image => { image.decoding = "sync"; });
         clone.classList.add("cv-mp-morph-card");
         clone.removeAttribute("href");

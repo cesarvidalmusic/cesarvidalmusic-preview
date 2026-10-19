@@ -94,11 +94,15 @@
 .cv-mp-overview > .cv-mp-card:hover {
   background: transparent;
   transform: none;
-  z-index: 3;
+  z-index: 1;
 }
 
 .cv-mp-overview > .cv-mp-card.cv-mp-card--leaving {
   z-index: 2;
+}
+
+.cv-mp-overview > .cv-mp-card.cv-mp-card--active {
+  z-index: 3;
 }
 
 .cv-mp-overview > .cv-mp-card::after {
@@ -116,18 +120,19 @@
   min-height: 0;
   padding: 8px;
   background-color: #ffffff;
-  transform: translateZ(0);
+  isolation: isolate;
+  transform: scale(1);
   transform-origin: center center;
-  transition: background-color 0.35s ease, transform 0.35s ease;
-  /* The visual layer never changes the link's hit area. Keeping it composited
-     also avoids rebuilding its photo/text layer at each hover boundary. */
-  backface-visibility: hidden;
+  transition: none;
   pointer-events: none;
 }
 
-.cv-mp-overview > .cv-mp-card:hover .cv-mp-card-visual {
-  background-color: var(--hover-color, #ffffff);
-  transform: translateZ(0) scale(1.05);
+.cv-mp-card-tint {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .cv-mp-overview .cv-mp-card-visual::after {
@@ -139,7 +144,7 @@
   pointer-events: none;
 }
 
-.cv-mp-overview > .cv-mp-card:hover .cv-mp-card-visual::after {
+.cv-mp-overview > .cv-mp-card--active .cv-mp-card-visual::after {
   opacity: 0;
 }
 
@@ -151,6 +156,11 @@
 .cv-mp-overview .cv-mp-card-text {
   gap: 5px;
   width: 100%;
+  transform: none;
+}
+
+.cv-mp-overview > .cv-mp-card:hover .cv-mp-card-text {
+  transform: none;
 }
 
 .cv-mp-overview .cv-mp-card-title {

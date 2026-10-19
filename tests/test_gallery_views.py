@@ -123,7 +123,9 @@ async def motion_and_hover(browser, base, out):
     grown=await visual.bounding_box()
     assert abs(grown['width']/box['width']-1.05)<0.002
     assert await visual.evaluate("el=>getComputedStyle(el,'::after').opacity")=='0'
-    assert await visual.evaluate("el=>getComputedStyle(el).backgroundColor") in ['rgb(36, 32, 23)','rgb(44, 85, 68)','rgb(237, 101, 81)','rgb(239, 208, 111)']
+    tint=card.locator('.cv-mp-card-tint')
+    assert await tint.evaluate("el=>getComputedStyle(el).opacity")=='1'
+    assert await tint.evaluate("el=>getComputedStyle(el).backgroundColor") in ['rgb(36, 32, 23)','rgb(44, 85, 68)','rgb(237, 101, 81)','rgb(239, 208, 111)']
     await page.mouse.move(10,10);await page.wait_for_timeout(400)
     if out:await page.screenshot(path=str(out/'overview.png'))
     await toggle(page,'moving')
@@ -195,12 +197,12 @@ async def hover_stability(browser,base):
     first=page.locator('.cv-mp-overview .cv-mp-card').nth(0)
     second=page.locator('.cv-mp-overview .cv-mp-card').nth(2)
     await first.hover();await page.wait_for_timeout(400)
-    color=await first.evaluate("el=>el.style.getPropertyValue('--hover-color')")
+    color=await first.locator('.cv-mp-card-tint').evaluate("el=>getComputedStyle(el).backgroundColor")
     await page.evaluate("""() => {
       Math.random=()=>0.99;
       window.exitSamples=[];window.sampleExit=true;
-      const card=document.querySelector('.cv-mp-overview .cv-mp-card-visual');
-      function sample(){if(!sampleExit)return;exitSamples.push(getComputedStyle(card).backgroundColor);requestAnimationFrame(sample)}sample();
+      const tint=document.querySelector('.cv-mp-overview .cv-mp-card-tint');
+      function sample(){if(!sampleExit)return;const css=getComputedStyle(tint);exitSamples.push({opacity:Number(css.opacity),color:css.backgroundColor});requestAnimationFrame(sample)}sample();
     }""")
     await second.hover();await page.wait_for_timeout(80)
     await page.locator('.cv-mp-overview .cv-mp-card').nth(4).hover();await page.wait_for_timeout(80)
@@ -208,21 +210,21 @@ async def hover_stability(browser,base):
     samples=await page.evaluate('sampleExit=false;exitSamples')
     # A departing card must fade monotonically to white, never pick up the
     # next card's random color or flash its older hover color again.
-    channels=[[int(value.strip()) for value in sample[4:-1].split(',')] for sample in samples]
-    assert all(all(b>=a for a,b in zip(old,new)) for old,new in zip(channels,channels[1:])),samples
-    assert channels[-1]==[255,255,255],samples
-    assert await first.evaluate("el=>el.style.getPropertyValue('--hover-color')")==color
+    assert all(new['opacity']<=old['opacity'] for old,new in zip(samples,samples[1:])),samples
+    assert all(sample['color']==color for sample in samples),samples
+    assert samples[-1]['opacity']==0,samples
     await first.hover();await page.wait_for_timeout(400)
-    next_color=await first.evaluate("el=>el.style.getPropertyValue('--hover-color')")
+    next_color=await first.locator('.cv-mp-card-tint').evaluate("el=>getComputedStyle(el).backgroundColor")
     assert next_color!=color
     # Re-enter during the shrink animation, as happens at a shared hit edge.
     box=await first.bounding_box()
     await page.mouse.move(10,10)
     await page.evaluate('Math.random=()=>0')
     await page.mouse.move(box['x']+box['width']/2,box['y']+box['height']/2)
-    assert await first.evaluate("el=>el.style.getPropertyValue('--hover-color')")==next_color
+    assert await first.locator('.cv-mp-card-tint').evaluate("el=>getComputedStyle(el).backgroundColor")==next_color
     await page.wait_for_timeout(400)
-    assert await first.locator('.cv-mp-card-visual').evaluate("el=>getComputedStyle(el).backgroundColor")=='rgb(239, 208, 111)'
+    assert await first.locator('.cv-mp-card-tint').evaluate("el=>getComputedStyle(el).backgroundColor")=='rgb(239, 208, 111)'
+    assert await first.locator('.cv-mp-card-tint').evaluate("el=>getComputedStyle(el).opacity")=='1'
     assert not page.errors,page.errors
     await context.close()
     return {'same_column_exit_fades_to_white':True,'rapid_reentry_keeps_color':True}

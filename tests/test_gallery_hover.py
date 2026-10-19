@@ -2,13 +2,92 @@
 import argparse
 import asyncio
 import functools
+import io
 import json
 from pathlib import Path
 import threading
 
 from playwright.async_api import async_playwright
+from PIL import Image
 from test_page_transitions import ROOT, QuietHandler, TestServer
 from test_gallery_views import loaded, toggle
+
+
+async def painted_colors(page, scale):
+    # Freeze compositor animations so computed colors and PNG pixels refer to
+    # exactly the same frame. This catches painted flashes that style-only
+    # assertions cannot see.
+    samples = await page.evaluate("""async () => {
+      const overview=document.querySelector('.cv-mp-overview');
+      window.paintAnimations=overview.getAnimations({subtree:true});
+      paintAnimations.forEach(a=>a.pause());
+      await Promise.all(paintAnimations.map(a=>a.ready));
+      // Chromium can retain the compositor's next frame after pause resolves.
+      // Seek after that acknowledgement to synchronize paint and computed style.
+      paintAnimations.forEach(a=>{a.currentTime+=.001});
+      await new Promise(requestAnimationFrame);
+      await new Promise(requestAnimationFrame);
+      return Array.from(overview.children,(card,i)=>{
+        const box=card.getBoundingClientRect();
+        const css=getComputedStyle(card.querySelector('.cv-mp-card-tint'));
+        const channels=css.backgroundColor.match(/[\\d.]+/g).map(Number);
+        const alpha=Number(css.opacity)*(channels[3]??1);
+        return {project:card.dataset.project,x:i%2?box.right-3:box.left+3,y:box.y+3,
+          expected:channels.slice(0,3).map(c=>Math.round(255+(c-255)*alpha)),
+          tone:css.backgroundColor,alpha:Number(css.opacity),
+          active:card.classList.contains('cv-mp-card--active'),layer:Number(getComputedStyle(card).zIndex)};
+      });
+    }""")
+    screenshot = Image.open(io.BytesIO(await page.screenshot())).convert('RGB')
+    for sample in samples:
+        pixel = screenshot.getpixel((round(sample['x'] * scale), round(sample['y'] * scale)))
+        assert all(abs(actual - expected) <= 2 for actual, expected in zip(pixel, sample['expected'])), (sample, pixel)
+    assert sum(sample['active'] for sample in samples) <= 1, samples
+    await page.evaluate("paintAnimations.forEach(a=>{if(a.playState==='paused')a.play()})")
+    return samples
+
+
+async def paint_handoffs(page, cards, boxes, scale):
+    await page.mouse.move(10, 10)
+    await page.wait_for_timeout(450)
+    await page.evaluate('Math.random=()=>0')
+    await cards.nth(0).hover()
+    await page.wait_for_timeout(400)
+    await painted_colors(page, scale)
+    await page.evaluate('Math.random=()=>.99')
+    await cards.nth(2).hover()
+    await page.wait_for_timeout(45)
+    await page.evaluate("""() => {
+      window.heldAnimations=document.querySelector('.cv-mp-overview').getAnimations({subtree:true});
+      heldAnimations.forEach(a=>a.pause());
+    }""")
+    await page.wait_for_timeout(450)
+    held = await cards.nth(0).evaluate("card=>({layer:getComputedStyle(card).zIndex,alpha:Number(getComputedStyle(card.querySelector('.cv-mp-card-tint')).opacity)})")
+    assert held['layer'] == '2' and held['alpha'] > 0, held
+    await page.evaluate("heldAnimations.forEach(a=>{if(a.playState==='paused')a.play()})")
+    previous = await painted_colors(page, scale)
+    assert previous[0]['tone'] == 'rgb(36, 32, 23)', previous
+    path = [4, 6, 4, 2, 0, 1, 3, 5, 7, 5, 3, 1]
+    for index in path:
+        box = boxes[index]
+        await page.mouse.move(box['x'] + 50, box['y'] + box['height'] / 2)
+        await page.wait_for_timeout(35)
+        current = await painted_colors(page, scale)
+        assert current[index]['active'], (index, current)
+        for peer, (before, after) in enumerate(zip(previous, current)):
+            if peer != index:
+                assert before['tone'] == after['tone'], (index, peer, before, after)
+        previous = current
+    await page.mouse.move(10, 10)
+    await page.wait_for_timeout(450)
+    final = await painted_colors(page, scale)
+    assert all(sample['alpha'] == 0 and sample['layer'] == 1 for sample in final), final
+    await toggle(page, 'moving')
+    assert await page.locator('.cv-mp-card-tint').count() == 0
+    await toggle(page, 'overview')
+    assert await page.locator('.cv-mp-card-tint').count() == 8
+    return {'painted_pixel_checks': 8 * (len(path) + 3), 'paused_exit_keeps_layer': True,
+            'peer_colors_unchanged': True, 'no_tint_leaks_between_views': True}
 
 
 async def check(browser, base, width, height, scale, out):
@@ -43,15 +122,17 @@ async def check(browser, base, width, height, scale, out):
           const samples=[];
           for(let frame=0;frame<25;frame++) {
             await new Promise(requestAnimationFrame);
-            const previous=cards[first].querySelector('.cv-mp-card-visual');
+            const tint=cards[first].querySelector('.cv-mp-card-tint');
+            const css=getComputedStyle(tint);
+            const rgb=css.backgroundColor.match(/[\\d.]+/g).slice(0,3).map(Number);
             samples.push({hovered:cards.flatMap((card,i)=>card.matches(':hover')?[i]:[]),
-              color:getComputedStyle(previous).backgroundColor,
+              color:rgb.map(channel=>Math.round(255+(channel-255)*Number(css.opacity))),
               previousLayer:Number(getComputedStyle(cards[first]).zIndex)});
           }
           return samples;
         }""", first)
         assert all(sample['hovered'] == [second] for sample in samples), (first, second, samples)
-        colors = [[int(channel) for channel in sample['color'][4:-1].split(',')] for sample in samples]
+        colors = [sample['color'] for sample in samples]
         assert all(all(b >= a for a, b in zip(old, new)) for old, new in zip(colors, colors[1:])), samples
         assert colors[-1] == [255, 255, 255], samples
         assert samples[0]['previousLayer'] == 2, samples
@@ -66,8 +147,9 @@ async def check(browser, base, width, height, scale, out):
         await page.wait_for_timeout(35)
     await page.mouse.move(10, 10)
     await page.wait_for_timeout(450)
-    assert await cards.locator('.cv-mp-card-visual').evaluate_all(
-        "els=>els.every(el=>getComputedStyle(el).backgroundColor==='rgb(255, 255, 255)')")
+    assert await cards.locator('.cv-mp-card-tint').evaluate_all(
+        "els=>els.every(el=>getComputedStyle(el).opacity==='0')")
+    paint = await paint_handoffs(page, cards, boxes, scale)
     if out:
         await page.screenshot(path=str(out / f'overview-{width}-{height}-{scale}.png'))
 
@@ -78,7 +160,7 @@ async def check(browser, base, width, height, scale, out):
     assert not errors, errors
     await context.close()
     return {'viewport': [width, height], 'pixel_ratio': scale, 'edge_handoffs': 6,
-            'rapid_handoffs': 14, 'fixed_targets': True, 'smooth_exit': True, 'photo_link': True}
+            'rapid_handoffs': 14, 'fixed_targets': True, 'smooth_exit': True, 'photo_link': True, **paint}
 
 
 async def run(base, out):
