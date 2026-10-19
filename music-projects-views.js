@@ -101,6 +101,12 @@
         if (previous && (previous.priority > priority ||
           (previous.priority === priority && previous.distance <= distance))) return;
         const blocks = {};
+        const textElement = card.querySelector(".cv-mp-card-text");
+        const textBox = rect(textElement);
+        const textStyle = getComputedStyle(textElement);
+        const text = { left: textBox.x - box.x, top: textBox.y - box.y,
+          scaleX: textBox.width / parseFloat(textStyle.width),
+          scaleY: textBox.height / parseFloat(textStyle.height) };
         Object.entries(PARTS).forEach(([name, selector]) => {
           const element = card.querySelector(selector);
           if (!element) return;
@@ -108,9 +114,10 @@
           const css = getComputedStyle(element);
           blocks[name] = { left: part.x - box.x, top: part.y - box.y, width: part.width,
             height: part.height, fontSize: css.fontSize, lineHeight: css.lineHeight,
-            letterSpacing: css.letterSpacing, color: css.color };
+            letterSpacing: css.letterSpacing, color: css.color,
+            layoutWidth: css.width, layoutHeight: css.height, lineClamp: css.webkitLineClamp };
         });
-        result.set(card.dataset.project, { element: card, box, blocks, distance, priority,
+        result.set(card.dataset.project, { element: card, box, text, blocks, distance, priority,
           column: tracks.indexOf(card.parentElement),
           background: getComputedStyle(visual).backgroundColor });
       });
@@ -159,12 +166,46 @@
         width: box.width + "px", height: box.height + "px", backgroundColor: snapshot.background };
     }
 
-    function partFrame(part, photo) {
-      const frame = { left: part.left + "px", top: part.top + "px",
+    function photoFrame(part) {
+      return { left: part.left + "px", top: part.top + "px",
         width: part.width + "px", height: part.height + "px" };
-      if (!photo) Object.assign(frame, { fontSize: part.fontSize, lineHeight: part.lineHeight,
-        letterSpacing: part.letterSpacing, color: part.color });
-      return frame;
+    }
+
+    function textFrame(snapshot) {
+      const text = snapshot.text;
+      return { transform: `translate3d(${text.left}px, ${text.top}px, 0) scale(${text.scaleX}, ${text.scaleY})` };
+    }
+
+    function fixedText(template, snapshot, layout) {
+      const layer = document.createElement("span");
+      layer.className = "cv-mp-morph-text";
+      layer.dataset.layout = layout;
+      Object.entries(PARTS).forEach(([name, selector]) => {
+        if (name === "photo") return;
+        const original = template.querySelector(selector);
+        if (!original) return;
+        const element = original.cloneNode(true);
+        const part = snapshot.blocks[name] || snapshot.blocks.more || snapshot.blocks.soon;
+        // Freeze the original typographic box, including its line clamp.
+        // Only the containing layer moves; words never rewrap in flight.
+        Object.assign(element.style, {
+          left: (part.left - snapshot.text.left) / snapshot.text.scaleX + "px",
+          top: (part.top - snapshot.text.top) / snapshot.text.scaleY + "px",
+          // Computed sizes are rounded strings. Avoid losing a layout pixel
+          // fraction when the browser parses those dimensions again.
+          width: parseFloat(part.layoutWidth) + 0.0001 + "px",
+          height: parseFloat(part.layoutHeight) + 0.0001 + "px",
+          fontSize: part.fontSize, lineHeight: part.lineHeight,
+          letterSpacing: part.letterSpacing, color: part.color
+        });
+        if (name === "preview") {
+          element.style.display = "-webkit-box";
+          element.style.webkitBoxOrient = "vertical";
+          element.style.webkitLineClamp = part.lineClamp;
+        }
+        layer.appendChild(element);
+      });
+      return layer;
     }
 
     function finishSwitch(flushQueue = true) {
@@ -199,6 +240,8 @@
       releaseMotion = preparation?.release || null;
       const after = snapshots(preparation?.preferred);
       const timing = { duration, easing: EASING, fill: "both" };
+      const fadeTiming = { delay: duration * 0.15, duration: Math.min(160, duration * 0.4) / 2,
+        easing: "ease-in-out", fill: "both" };
       const firstBefore = before.values().next().value;
       const firstAfter = after.values().next().value;
       const carriers = [];
@@ -216,12 +259,17 @@
         morphLayer.appendChild(carrier);
         carriers.push({ element: carrier, column: to.column });
         animations.push(clone.animate([cardFrame(from), cardFrame(to, view !== "moving")], timing));
-        Object.entries(PARTS).forEach(([name, selector]) => {
-          const element = clone.querySelector(selector);
-          if (!element) return;
-          const start = from.blocks[name] || from.blocks.more || from.blocks.soon;
-          const end = to.blocks[name] || to.blocks.more || to.blocks.soon;
-          animations.push(element.animate([partFrame(start, name === "photo"), partFrame(end, name === "photo")], timing));
+        const photo = clone.querySelector(PARTS.photo);
+        animations.push(photo.animate([photoFrame(from.blocks.photo), photoFrame(to.blocks.photo)], timing));
+        const template = clone.querySelector(".cv-mp-card-text");
+        template.remove();
+        [from, to].forEach((snapshot, side) => {
+          const text = fixedText(template, snapshot, side ? "to" : "from");
+          clone.appendChild(text);
+          animations.push(text.animate([textFrame(from), textFrame(to)], timing));
+          // Fade through the two fixed compositions without overlapping words.
+          animations.push(text.animate([{ opacity: side ? 0 : 1 }, { opacity: side ? 1 : 0 }],
+            { ...fadeTiming, delay: fadeTiming.delay + side * fadeTiming.duration }));
         });
       });
       if (view === "moving") {
