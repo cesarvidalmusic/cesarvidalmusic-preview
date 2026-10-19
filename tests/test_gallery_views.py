@@ -103,7 +103,7 @@ async def motion_and_hover(browser, base, out):
       viewAnimations.forEach(a=>a.currentTime=timing.duration*0.45);
       return {cards,duration:timing.duration,easing:timing.easing,progress};
     }""")
-    assert animation['duration']==850,animation
+    assert animation['duration']==1200,animation
     assert animation['progress'][0]>0.5 and 1-animation['progress'][1]<0.05,animation
     for column in before['columns']:
         for card in column:
@@ -132,6 +132,138 @@ async def motion_and_hover(browser, base, out):
     assert not page.errors,page.errors
     await context.close()
     return {'duration_ms':animation['duration'],'ease_progress':animation['progress'],'restored_nodes':True,'hover':True}
+
+
+async def continuous_return(browser,base):
+    context,page=await new_page(browser,base,init=CLOCK)
+    await direct(page,base,'music-projects.html');await loaded(page)
+    await page.evaluate('stepGallery(0);stepGallery(17000)')
+    await toggle(page,'overview')
+    await page.get_by_role('button',name='Moving columns',exact=True).click()
+    await page.evaluate("""() => {
+      window.returnAnimations=document.querySelector('.cv-mp-morph-layer').getAnimations({subtree:true});
+      returnAnimations.forEach(a=>{a.pause();a.currentTime=0});
+      window.returnStart=Array.from(document.querySelectorAll('.cv-mp-track'),el=>new DOMMatrix(el.style.transform).m42);
+      stepGallery(0);
+    }""")
+    for total in [400,800,1200]:
+        state=await page.evaluate("""elapsed => {
+          stepGallery(elapsed);
+          returnAnimations.forEach(a=>a.currentTime=Number(a.currentTime)+elapsed);
+          return {active:!!document.querySelector('.cv-mp-morph-layer'),
+            travel:Array.from(document.querySelectorAll('.cv-mp-track'),(el,i)=>new DOMMatrix(el.style.transform).m42-returnStart[i]),
+            carriers:Array.from(document.querySelectorAll('.cv-mp-morph-motion'),el=>new DOMMatrix(getComputedStyle(el).transform).m42)};
+        }""",400)
+        assert state['active'],state
+        assert all(abs(actual-speed*total/1000)<0.1 for actual,speed in zip(state['travel'],[-22,30,-18,26])),state
+        assert any(abs(y)>1 for y in state['carriers']),state
+    # Check the final proxy position against the actual moving target before
+    # removing the proxy, including both upward and downward columns.
+    handoff=await page.evaluate("""() => {
+      const stage=document.querySelector('#stage').getBoundingClientRect();
+      window.handoffCards=Array.from(document.querySelectorAll('.cv-mp-track .cv-mp-card'))
+        .filter(card=>{const b=card.getBoundingClientRect();return b.top<stage.bottom&&b.bottom>stage.top});
+      return handoffCards.map(card=>{
+        const proxy=Array.from(document.querySelectorAll('.cv-mp-morph-card')).find(p=>p.dataset.project===card.dataset.project);
+        return {project:card.dataset.project,actual:card.getBoundingClientRect().toJSON(),proxy:proxy?.getBoundingClientRect().toJSON()};
+      });
+    }""")
+    for card in handoff:
+        assert card['proxy'],card
+        assert all(abs(card['actual'][key]-card['proxy'][key])<0.2 for key in ['x','y','width','height']),card
+    await page.evaluate('returnAnimations.forEach(a=>a.finish())')
+    await settled(page,'moving')
+    travel=await page.evaluate("""() => {
+      const before=handoffCards.map(card=>card.getBoundingClientRect().y);
+      stepGallery(100);
+      return handoffCards.map((card,i)=>({column:Array.from(document.querySelectorAll('.cv-mp-track')).indexOf(card.parentElement),dy:card.getBoundingClientRect().y-before[i]}));
+    }""")
+    for card in travel:
+        assert abs(card['dy']-[-2.2,3,-1.8,2.6][card['column']])<0.1,card
+    await snapshot(page)
+    assert not page.errors,page.errors
+    await context.close()
+    return {'moving_during_reordering':True,'handoff_without_jump':True,'continues_without_restart':True}
+
+
+async def hover_stability(browser,base):
+    context,page=await new_page(browser,base)
+    await page.set_viewport_size({'width':1512,'height':770})
+    await direct(page,base,'music-projects.html');await loaded(page);await toggle(page,'overview')
+    await page.evaluate('Math.random=()=>0')
+    first=page.locator('.cv-mp-overview .cv-mp-card').nth(0)
+    second=page.locator('.cv-mp-overview .cv-mp-card').nth(2)
+    await first.hover();await page.wait_for_timeout(400)
+    color=await first.evaluate("el=>el.style.getPropertyValue('--hover-color')")
+    await page.evaluate("""() => {
+      Math.random=()=>0.99;
+      window.exitSamples=[];window.sampleExit=true;
+      const card=document.querySelector('.cv-mp-overview .cv-mp-card');
+      function sample(){if(!sampleExit)return;exitSamples.push(getComputedStyle(card).backgroundColor);requestAnimationFrame(sample)}sample();
+    }""")
+    await second.hover();await page.wait_for_timeout(80)
+    await page.locator('.cv-mp-overview .cv-mp-card').nth(4).hover();await page.wait_for_timeout(80)
+    await page.locator('.cv-mp-overview .cv-mp-card').nth(6).hover();await page.wait_for_timeout(400)
+    samples=await page.evaluate('sampleExit=false;exitSamples')
+    # A departing card must fade monotonically to white, never pick up the
+    # next card's random color or flash its older hover color again.
+    channels=[[int(value.strip()) for value in sample[4:-1].split(',')] for sample in samples]
+    assert all(all(b>=a for a,b in zip(old,new)) for old,new in zip(channels,channels[1:])),samples
+    assert channels[-1]==[255,255,255],samples
+    assert await first.evaluate("el=>el.style.getPropertyValue('--hover-color')")==color
+    await first.hover();await page.wait_for_timeout(400)
+    next_color=await first.evaluate("el=>el.style.getPropertyValue('--hover-color')")
+    assert next_color!=color
+    # Re-enter during the shrink animation, as happens at a shared hit edge.
+    box=await first.bounding_box()
+    await page.mouse.move(10,10)
+    await page.evaluate('Math.random=()=>0')
+    await page.mouse.move(box['x']+box['width']/2,box['y']+box['height']/2)
+    assert await first.evaluate("el=>el.style.getPropertyValue('--hover-color')")==next_color
+    await page.wait_for_timeout(400)
+    assert await first.evaluate("el=>getComputedStyle(el).backgroundColor")=='rgb(239, 208, 111)'
+    assert not page.errors,page.errors
+    await context.close()
+    return {'same_column_exit_fades_to_white':True,'rapid_reentry_keeps_color':True}
+
+
+async def return_boundaries(browser,base):
+    # Include incoming covers and the instant a downward column recycles.
+    phases=[0,200,600,1000,1500,1800,2000,2700,17000,28500,29000,29300,29600]
+    for phase in phases:
+        context,page=await new_page(browser,base,init=CLOCK)
+        await direct(page,base,'music-projects.html');await loaded(page)
+        await page.evaluate('ms=>{stepGallery(0);stepGallery(ms)}',phase)
+        await page.get_by_role('button',name='All projects',exact=True).evaluate('button=>button.click()')
+        await page.evaluate("document.querySelector('.cv-mp-morph-layer').getAnimations({subtree:true}).forEach(a=>a.finish())")
+        await settled(page,'overview')
+        await page.get_by_role('button',name='Moving columns',exact=True).evaluate('button=>button.click()')
+        handoff=await page.evaluate("""() => {
+          window.returnAnimations=document.querySelector('.cv-mp-morph-layer').getAnimations({subtree:true});
+          returnAnimations.forEach(a=>{a.pause();a.currentTime=0});stepGallery(0);
+          for(let i=0;i<12;i++)stepGallery(100);
+          returnAnimations.forEach(a=>a.currentTime=1200);
+          const stage=document.querySelector('#stage').getBoundingClientRect();
+          const visible=selector=>Array.from(document.querySelectorAll(selector))
+            .filter(card=>{const box=card.getBoundingClientRect();return box.top<stage.bottom-0.1&&box.bottom>stage.top+0.1});
+          const actual=visible('.cv-mp-track .cv-mp-card');
+          const proxies=visible('.cv-mp-morph-card');
+          return {actual:actual.map(card=>card.dataset.project),proxies:proxies.map(card=>card.dataset.project),
+            errors:actual.map(card=>{
+              const proxy=proxies.find(p=>p.dataset.project===card.dataset.project);
+              const a=card.getBoundingClientRect(),b=proxy?.getBoundingClientRect();
+              return b?Math.max(...['x','y','width','height'].map(key=>Math.abs(a[key]-b[key]))):null;
+            })};
+        }""")
+        assert set(handoff['actual'])==set(handoff['proxies']),(phase,handoff)
+        assert all(error is not None and error<0.2 for error in handoff['errors']),(phase,handoff)
+        await page.evaluate('returnAnimations.forEach(a=>a.finish())')
+        await settled(page,'moving');await snapshot(page)
+        for _ in range(20):
+            await page.evaluate('stepGallery(200)');await snapshot(page)
+        assert not page.errors,page.errors
+        await context.close()
+    return {'entry_and_recycling_phases':len(phases),'visible_proxies_match_live_cards':True}
 
 
 async def persistence(browser,base):
@@ -220,7 +352,7 @@ async def run(base,out):
     async with async_playwright() as p:
         browser=await p.chromium.launch(executable_path='/usr/bin/chromium',headless=True)
         results={}
-        for name,check in [('motion',motion_and_hover),('persistence',persistence),('layouts',layouts),('resilience',resilience)]:
+        for name,check in [('motion',motion_and_hover),('continuous_return',continuous_return),('hover_stability',hover_stability),('return_boundaries',return_boundaries),('persistence',persistence),('layouts',layouts),('resilience',resilience)]:
             results[name]=await check(browser,base,out) if name in ('motion','layouts') else await check(browser,base)
             print(json.dumps({name:results[name]}),flush=True)
         await browser.close()

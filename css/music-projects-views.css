@@ -125,6 +125,12 @@
   pointer-events: none;
 }
 
+.cv-mp-morph-motion {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
 .cv-mp-card.cv-mp-morph-card {
   position: absolute;
   top: 0;

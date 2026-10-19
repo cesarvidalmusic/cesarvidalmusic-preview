@@ -51,7 +51,7 @@
   <link rel="stylesheet" href="css/style.css?v=barlowfold-1" />
   <link rel="preload" href="fonts/barlowfold.otf" as="font" type="font/otf" crossorigin />
   <link rel="stylesheet" href="css/title-barlowfold.css?v=2" />
-  <link rel="stylesheet" href="css/music-projects-views.css?v=1" />
+  <link rel="stylesheet" href="css/music-projects-views.css?v=2" />
 
   <style>
     html, body {
@@ -122,14 +122,14 @@
       text-decoration: none;
       color: #0A0A0A;
       gap: 0.82rem;
-      transition: background 0.35s ease, transform 0.35s ease;
+      transition: background-color 0.35s ease, transform 0.35s ease;
       transform-origin: center center;
       position: relative;
       z-index: 1;
     }
 
     .cv-mp-card:hover {
-      background: var(--hover-color);
+      background-color: var(--hover-color, #ffffff);
       transform: scale(1.05);
       z-index: 2;
     }
@@ -356,7 +356,7 @@
 
   </div>
 
-  <script src="music-projects-views.js?v=1"></script>
+  <script src="music-projects-views.js?v=2"></script>
   <script>
     const SPEEDS = [22, 30, 18, 26];
 
@@ -448,6 +448,8 @@
     let reservedCards = new Set();
     let motionRunning = true;
     let motionFrame = null;
+    let motionObserver = null;
+    let motionPrepared = false;
 
     function preloadProjectImages() {
       const loaders = PROJECTS.map(project => {
@@ -553,8 +555,14 @@
     }
 
     function addHover(card) {
+      let lastLeave = -Infinity;
       card.addEventListener("mouseenter", () => {
-        const color = HOVER_COLORS[
+        // A shrinking card can briefly regain the pointer at a shared edge.
+        // Keep its own color until its exit has finished, rather than flashing
+        // a fresh random color during that same interaction.
+        const color = performance.now() - lastLeave < 350
+          ? card.style.getPropertyValue("--hover-color") || HOVER_COLORS[0]
+          : HOVER_COLORS[
           Math.floor(Math.random() * HOVER_COLORS.length)
         ];
 
@@ -563,7 +571,9 @@
       });
 
       card.addEventListener("mouseleave", () => {
-        card.style.removeProperty("--hover-color");
+        lastLeave = performance.now();
+        // :hover restores white. Keep the color variable stable while the
+        // background fades out; removing it can invalidate an in-flight style.
         clearHoverTextColor(card);
       });
     }
@@ -693,15 +703,7 @@
       offsets[i] -= cardHeight;
     }
 
-    function animate(ts) {
-      if (!motionRunning) return;
-      if (lastTime === null) {
-        lastTime = ts;
-      }
-
-      const dt = (ts - lastTime) / 1000;
-      lastTime = ts;
-
+    function advanceGallery(dt) {
       trackEls.forEach((track, i) => {
         offsets[i] += SPEEDS[i] * dt;
 
@@ -712,8 +714,37 @@
         applyTransform(i);
       });
 
-      reserveVisibleProjects();
+      if (!motionPrepared) reserveVisibleProjects();
+    }
 
+    function prepareGalleryMotion(seconds) {
+      // Plan which unique cards will occupy the moving destination. Recycling
+      // happens while hidden, then positions rewind so their real travel can
+      // start during reordering without changing a proxy's project midway.
+      advanceGallery(seconds);
+      const preferred = new Set(reservedCards);
+      trackEls.forEach((track, i) => {
+        offsets[i] -= SPEEDS[i] * seconds;
+        applyTransform(i);
+      });
+      motionPrepared = true;
+      return { preferred, release() {
+        motionPrepared = false;
+        reserveVisibleProjects();
+      } };
+    }
+
+    function animate(ts) {
+      if (!motionRunning) return;
+      if (lastTime === null) {
+        lastTime = ts;
+      }
+
+      const dt = (ts - lastTime) / 1000;
+      lastTime = ts;
+      advanceGallery(dt);
+
+      if (motionObserver) motionObserver(SPEEDS.map((speed, i) => (DIRS[i] === 1 ? -1 : 1) * speed * dt));
       motionFrame = requestAnimationFrame(animate);
     }
 
@@ -756,6 +787,11 @@
           createCard,
           pause: pauseGallery,
           resume: resumeGallery,
+          prepareMotion: prepareGalleryMotion,
+          followMotion(observer) {
+            motionObserver = observer;
+            return () => { if (motionObserver === observer) motionObserver = null; };
+          },
           resize: resizeGallery,
           resetHover(card) {
             card.style.removeProperty("--hover-color");

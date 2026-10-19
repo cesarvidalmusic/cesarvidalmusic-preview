@@ -3,7 +3,7 @@
   "use strict";
 
   const STORAGE_KEY = "cv-mp-view";
-  const DURATION = 850;
+  const DURATION = 1200;
   const EASING = "cubic-bezier(0.16, 1, 0.3, 1)";
   const PARTS = {
     photo: ".cv-mp-cover",
@@ -13,7 +13,7 @@
     soon: ".cv-mp-coming-soon"
   };
 
-  window.cvInitProjectViews = function ({ stage, tracks, projects, createCard, pause, resume, resize, resetHover }) {
+  window.cvInitProjectViews = function ({ stage, tracks, projects, createCard, pause, resume, prepareMotion, followMotion, resize, resetHover }) {
     if (getComputedStyle(stage).getPropertyValue("--cv-mp-views-ready").trim() !== "1") return;
     const hero = document.querySelector(".cv-page-hero");
     const title = hero.querySelector("h1");
@@ -30,6 +30,8 @@
     let queuedView = null;
     let morphLayer = null;
     let animations = [];
+    let stopFollowing = null;
+    let releaseMotion = null;
     let generation = 0;
 
     function readView() {
@@ -78,7 +80,7 @@
       controls.style.top = ((titleBox.top - heroBox.top) / scaleY + (titleBox.height / scaleY - 28) / 2) + "px";
     }
 
-    function snapshots() {
+    function snapshots(preferred) {
       const frame = stage.getBoundingClientRect();
       const scaleX = frame.width / stage.offsetWidth;
       const scaleY = frame.height / stage.offsetHeight;
@@ -94,7 +96,9 @@
         const visible = Math.max(0, Math.min(box.y + box.height, stage.clientHeight) - Math.max(box.y, 0));
         const distance = visible ? -visible : Math.max(-box.y - box.height, box.y - stage.clientHeight, 0);
         const previous = result.get(card.dataset.project);
-        if (previous && previous.distance <= distance) return;
+        const priority = Boolean(preferred?.has(card));
+        if (previous && (previous.priority > priority ||
+          (previous.priority === priority && previous.distance <= distance))) return;
         const blocks = {};
         Object.entries(PARTS).forEach(([name, selector]) => {
           const element = card.querySelector(selector);
@@ -105,7 +109,8 @@
             height: part.height, fontSize: css.fontSize, lineHeight: css.lineHeight,
             letterSpacing: css.letterSpacing, color: css.color };
         });
-        result.set(card.dataset.project, { element: card, box, blocks, distance,
+        result.set(card.dataset.project, { element: card, box, blocks, distance, priority,
+          column: tracks.indexOf(card.parentElement),
           background: getComputedStyle(card).backgroundColor });
       });
       return result;
@@ -129,14 +134,14 @@
     }
 
     function outside(reference, index) {
-      return { ...reference, element: null, box: { ...reference.box,
+      return { ...reference, element: null, column: -1, box: { ...reference.box,
         y: index % 2 ? -reference.box.height - 4 : stage.clientHeight + 4 } };
     }
 
-    function cardFrame(snapshot) {
+    function cardFrame(snapshot, clampBuffer = true) {
       const box = snapshot.box;
       // Keep unseen buffers just outside the crop instead of flying from many screens away.
-      const y = Math.max(-box.height - 4, Math.min(stage.clientHeight + 4, box.y));
+      const y = clampBuffer ? Math.max(-box.height - 4, Math.min(stage.clientHeight + 4, box.y)) : box.y;
       return { transform: `translate3d(${box.x}px, ${y}px, 0)`,
         width: box.width + "px", height: box.height + "px", backgroundColor: snapshot.background };
     }
@@ -151,6 +156,10 @@
 
     function finishSwitch(flushQueue = true) {
       generation++;
+      if (stopFollowing) stopFollowing();
+      stopFollowing = null;
+      if (releaseMotion) releaseMotion();
+      releaseMotion = null;
       animations.forEach(animation => animation.cancel());
       animations = [];
       if (morphLayer) morphLayer.remove();
@@ -164,7 +173,7 @@
       if (flushQueue && next && next !== view) setView(next);
     }
 
-    function morph(before, after) {
+    function morph(before) {
       switching = true;
       stage.classList.add("cv-mp-is-switching");
       stage.setAttribute("aria-busy", "true");
@@ -173,9 +182,13 @@
       morphLayer.setAttribute("aria-hidden", "true");
       stage.appendChild(morphLayer);
       const duration = matchMedia("(prefers-reduced-motion: reduce)").matches ? 80 : DURATION;
+      const preparation = view === "moving" ? prepareMotion(duration / 1000) : null;
+      releaseMotion = preparation?.release || null;
+      const after = snapshots(preparation?.preferred);
       const timing = { duration, easing: EASING, fill: "both" };
       const firstBefore = before.values().next().value;
       const firstAfter = after.values().next().value;
+      const carriers = [];
       projects.forEach((project, index) => {
         const from = before.get(project.title) || outside(firstBefore, index);
         const to = after.get(project.title) || outside(firstAfter, index);
@@ -184,8 +197,12 @@
         clone.classList.add("cv-mp-morph-card");
         clone.removeAttribute("href");
         clone.tabIndex = -1;
-        morphLayer.appendChild(clone);
-        animations.push(clone.animate([cardFrame(from), cardFrame(to)], timing));
+        const carrier = document.createElement("div");
+        carrier.className = "cv-mp-morph-motion";
+        carrier.appendChild(clone);
+        morphLayer.appendChild(carrier);
+        carriers.push({ element: carrier, column: to.column });
+        animations.push(clone.animate([cardFrame(from), cardFrame(to, view !== "moving")], timing));
         Object.entries(PARTS).forEach(([name, selector]) => {
           const element = clone.querySelector(selector);
           if (!element) return;
@@ -194,6 +211,20 @@
           animations.push(element.animate([partFrame(start, name === "photo"), partFrame(end, name === "photo")], timing));
         });
       });
+      if (view === "moving") {
+        // Follow the actual column travel on a separate wrapper. Reordering
+        // eases to a moving destination, so revealing the originals never
+        // stops their vertical motion or adds a second positional jump.
+        const travel = tracks.map(() => 0);
+        stopFollowing = followMotion(movement => {
+          movement.forEach((distance, column) => { travel[column] += distance; });
+          carriers.forEach(carrier => {
+            if (carrier.column < 0) return;
+            carrier.element.style.transform = `translate3d(0, ${travel[carrier.column]}px, 0)`;
+          });
+        });
+        resume();
+      }
       const current = ++generation;
       Promise.all(animations.map(animation => animation.finished)).then(() => {
         if (generation === current) finishSwitch();
@@ -216,7 +247,7 @@
       Array.from(overview.children).forEach(resetHover);
       const before = snapshots();
       applyView(next, before);
-      if (animate && typeof stage.animate === "function") morph(before, snapshots());
+      if (animate && typeof stage.animate === "function") morph(before);
       else if (view === "moving") resume();
     }
 
