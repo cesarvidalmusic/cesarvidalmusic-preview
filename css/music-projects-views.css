@@ -1,0 +1,186 @@
+/* Two views of the same project cards. */
+.cv-mp-stage {
+  --cv-mp-views-ready: 1;
+}
+
+.cv-page-hero {
+  position: relative;
+}
+
+.cv-page-title.cv-title-barlowfold--music {
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.cv-mp-view-controls {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 2;
+}
+
+.cv-mp-view-controls[hidden] {
+  display: none;
+}
+
+.cv-mp-view-button {
+  appearance: none;
+  display: block;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--accent);
+  opacity: 0.42;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+
+.cv-mp-view-button[aria-pressed="true"],
+.cv-mp-view-button:hover {
+  opacity: 1;
+}
+
+.cv-mp-view-button:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 5px;
+}
+
+.cv-mp-view-button svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.cv-mp-overview {
+  display: none;
+}
+
+.cv-mp-stage--overview > .cv-mp-col {
+  display: none;
+}
+
+.cv-mp-stage--overview > .cv-mp-overview {
+  --cv-mp-overview-photo: clamp(70px, calc((var(--cv-mp-stage-height) - 24px) / 4 - 16px), 170px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  gap: 8px 24px;
+  width: 100%;
+  height: 100%;
+  padding: 0 16px;
+  align-content: stretch;
+}
+
+.cv-mp-overview .cv-mp-card {
+  display: grid;
+  grid-template-columns: var(--cv-mp-overview-photo) minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  height: auto;
+  min-height: 0;
+  padding: 8px;
+}
+
+.cv-mp-overview .cv-mp-cover {
+  width: var(--cv-mp-overview-photo);
+  height: var(--cv-mp-overview-photo);
+}
+
+.cv-mp-overview .cv-mp-card-text {
+  gap: 5px;
+  width: 100%;
+}
+
+.cv-mp-overview .cv-mp-card-title {
+  font-size: clamp(13px, 1.1vw, 17px);
+}
+
+.cv-mp-overview .cv-mp-card-preview {
+  -webkit-line-clamp: 5;
+  font-size: clamp(11px, 0.85vw, 13px);
+  line-height: 1.3;
+}
+
+.cv-mp-overview .cv-mp-card-more,
+.cv-mp-overview .cv-mp-coming-soon {
+  font-size: 10px;
+}
+
+.cv-mp-stage.cv-mp-is-switching > .cv-mp-col .cv-mp-card,
+.cv-mp-stage.cv-mp-is-switching > .cv-mp-overview .cv-mp-card {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.cv-mp-morph-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cv-mp-card.cv-mp-morph-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  min-height: 0;
+  max-width: none;
+  padding: 0;
+  overflow: hidden;
+  transform-origin: 0 0;
+  transition: none;
+  visibility: visible;
+  pointer-events: none;
+}
+
+.cv-mp-morph-card .cv-mp-card-text {
+  display: contents;
+}
+
+.cv-mp-morph-card .cv-mp-cover,
+.cv-mp-morph-card .cv-mp-card-title,
+.cv-mp-morph-card .cv-mp-card-preview,
+.cv-mp-morph-card .cv-mp-card-more,
+.cv-mp-morph-card .cv-mp-coming-soon {
+  position: absolute;
+  display: block;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  transition: none;
+  -webkit-line-clamp: unset;
+}
+
+@media (max-width: 700px) {
+  .cv-mp-stage--overview {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .cv-mp-stage--overview > .cv-mp-overview {
+    --cv-mp-overview-photo: 100px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(8, minmax(145px, auto));
+    height: auto;
+    min-height: 100%;
+    padding: 0 8px 16px;
+    gap: 8px;
+  }
+
+  .cv-mp-overview .cv-mp-card {
+    gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-mp-view-button {
+    transition: none;
+  }
+}

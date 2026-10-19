@@ -51,6 +51,7 @@
   <link rel="stylesheet" href="css/style.css?v=barlowfold-1" />
   <link rel="preload" href="fonts/barlowfold.otf" as="font" type="font/otf" crossorigin />
   <link rel="stylesheet" href="css/title-barlowfold.css?v=2" />
+  <link rel="stylesheet" href="css/music-projects-views.css?v=1" />
 
   <style>
     html, body {
@@ -317,6 +318,14 @@
 
       <div class="cv-page-hero">
         <h1 class="cv-page-title cv-title-barlowfold cv-title-barlowfold--black cv-title-barlowfold--music">MUSIC &amp; PROJECTS</h1>
+        <div class="cv-mp-view-controls" role="group" aria-label="Project view" hidden>
+          <button class="cv-mp-view-button" type="button" data-view="moving" aria-label="Moving columns" title="Moving columns" aria-pressed="true" aria-controls="stage">
+            <svg viewBox="0 0 28 28" aria-hidden="true" focusable="false"><path d="M1 12h6v14H1zM11 2h6v18h-6zM21 8h6v16h-6z"/></svg>
+          </button>
+          <button class="cv-mp-view-button" type="button" data-view="overview" aria-label="All projects" title="All projects" aria-pressed="false" aria-controls="stage">
+            <svg viewBox="0 0 28 28" aria-hidden="true" focusable="false"><path d="M1 3h11v4H1zM16 3h11v4H16zM1 9h11v4H1zM16 9h11v4H16zM1 15h11v4H1zM16 15h11v4H16zM1 21h11v4H1zM16 21h11v4H16z"/></svg>
+          </button>
+        </div>
       </div>
 
       <div class="cv-mp-stage" id="stage">
@@ -347,6 +356,7 @@
 
   </div>
 
+  <script src="music-projects-views.js?v=1"></script>
   <script>
     const SPEEDS = [22, 30, 18, 26];
 
@@ -436,6 +446,8 @@
     let stageHeight = 0;
     let lastTime = null;
     let reservedCards = new Set();
+    let motionRunning = true;
+    let motionFrame = null;
 
     function preloadProjectImages() {
       const loaders = PROJECTS.map(project => {
@@ -682,6 +694,7 @@
     }
 
     function animate(ts) {
+      if (!motionRunning) return;
       if (lastTime === null) {
         lastTime = ts;
       }
@@ -701,10 +714,24 @@
 
       reserveVisibleProjects();
 
-      requestAnimationFrame(animate);
+      motionFrame = requestAnimationFrame(animate);
+    }
+
+    function pauseGallery() {
+      motionRunning = false;
+      cancelAnimationFrame(motionFrame);
+      lastTime = null;
+    }
+
+    function resumeGallery() {
+      if (motionRunning) return;
+      motionRunning = true;
+      lastTime = null;
+      motionFrame = requestAnimationFrame(animate);
     }
 
     function resizeGallery() {
+      if (stageEl.classList.contains("cv-mp-stage--overview")) return;
       const previousHeight = cardHeight;
       measureCardHeight();
 
@@ -720,7 +747,22 @@
       measureCardHeight();
       buildInitialGallery();
       window.addEventListener("resize", resizeGallery);
-      requestAnimationFrame(animate);
+      motionFrame = requestAnimationFrame(animate);
+      if (typeof window.cvInitProjectViews === "function") {
+        window.cvInitProjectViews({
+          stage: stageEl,
+          tracks: trackEls,
+          projects: PROJECTS,
+          createCard,
+          pause: pauseGallery,
+          resume: resumeGallery,
+          resize: resizeGallery,
+          resetHover(card) {
+            card.style.removeProperty("--hover-color");
+            clearHoverTextColor(card);
+          }
+        });
+      }
     }
 
     const preloadLimit = new Promise(resolve => setTimeout(resolve, 2200));
