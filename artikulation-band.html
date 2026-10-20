@@ -35,6 +35,7 @@
   <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" as="image" href="img/artikulation-video-1.webp" type="image/webp" fetchpriority="high">
   <link rel="preload" as="image" href="img/artikulation-video-2.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/title-artikulation-v1.png" type="image/png" fetchpriority="high">
   <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -132,6 +133,85 @@
     .cv-page-title {
       margin: 0 0 clamp(0.68rem, 1.2vh, 0.95rem);
       color: #ffffff;
+    }
+
+    .cv-ab-title {
+      width: 100%;
+    }
+
+    .cv-ab-title-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .cv-ab-title-art {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 2070 / 146;
+      overflow: hidden;
+    }
+
+    .cv-ab-title-art img {
+      position: absolute;
+      left: -2.512077%;
+      top: -184.246575%;
+      width: 104.927536%;
+      height: auto;
+      max-width: none;
+      display: block;
+      filter: brightness(0) invert(1);
+    }
+
+    .cv-ab-title-art--name,
+    .cv-ab-title-art--band {
+      display: none;
+    }
+
+    .cv-ab-title-fallback .cv-ab-title-art {
+      display: none;
+    }
+
+    .cv-ab-title-fallback .cv-ab-title-label {
+      position: static;
+      width: auto;
+      height: auto;
+      margin: 0;
+      overflow: visible;
+      clip-path: none;
+      white-space: normal;
+    }
+
+    @media (max-width: 900px) {
+      .cv-ab-title-art--full {
+        display: none;
+      }
+
+      .cv-ab-title-art--name {
+        display: block;
+        aspect-ratio: 862 / 146;
+        margin-bottom: 0.35rem;
+      }
+
+      .cv-ab-title-art--name img {
+        left: -6.032483%;
+        width: 251.972158%;
+      }
+
+      .cv-ab-title-art--band {
+        display: block;
+        aspect-ratio: 1198 / 146;
+      }
+
+      .cv-ab-title-art--band img {
+        left: -77.128548%;
+        width: 181.302170%;
+      }
     }
 
     .cv-ab-copy {
@@ -330,7 +410,18 @@
         <div class="cv-ab-panel">
 
           <article class="cv-ab-text-slot">
-            <h1 class="cv-page-title">César Vidal & Artikulation Band</h1>
+            <h1 class="cv-page-title cv-ab-title">
+              <span class="cv-ab-title-label">César Vidal &amp; Artikulation Band</span>
+              <span class="cv-ab-title-art cv-ab-title-art--full" aria-hidden="true">
+                <img src="img/title-artikulation-v1.png" alt="" width="2172" height="724" decoding="async" onerror="this.closest('h1').classList.add('cv-ab-title-fallback')">
+              </span>
+              <span class="cv-ab-title-art cv-ab-title-art--name" aria-hidden="true">
+                <img src="img/title-artikulation-v1.png" alt="" width="2172" height="724" decoding="async" onerror="this.closest('h1').classList.add('cv-ab-title-fallback')">
+              </span>
+              <span class="cv-ab-title-art cv-ab-title-art--band" aria-hidden="true">
+                <img src="img/title-artikulation-v1.png" alt="" width="2172" height="724" decoding="async" onerror="this.closest('h1').classList.add('cv-ab-title-fallback')">
+              </span>
+            </h1>
 
             <p class="cv-ab-copy">
               César Vidal &amp; Artikulation Band is a multicultural contemporary jazz quintet based in the Netherlands, bringing together musicians from Chile, Italy, Portugal, and the Basque Country. The group, consisting of alto saxophone, piano, double bass, drums and electronics, explores the intersection between acoustic and electronic sound worlds through composition and improvisation, aiming to develop new sonic landscapes that challenge the boundaries of contemporary jazz.
