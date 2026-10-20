@@ -1,5 +1,5 @@
 /*
- * César Vidal — page transition v15 (preview)
+ * César Vidal — page transition v16 (preview)
  * Transición compartida para todas las páginas del sitio.
  * Transiciones adaptadas al fondo de origen y destino en todo el sitio.
  */
@@ -23,7 +23,14 @@
     "aleas.html": "black",
     "artikulation-band.html": "black"
   };
-  const COLOR_TRANSITION_CLASSES = ["des-visages", "spam", "black", "white", "artikulation"].flatMap(
+  const PHOTO_TRANSITIONS = {
+    "artikulation-band.html": { theme: "artikulation", image: "img/artikulation-video-1.webp" },
+    "des-visages.html": { theme: "des-visages-photo", image: "img/des-visages-transition.webp" }
+  };
+  const PHOTO_TRANSITION_CLASSES = Object.values(PHOTO_TRANSITIONS).map(
+    ({ theme }) => "cv-transition-to-" + theme
+  );
+  const COLOR_TRANSITION_CLASSES = ["des-visages", "spam", "black", "white", "artikulation", "des-visages-photo"].flatMap(
     (theme) => ["cv-transition-from-" + theme, "cv-transition-to-" + theme]
   );
   const CSS_FALLBACK_CLASS = "cv-transition-css-fallback";
@@ -73,13 +80,14 @@
   let incomingTransitionEnd = null;
   let incomingAnimation = null;
   let outgoingAnimation = null;
-  let photographReady = null;
+  const photographsReady = new Map();
 
-  function warmArtikulationColors() {
-    if (photographReady) return photographReady;
+  function warmPhotoColors(destinationPage) {
+    if (photographsReady.has(destinationPage)) return photographsReady.get(destinationPage);
     const image = new Image();
-    image.src = new URL("img/artikulation-video-1.webp", SCRIPT_URL).href;
-    photographReady = image.decode().catch(() => {});
+    image.src = new URL(PHOTO_TRANSITIONS[destinationPage].image, SCRIPT_URL).href;
+    const photographReady = image.decode().catch(() => {});
+    photographsReady.set(destinationPage, photographReady);
     return photographReady;
   }
 
@@ -96,7 +104,7 @@
     });
     const clear = { filter: "blur(0px) brightness(1)", transform: "scale(1)" };
     const blurred = { filter: "blur(7px) brightness(0.90)", transform: "scale(1.008)" };
-    const incomingBlur = !closing && root.classList.contains("cv-transition-to-artikulation")
+    const incomingBlur = !closing && PHOTO_TRANSITION_CLASSES.some((name) => root.classList.contains(name))
       ? { filter: "blur(" + settings.getPropertyValue("--cv-transition-photo-content-blur").trim() + ") brightness(1)", transform: "scale(1.008)" }
       : blurred;
     const timing = { duration, easing: "cubic-bezier(0.40, 0, 0.22, 1)", fill: "both" };
@@ -210,7 +218,7 @@
     const sourcePage = pageName(location.href);
     const destinationPage = pageName(destination);
     const sourceTheme = PAGE_THEMES[sourcePage];
-    const colorTheme = destinationPage === "artikulation-band.html" ? "artikulation" : PAGE_THEMES[destinationPage];
+    const colorTheme = PHOTO_TRANSITIONS[destinationPage]?.theme || PAGE_THEMES[destinationPage];
 
     // Si el navegador bloquea sessionStorage, conservar la navegación normal
     // en lugar de mostrar solamente la mitad de la transición.
@@ -221,10 +229,10 @@
 
     isNavigating = true;
     finishIncomingPage();
-    if (colorTheme === "artikulation") {
+    if (PHOTO_TRANSITIONS[destinationPage]) {
       let timeout;
       await Promise.race([
-        warmArtikulationColors(),
+        warmPhotoColors(destinationPage),
         new Promise((resolve) => { timeout = window.setTimeout(resolve, MAX_ASSET_WAIT); })
       ]).finally(() => window.clearTimeout(timeout));
     }
@@ -390,7 +398,7 @@
 
   function warmLinkedPhoto(event) {
     const link = event.target instanceof Element ? event.target.closest("a") : null;
-    if (transitionAllowed(link) && pageName(link.href) === "artikulation-band.html") warmArtikulationColors();
+    if (transitionAllowed(link) && PHOTO_TRANSITIONS[pageName(link.href)]) warmPhotoColors(pageName(link.href));
   }
   document.addEventListener("pointerover", warmLinkedPhoto, { passive: true });
   document.addEventListener("focusin", warmLinkedPhoto);

@@ -26,6 +26,7 @@ html, body {
   object-fit: cover;
   object-position: var(--cv-artikulation-photo-position);
   background: url("../img/artikulation-video-1.webp") var(--cv-artikulation-photo-position) / cover no-repeat;
+  filter: url("#cv-ab-photo-clarity");
   z-index: 0;
 }
 
@@ -180,11 +181,14 @@ html, body {
 }
 
 .cv-ab-live-label {
-  margin: 0 0 2px;
-  font-size: 12px;
+  margin: 0;
+  padding: 6px 12px;
+  background: rgba(0,0,0,.88);
+  font-size: clamp(13px, .9vw, 15px);
+  font-weight: 700;
   line-height: 1.2;
   letter-spacing: .02em;
-  color: rgba(255,255,255,.9);
+  color: #fff;
 }
 
 .cv-ab-live-track {

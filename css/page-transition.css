@@ -9,7 +9,7 @@
   --cv-transition-color-spam: #E6DFC5;
   --cv-transition-color-black: #000000;
   --cv-transition-color-white: #ffffff;
-  --cv-artikulation-photo-position: center 25%;
+  --cv-artikulation-photo-position: center 60%;
   --cv-transition-photo-content-blur: 48px;
 }
 
@@ -87,24 +87,39 @@ html:is(.cv-transition-to-des-visages, .cv-transition-to-spam, .cv-transition-to
   background-color: var(--cv-transition-destination-color);
 }
 
-/* Artikulation uses the photograph's spatial colors instead of a solid curtain.
-   The small existing copy avoids downloading the full background on other pages. */
-html.cv-transition-to-artikulation :is(.cv-transition-curtain, .cv-transition-entering) {
+/* Photo transitions use spatial colors instead of a solid curtain.
+   Small copies avoid downloading full backgrounds on other pages. */
+html:is(.cv-transition-to-artikulation, .cv-transition-to-des-visages-photo) :is(.cv-transition-curtain, .cv-transition-entering) {
   overflow: hidden;
+}
+
+html.cv-transition-to-artikulation :is(.cv-transition-curtain, .cv-transition-entering) {
   background:
     linear-gradient(to top, #000, transparent 65%),
     linear-gradient(105deg, #030205 35%, #2116bc 80%, #30207b);
 }
 
-html.cv-transition-to-artikulation :is(.cv-transition-curtain, .cv-transition-entering)::before {
+html:is(.cv-transition-to-artikulation, .cv-transition-to-des-visages-photo) :is(.cv-transition-curtain, .cv-transition-entering)::before {
   content: "";
   position: absolute;
   inset: 0;
+  filter: blur(clamp(48px, 7vw, 120px));
+  transform: scale(1.18);
+}
+
+html.cv-transition-to-artikulation :is(.cv-transition-curtain, .cv-transition-entering)::before {
   background:
     linear-gradient(to top, rgba(0,0,0,.55), transparent 45%),
     url("../img/artikulation-video-1.webp") var(--cv-artikulation-photo-position) / cover no-repeat;
-  filter: blur(clamp(48px, 7vw, 120px));
-  transform: scale(1.18);
+}
+
+html.cv-transition-to-des-visages-photo :is(.cv-transition-curtain, .cv-transition-entering) {
+  background: var(--cv-transition-color-des-visages);
+}
+
+html.cv-transition-to-des-visages-photo :is(.cv-transition-curtain, .cv-transition-entering)::before {
+  background: url("../img/des-visages-transition.webp") left bottom / auto 100% no-repeat var(--cv-transition-color-des-visages);
+  transform-origin: left bottom;
 }
 
 html.cv-transition-leaving [data-page-transition-content],
@@ -113,7 +128,7 @@ html.cv-transition-incoming [data-page-transition-content] {
   transform: scale(1.008);
 }
 
-html.cv-transition-to-artikulation.cv-transition-incoming [data-page-transition-content] {
+html:is(.cv-transition-to-artikulation, .cv-transition-to-des-visages-photo).cv-transition-incoming [data-page-transition-content] {
   filter: blur(var(--cv-transition-photo-content-blur)) brightness(1);
 }
 
@@ -138,7 +153,7 @@ html.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] 
     transform var(--cv-transition-in-duration) cubic-bezier(0.40, 0, 0.22, 1);
 }
 
-html.cv-transition-to-artikulation.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
+html:is(.cv-transition-to-artikulation, .cv-transition-to-des-visages-photo).cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
   filter: blur(0px) brightness(1);
 }
 
@@ -153,7 +168,7 @@ html.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [dat
   animation: cv-transition-content-in var(--cv-transition-css-duration) cubic-bezier(0.40, 0, 0.22, 1) both;
 }
 
-html.cv-transition-to-artikulation.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
+html:is(.cv-transition-to-artikulation, .cv-transition-to-des-visages-photo).cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
   animation-name: cv-transition-photo-in;
 }
 
