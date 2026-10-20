@@ -9,6 +9,8 @@
   --cv-transition-color-spam: #E6DFC5;
   --cv-transition-color-black: #000000;
   --cv-transition-color-white: #ffffff;
+  --cv-artikulation-photo-position: center 25%;
+  --cv-transition-photo-content-blur: 48px;
 }
 
 .cv-transition-entering,
@@ -85,10 +87,34 @@ html:is(.cv-transition-to-des-visages, .cv-transition-to-spam, .cv-transition-to
   background-color: var(--cv-transition-destination-color);
 }
 
+/* Artikulation uses the photograph's spatial colors instead of a solid curtain.
+   The small existing copy avoids downloading the full background on other pages. */
+html.cv-transition-to-artikulation :is(.cv-transition-curtain, .cv-transition-entering) {
+  overflow: hidden;
+  background:
+    linear-gradient(to top, #000, transparent 65%),
+    linear-gradient(105deg, #030205 35%, #2116bc 80%, #30207b);
+}
+
+html.cv-transition-to-artikulation :is(.cv-transition-curtain, .cv-transition-entering)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(0,0,0,.55), transparent 45%),
+    url("../img/artikulation-video-1.webp") var(--cv-artikulation-photo-position) / cover no-repeat;
+  filter: blur(clamp(48px, 7vw, 120px));
+  transform: scale(1.18);
+}
+
 html.cv-transition-leaving [data-page-transition-content],
 html.cv-transition-incoming [data-page-transition-content] {
   filter: blur(7px) brightness(0.90);
   transform: scale(1.008);
+}
+
+html.cv-transition-to-artikulation.cv-transition-incoming [data-page-transition-content] {
+  filter: blur(var(--cv-transition-photo-content-blur)) brightness(1);
 }
 
 html.cv-transition-leaving [data-page-transition-content] {
@@ -112,6 +138,10 @@ html.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] 
     transform var(--cv-transition-in-duration) cubic-bezier(0.40, 0, 0.22, 1);
 }
 
+html.cv-transition-to-artikulation.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
+  filter: blur(0px) brightness(1);
+}
+
 /* Explicit starting frames also work before a fast page's first paint. */
 html.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal .cv-transition-entering {
   transition: none;
@@ -121,6 +151,10 @@ html.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal .cv-
 html.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
   transition: none;
   animation: cv-transition-content-in var(--cv-transition-css-duration) cubic-bezier(0.40, 0, 0.22, 1) both;
+}
+
+html.cv-transition-to-artikulation.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
+  animation-name: cv-transition-photo-in;
 }
 
 @keyframes cv-transition-overlay-in {
@@ -133,7 +167,13 @@ html.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [dat
   to { filter: blur(0px) brightness(1); transform: scale(1); }
 }
 
+@keyframes cv-transition-photo-in {
+  from { filter: blur(var(--cv-transition-photo-content-blur)) brightness(1); transform: scale(1.008); }
+  to { filter: blur(0px) brightness(1); transform: scale(1); }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  :root { --cv-transition-photo-content-blur: 0px; }
   .cv-transition-curtain,
   html:is(.cv-transition-to-des-visages, .cv-transition-to-spam, .cv-transition-to-black, .cv-transition-to-white) .cv-transition-curtain,
   html.cv-transition-leaving [data-page-transition-content] {

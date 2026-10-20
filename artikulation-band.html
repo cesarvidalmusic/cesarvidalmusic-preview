@@ -14,17 +14,15 @@
         const age = state ? Date.now() - Number(state.time) : Infinity;
         if (state && state.target === location.pathname && age >= 0 && age < 60000) {
           document.documentElement.classList.add("cv-transition-incoming");
-          if (state.theme === "black") {
-            document.documentElement.classList.add("cv-transition-to-black");
-          }
+          document.documentElement.classList.add("cv-transition-to-artikulation");
         }
       } catch (error) {
         // Navigation remains available when storage is blocked.
       }
     })();
   </script>
-  <link rel="stylesheet" href="css/page-transition.css?v=14" />
-  <script defer src="page-transition.js?v=14" onerror="document.documentElement.classList.remove('cv-transition-incoming', 'cv-transition-to-black')"></script>
+  <link rel="stylesheet" href="css/page-transition.css?v=15" />
+  <script defer src="page-transition.js?v=15" onerror="document.documentElement.classList.remove('cv-transition-incoming', 'cv-transition-to-artikulation')"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="César Vidal & Artikulation Band — contemporary jazz quintet based in the Netherlands." />
@@ -33,7 +31,7 @@
   <link rel="preload" href="fonts/Ronzino-BoldOblique.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" as="image" href="img/artikulation-stage.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/artikulation-stage.webp?v=2" type="image/webp" fetchpriority="high">
   <link rel="preload" as="image" href="img/title-artikulation-v1.png" type="image/png" fetchpriority="high">
   <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -41,14 +39,18 @@
 <script defer src="favicon.js?v=6"></script>
   <link rel="stylesheet" href="css/style.css" />
 
-  <link rel="stylesheet" href="css/artikulation-photo.css?v=1" />
+  <link rel="stylesheet" href="css/artikulation-photo.css?v=2" />
 </head>
 
 <body>
   <div class="cv-transition-entering" aria-hidden="true"></div>
   <div class="cv-page" data-page-transition-content>
 
-    <img class="cv-ab-bg-photo" src="img/artikulation-stage.webp" alt="" width="2160" height="1440" fetchpriority="high" decoding="async" aria-hidden="true">
+    <img class="cv-ab-bg-photo" src="img/artikulation-stage.webp?v=2" alt="" width="2160" height="1440" fetchpriority="high" decoding="async" aria-hidden="true">
+    <script>
+      // Keep the color field visible until the full-quality photograph is decoded.
+      window.cvPageReady = document.querySelector('.cv-ab-bg-photo').decode().catch(() => {});
+    </script>
     <div class="cv-ab-photo-shade" aria-hidden="true"></div>
 
     <nav class="cv-nav cv-nav--dark">
@@ -71,7 +73,6 @@
         <div class="cv-ab-panel">
 
           <article class="cv-ab-text-slot">
-            <div class="cv-ab-heading-row">
               <h1 class="cv-page-title cv-ab-title">
                 <span class="cv-ab-title-label">César Vidal &amp; Artikulation Band</span>
                 <span class="cv-ab-title-art cv-ab-title-art--full" aria-hidden="true">
@@ -85,39 +86,41 @@
                 </span>
               </h1>
 
+            <div class="cv-ab-copy-columns">
+              <div class="cv-ab-copy-block">
+              <p class="cv-ab-copy">
+                César Vidal &amp; Artikulation Band is a multicultural contemporary jazz quintet based in the Netherlands, bringing together musicians from Chile, Italy, Portugal and the Basque Country. The ensemble writes for alto saxophone, piano, double bass, drums and electronics, developing each piece through composition and collective improvisation.
+              </p>
+
+              <p class="cv-ab-copy">
+                Their repertoire ranges from simple, recurring melodic patterns to intricate structures inspired by contemporary classical music and virtual composition tools such as OpenMusic. Algorithmic ideas help shape the writing, while improvisation lets the musicians transform that material in performance.
+              </p>
+              </div>
+
+              <div class="cv-ab-copy-block">
+              <p class="cv-ab-copy">
+                Initially inspired by artists working with modern jazz ensembles and electronic media, Artikulation Band has developed its own language through this approach, giving each musician an active role in the music’s direction. Electronic sound is part of the musical material, shaping how the instruments interact and how the music unfolds.
+              </p>
+
+              <p class="cv-ab-copy">
+                The band has performed at JazzBer Festival in Bermeo and Getxo Jazz Festival in the Basque Country. At Getxo, they opened for three-time Grammy winner Cécile McLorin Salvant and were awarded second place in the festival’s band competition.
+              </p>
+              </div>
+            </div>
+
               <aside class="cv-ab-live" aria-label="Artikulation Band live videos">
-                <p class="cv-ab-live-label">live at Getxo Jazz 2025</p>
+                <p class="cv-ab-live-label">CV&amp;AB live at getxo 2025</p>
                 <a class="cv-ab-live-track" href="https://youtu.be/JKIPqN-s-ow" target="_blank" rel="noopener" aria-label="Watch Sad People live at Getxo Jazz 2025 on YouTube">
-                  <span class="cv-ab-live-index" aria-hidden="true">01</span>
                   <span class="cv-ab-live-title"><em>Sad People</em></span>
                   <svg class="cv-ab-live-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l8 5-8 5z"/></svg>
                   <svg class="cv-ab-live-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 12l8-8M4 4h8v8"/></svg>
                 </a>
                 <a class="cv-ab-live-track" href="https://youtu.be/fSAOIAiA0Lw" target="_blank" rel="noopener" aria-label="Watch In Memoriam of a Star live at Getxo Jazz 2025 on YouTube">
-                  <span class="cv-ab-live-index" aria-hidden="true">02</span>
                   <span class="cv-ab-live-title"><em>In Memoriam of a Star</em></span>
                   <svg class="cv-ab-live-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l8 5-8 5z"/></svg>
                   <svg class="cv-ab-live-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 12l8-8M4 4h8v8"/></svg>
                 </a>
               </aside>
-            </div>
-            <div class="cv-ab-copy-columns">
-              <p class="cv-ab-copy">
-                César Vidal &amp; Artikulation Band is a multicultural contemporary jazz quintet based in the Netherlands, bringing together musicians from Chile, Italy, Portugal, and the Basque Country. The group, consisting of alto saxophone, piano, double bass, drums and electronics, explores the intersection between acoustic and electronic sound worlds through composition and improvisation, aiming to develop new sonic landscapes that challenge the boundaries of contemporary jazz.
-              </p>
-
-              <p class="cv-ab-copy">
-                Their repertoire spans from simple, repetitive melodic patterns to intricate structures inspired by the compositional approaches of Olivier Messiaen and Iannis Xenakis, as well as by the use of virtual composition assistants such as OpenMusic. This broad spectrum reflects the band’s interest in exploring how algorithmic thinking and formal structures can coexist with the spontaneity and expressiveness of improvisation.
-              </p>
-
-              <p class="cv-ab-copy">
-                Originally conceived as a project influenced by artists who have long investigated the dialogue between modern jazz ensembles and electronic media, including Steve Lehman’s <em>Ex Machina</em> and <em>Demian as Posthuman</em>, ØKSE, Peter Evans’ <em>Ghosts</em> and <em>Destination : Void</em>, Cory Smythe’s <em>AUTOTROPHS</em>, and Benoît Delbecq’s <em>Gentle Ghosts</em>, Artikulation Band finds its own language and narrative, where structure and freedom constantly inform one another.
-              </p>
-
-              <p class="cv-ab-copy">
-                César Vidal &amp; Artikulation Band have performed across different regions, with notable appearances at JazzBer Festival in Bermeo and Getxo Jazz Festival in the Basque Country. At Getxo, they opened for the acclaimed vocalist Cécile McLorin Salvant and were awarded second place in the festival’s ensemble competition.
-              </p>
-            </div>
           </article>
 
         </div>
