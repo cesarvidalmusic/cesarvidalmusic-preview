@@ -1,0 +1,311 @@
+/* Artikulation Band: stage photograph and an editorial block at its foot. */
+html, body {
+  min-height: 100%;
+  overflow-x: hidden;
+  background: #000;
+}
+
+.cv-page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  background: #000;
+}
+
+.cv-ab-bg-photo,
+.cv-ab-photo-shade {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  pointer-events: none;
+}
+
+.cv-ab-bg-photo {
+  object-fit: cover;
+  object-position: center bottom;
+  z-index: 0;
+}
+
+.cv-ab-photo-shade {
+  z-index: 1;
+  background: linear-gradient(to top, rgba(0,0,0,.64), rgba(0,0,0,.18) 25%, transparent 46%);
+}
+
+.cv-nav {
+  z-index: 5;
+  background: transparent;
+}
+
+.cv-nav.cv-nav--dark a {
+  color: rgba(255,255,255,.82);
+}
+
+.cv-nav.cv-nav--dark a:hover {
+  color: var(--accent);
+}
+
+.cv-nav a.active {
+  color: #fff;
+  text-shadow: .35px 0 currentColor, -.35px 0 currentColor;
+}
+
+.cv-page-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100svh;
+  min-height: 680px;
+  padding-top: var(--nav-height);
+  background: transparent;
+}
+
+.cv-ab-stage {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  min-height: 0;
+}
+
+.cv-ab-panel {
+  --cv-ab-column-gap: clamp(24px, 2.8vw, 48px);
+  width: 100%;
+  padding: 0 var(--pad-x) clamp(48px, 5.3vh, 64px);
+}
+
+.cv-ab-text-slot {
+  width: 100%;
+  min-width: 0;
+  font-family: 'Ronzino', sans-serif;
+  color: #fff;
+}
+
+.cv-ab-heading-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  align-items: end;
+  gap: var(--cv-ab-column-gap);
+}
+
+.cv-page-title.cv-ab-title {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  color: #fff;
+}
+
+.cv-ab-title-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.cv-ab-title-art {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 2070 / 146;
+  overflow: hidden;
+}
+
+.cv-ab-title-art img {
+  position: absolute;
+  left: -2.512077%;
+  top: -184.246575%;
+  width: 104.927536%;
+  height: auto;
+  max-width: none;
+  display: block;
+  filter: brightness(0) invert(1);
+}
+
+.cv-ab-title-art--name,
+.cv-ab-title-art--band,
+.cv-ab-title-fallback .cv-ab-title-art {
+  display: none;
+}
+
+.cv-ab-title-fallback .cv-ab-title-label {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip-path: none;
+  white-space: normal;
+}
+
+.cv-ab-copy-columns {
+  column-count: 3;
+  column-gap: var(--cv-ab-column-gap);
+  column-fill: balance;
+  margin-top: 20px;
+}
+
+.cv-ab-copy {
+  margin: 0 0 .65rem;
+  font-size: clamp(12px, .85vw, 14px);
+  line-height: 1.42;
+  letter-spacing: .002em;
+  color: rgba(255,255,255,.94);
+  text-align: justify;
+  text-justify: inter-word;
+  text-shadow: 0 1px 3px rgba(0,0,0,.45);
+  orphans: 3;
+  widows: 3;
+}
+
+.cv-ab-copy:last-child {
+  margin-bottom: 0;
+}
+
+.cv-ab-copy em {
+  font-style: italic;
+}
+
+.cv-ab-live {
+  min-width: 0;
+  width: 100%;
+}
+
+.cv-ab-live-label {
+  margin: 0 0 8px;
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: .12em;
+  color: rgba(255,255,255,.7);
+}
+
+.cv-ab-live-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) 16px 16px;
+  align-items: center;
+  gap: 10px;
+  min-height: 32px;
+  padding: 6px 0;
+  border-top: 1px solid rgba(255,255,255,.28);
+  color: #fff;
+  text-decoration: none;
+}
+
+.cv-ab-live-track::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .25s ease;
+}
+
+.cv-ab-live-index {
+  font-size: 10px;
+  color: rgba(255,255,255,.55);
+  transition: color .25s ease;
+}
+
+.cv-ab-live-title {
+  font-size: clamp(12px, .85vw, 14px);
+  line-height: 1.25;
+  transition: transform .25s ease;
+}
+
+.cv-ab-live-play {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  transition: color .25s ease;
+}
+
+.cv-ab-live-arrow {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  transition: transform .25s ease, color .25s ease;
+}
+
+.cv-ab-live-track:is(:hover, :focus-visible)::after {
+  transform: scaleX(1);
+}
+
+.cv-ab-live-track:is(:hover, :focus-visible) :is(.cv-ab-live-index, .cv-ab-live-play, .cv-ab-live-arrow) {
+  color: var(--accent);
+}
+
+.cv-ab-live-track:is(:hover, :focus-visible) .cv-ab-live-title {
+  transform: translateX(3px);
+}
+
+.cv-ab-live-track:is(:hover, :focus-visible) .cv-ab-live-arrow {
+  transform: translate(2px, -2px);
+}
+
+.cv-ab-live-track:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 4px;
+}
+
+.cv-ab-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  padding: .55rem clamp(.5rem, 2vw, 1.25rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+
+.cv-ab-footer span {
+  font-family: 'Ronzino', sans-serif;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: lowercase;
+  color: rgba(255,255,255,.82);
+}
+
+@media (max-width: 1100px) {
+  .cv-ab-copy-columns { column-count: 2; }
+}
+
+@media (max-width: 720px) {
+  .cv-page-content { height: auto; min-height: 100svh; }
+  .cv-ab-panel { padding-top: 42vh; padding-bottom: 28px; }
+  .cv-ab-heading-row { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .cv-ab-copy-columns { column-count: 1; margin-top: 24px; }
+  .cv-ab-copy { font-size: 13px; line-height: 1.5; }
+  .cv-ab-live-track { min-height: 40px; }
+  .cv-ab-photo-shade { background: linear-gradient(to top, rgba(0,0,0,.9), rgba(0,0,0,.65) 50%, transparent 82%); }
+  .cv-ab-footer { position: relative; }
+}
+
+@media (max-width: 540px) {
+  .cv-ab-title-art--full { display: none; }
+  .cv-ab-title-art--name { display: block; aspect-ratio: 862 / 146; margin-bottom: .35rem; }
+  .cv-ab-title-art--name img { left: -6.032483%; width: 251.972158%; }
+  .cv-ab-title-art--band { display: block; aspect-ratio: 1198 / 146; }
+  .cv-ab-title-art--band img { left: -77.128548%; width: 181.302170%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-ab-live-track::after,
+  .cv-ab-live-track span,
+  .cv-ab-live-play { transition: none; }
+}
