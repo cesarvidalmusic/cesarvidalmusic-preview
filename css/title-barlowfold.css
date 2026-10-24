@@ -29,7 +29,7 @@
   --cv-title-stroke: 0.012em;
   font-size: clamp(40px, 8.5vw, 104px);
   letter-spacing: -0.01em;
-  margin-top: clamp(1.8rem, 3.3vw, 2.8rem);
+  margin-top: calc(clamp(1.8rem, 3.3vw, 2.8rem) + clamp(.75rem, 1.4vw, 1.25rem));
   /* Compensate for the L's sidebearing, tracking and stroke to align its ink
      with the end of the menu's contact link. Both use the same right padding. */
   margin-right: calc(0.4px - 0.03125em);

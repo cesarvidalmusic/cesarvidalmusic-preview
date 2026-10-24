@@ -1,0 +1,78 @@
+/* In-flow project links share the text column and inherit each page's palette. */
+.cv-project-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px clamp(16px, 1.8vw, 28px);
+  width: 100%;
+  margin-top: clamp(18px, 2.6vh, 28px);
+  padding-top: 9px;
+  border-top: .5px solid rgba(255,255,255,.3);
+  font-family: 'Ronzino', sans-serif;
+  font-size: clamp(11px, .86vw, 13px);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.35;
+  letter-spacing: .015em;
+  text-align: left;
+  color: rgba(255,255,255,.88);
+}
+
+.cv-project-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: .55em;
+  min-height: 32px;
+  padding: 5px 0;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .2s ease;
+}
+
+.cv-project-nav-all { margin-right: auto; }
+
+.cv-project-nav a:is(:hover, :focus-visible) { color: var(--accent); }
+.cv-project-nav a:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
+.cv-project-nav svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.1;
+  flex: none;
+  transition: transform .2s ease;
+}
+.cv-project-nav-previous:hover svg { transform: translateX(-3px); }
+.cv-project-nav-next:hover svg { transform: translateX(3px); }
+
+.cv-spam-text-panel .cv-project-nav {
+  border-color: rgba(5,5,5,.28);
+  color: rgba(5,5,5,.78);
+}
+
+.cv-dv-copy .cv-project-nav a:is(:hover, :focus-visible) { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+
+.cv-ab-copy-columns { row-gap: clamp(12px, 1.8vh, 20px); }
+.cv-ab-copy-columns > .cv-project-nav { grid-column: 1 / -1; margin-top: 0; }
+
+@media (max-width: 720px) {
+  .cv-project-nav { gap: 3px 16px; }
+  .cv-project-nav-all { flex-basis: 100%; }
+  .cv-project-nav-context { display: none; }
+  .cv-project-nav-next { margin-left: auto; }
+}
+
+/* Keep the new links reachable when a viewport is shorter than the content. */
+@media (max-width: 720px), (max-height: 680px) {
+  html, body { height: auto; overflow-y: auto; }
+  .cv-page { height: auto; min-height: 100svh; overflow: clip; }
+  .cv-page-content { height: auto; min-height: 100svh; }
+  .cv-dv-layout, .cv-dv-ep-layout { height: auto; min-height: calc(100svh - var(--nav-height)); }
+  .cv-dv-copy-panel { height: auto; padding-top: 28px; padding-bottom: 48px; }
+  .cv-nubes-stage, .cv-aleas-stage, .cv-flor-stage, .cv-spam-stage { flex: none; min-height: calc(100svh - var(--nav-height)); padding-top: 28px; padding-bottom: 48px; }
+  .cv-nubes-panel, .cv-aleas-panel, .cv-flor-panel { height: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-project-nav a, .cv-project-nav svg { transition: none; }
+}

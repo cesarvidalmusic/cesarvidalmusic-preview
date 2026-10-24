@@ -102,7 +102,7 @@ async def color_route(browser, base, destination='des-visages.html', *, source='
         async def delay_script(route):
             await asyncio.sleep(0.8)
             await route.continue_()
-        await page.route('**/page-transition.js?v=17', delay_script)
+        await page.route('**/page-transition.js?v=18', delay_script)
     await page.locator(link_selector(source, destination)).first.evaluate('(link)=>link.click()')
     if delayed:
         await early_cover(page, destination, target_color)
@@ -117,11 +117,12 @@ async def color_route(browser, base, destination='des-visages.html', *, source='
     if delayed:
         await early_cover(page, source, source_color)
     await check_entry(page, source, reduced=reduced, color=source_color)
-    reverse_samples = check_colors(samples, target_rgb, source_rgb, reduced)
+    reverse_samples = (check_photo_colors(samples, PHOTO_IMAGES[source], reduced)
+                       if source in PHOTO_IMAGES else check_colors(samples, target_rgb, source_rgb, reduced))
     assert abs(page.exits[-1]['duration'] - (0.08 if reduced else 0.5)) < 0.005, page.exits
     assert not await page.evaluate("document.documentElement.className.includes('cv-transition-')")
     if delayed:
-        await page.unroute('**/page-transition.js?v=17', delay_script)
+        await page.unroute('**/page-transition.js?v=18', delay_script)
     await page.go_back(wait_until='domcontentloaded')
     await page.wait_for_function("!document.documentElement.className.includes('cv-transition-')")
     await page.go_forward(wait_until='domcontentloaded')

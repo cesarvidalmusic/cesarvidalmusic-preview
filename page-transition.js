@@ -1,5 +1,5 @@
 /*
- * César Vidal — page transition v17 (preview)
+ * César Vidal — page transition v18 (preview)
  * Transición compartida para todas las páginas del sitio.
  * Transiciones adaptadas al fondo de origen y destino en todo el sitio.
  */
@@ -24,6 +24,7 @@
     "artikulation-band.html": "black"
   };
   const PHOTO_TRANSITIONS = {
+    "bio.html": { theme: "bio-photo", image: "img/bio-transition.webp" },
     "artikulation-band.html": { theme: "artikulation", image: "img/artikulation-video-1.webp" },
     "des-visages.html": { theme: "des-visages-photo", image: "img/des-visages-transition.webp" },
     "spam.html": { theme: "spam-photo", image: "img/spam-transition.webp" },
@@ -34,7 +35,7 @@
   const PHOTO_TRANSITION_CLASSES = Object.values(PHOTO_TRANSITIONS).map(
     ({ theme }) => "cv-transition-to-" + theme
   );
-  const COLOR_TRANSITION_CLASSES = ["des-visages", "spam", "black", "white", "artikulation", "des-visages-photo", "spam-photo", "des-visages-ep-photo", "flor-photo", "nubes-photo"].flatMap(
+  const COLOR_TRANSITION_CLASSES = ["des-visages", "spam", "black", "white", "bio-photo", "artikulation", "des-visages-photo", "spam-photo", "des-visages-ep-photo", "flor-photo", "nubes-photo"].flatMap(
     (theme) => ["cv-transition-from-" + theme, "cv-transition-to-" + theme]
   );
   const CSS_FALLBACK_CLASS = "cv-transition-css-fallback";

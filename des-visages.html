@@ -21,8 +21,8 @@
       }
     })();
   </script>
-  <link rel="stylesheet" href="css/page-transition.css?v=17" />
-  <script defer src="page-transition.js?v=17" onerror="document.documentElement.classList.remove('cv-transition-incoming', 'cv-transition-to-des-visages-photo')"></script>
+  <link rel="stylesheet" href="css/page-transition.css?v=18" />
+  <script defer src="page-transition.js?v=18" onerror="document.documentElement.classList.remove('cv-transition-incoming', 'cv-transition-to-des-visages-photo')"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Des Visages — saxophone and live electronics duo by Jorge Care and César Vidal." />
@@ -194,37 +194,33 @@
       margin-bottom: 0;
     }
 
-    .cv-dv-listen-area {
-      margin-top: clamp(0.9rem, 1.75vh, 1.25rem);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: flex-start;
-      gap: 0.5rem;
+    .cv-dv-website {
+      margin-top: clamp(18px, 2.4vh, 26px);
+      font-size: clamp(13px, .98vw, 15px);
+      line-height: 1.4;
+      color: #fff;
     }
 
-    .cv-dv-release-note {
-      margin: 0;
-      font-size: clamp(12px, 0.92vw, 14.2px);
-      line-height: 1.39;
-      letter-spacing: 0.002em;
-      color: rgba(255,255,255,0.94);
-      text-align: left;
+    .cv-dv-website a {
+      display: inline-flex;
+      align-items: center;
+      gap: .65em;
+      min-height: 36px;
+      padding-bottom: 3px;
+      border-bottom: .5px solid rgba(255,255,255,.65);
     }
 
-    .cv-dv-bandcamp {
-      width: 100%;
-      max-width: 760px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
+    .cv-dv-website svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.2;
     }
 
-    .cv-dv-bandcamp iframe {
-      display: block;
-      width: 100%;
-      height: 120px;
-      border: 0;
+    .cv-dv-website a:is(:hover, :focus-visible) {
+      border-color: #fff;
+      text-shadow: .3px 0 currentColor;
     }
 
     .cv-dv-photo-credit {
@@ -264,6 +260,7 @@
     }
   </style>
   <link rel="stylesheet" href="css/inline-project-heading.css?v=2" />
+  <link rel="stylesheet" href="css/project-navigation.css?v=1" />
 </head>
 
 <body>
@@ -330,25 +327,19 @@
               Each performance becomes a unique encounter between performer, audience and place: a sonic journey where improvisation turns sound into story.
             </p>
 
-            <div class="cv-dv-listen-area">
-              <p class="cv-dv-release-note">
-                Listen to our two recorded works:
-              </p>
-
-              <div class="cv-dv-bandcamp">
-                <iframe
-                  src="https://bandcamp.com/EmbeddedPlayer/album=2317617485/size=large/bgcol=333333/linkcol=e99708/tracklist=false/artwork=small/transparent=true/"
-                  seamless>
-                  <a href="https://desvisages.bandcamp.com/album/aleas">aleas by Des Visages</a>
-                </iframe>
-
-                <iframe
-                  src="https://bandcamp.com/EmbeddedPlayer/album=3382948755/size=large/bgcol=333333/linkcol=e32c14/tracklist=false/artwork=small/transparent=true/"
-                  seamless>
-                  <a href="https://desvisages.bandcamp.com/album/des-visages">Des Visages by Des Visages</a>
-                </iframe>
-              </div>
+            <div class="cv-dv-website">
+              <a href="https://www.desvisages.net/" target="_blank" rel="noopener">visit desvisages.net <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 12l8-8M4 4h8v8"/></svg></a>
             </div>
+
+            <nav class="cv-project-nav" aria-label="Project navigation">
+              <a class="cv-project-nav-all" href="music-projects.html">all projects</a>
+              <a class="cv-project-nav-previous" href="flor-de-loto.html" rel="prev" aria-label="Previous project: Flor de Loto" title="Flor de Loto">
+                <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M13 8H3m5-5L3 8l5 5"/></svg><span>previous<span class="cv-project-nav-context"> project</span></span>
+              </a>
+              <a class="cv-project-nav-next" href="nubes.html" rel="next" aria-label="Next project: NUBES" title="NUBES">
+                <span>next<span class="cv-project-nav-context"> project</span></span><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8h10M8 3l5 5-5 5"/></svg>
+              </a>
+            </nav>
           </div>
         </article>
 
