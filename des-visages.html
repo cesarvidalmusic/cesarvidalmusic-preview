@@ -31,6 +31,7 @@
   <link rel="preload" href="fonts/Ronzino-BoldOblique.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" as="image" href="img/title-des-visages-v1.png" type="image/png" fetchpriority="high">
 
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -167,6 +168,18 @@
       color: #ffffff;
     }
 
+    .cv-dv-opening {
+      --run-in-copy-size: clamp(12px, .92vw, 14.2px);
+      --run-in-copy-leading: 1.39;
+      --run-in-paragraph-gap: .66rem;
+      --run-in-title-height: clamp(26px, 2vw, 34px);
+      --run-in-title-ratio: 7.4;
+      --run-in-art-left: -5.74358974%;
+      --run-in-art-top: -71.86440678%;
+      --run-in-art-width: 111.38461538%;
+      --run-in-art-height: 245.42372881%;
+    }
+
     .cv-dv-copy p {
       margin: 0 0 0.66rem;
       font-size: clamp(12px, 0.92vw, 14.2px);
@@ -250,6 +263,7 @@
       color: rgba(255,255,255,0.82);
     }
   </style>
+  <link rel="stylesheet" href="css/inline-project-heading.css?v=1" />
 </head>
 
 <body>
@@ -288,11 +302,17 @@
 
         <article class="cv-dv-copy-panel">
           <div class="cv-dv-copy">
-            <h1 class="cv-page-title">Des Visages</h1>
-
+            <div class="cv-dv-opening cv-run-in-opening">
+              <h1 class="cv-page-title cv-run-in-title">
+                <span class="cv-run-in-title-label">Des Visages</span>
+                <span class="cv-run-in-title-art" aria-hidden="true">
+                  <img src="img/title-des-visages-v1.png" alt="" width="2172" height="724" decoding="async" onerror="this.closest('h1').classList.add('cv-run-in-fallback')">
+                </span>
+              </h1>
             <p>
-              Des Visages is a Europe-based duo of saxophone and live electronics created by Chilean musicians Jorge Care and César Vidal. Their music unfolds through spontaneous interaction, weaving sonic narratives born from improvisation and blurring the boundaries between acoustic and electronic sound.
+              is a Europe-based duo of saxophone and live electronics created by Chilean musicians Jorge Care and César Vidal. Their music unfolds through spontaneous interaction, weaving sonic narratives born from improvisation and blurring the boundaries between acoustic and electronic sound.
             </p>
+            </div>
 
             <p>
               Rooted in dialogue, listening and real-time transformation, the duo builds evolving soundscapes where texture, rhythm and space shape the story as it happens. Their setup includes prepared saxophone, synthesizers, controllers, Push 3 and digital environments such as Ableton Live, MAX, TouchOSC, Beam and TouchDesigner.

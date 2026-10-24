@@ -148,58 +148,15 @@
     }
 
     .cv-nubes-opening {
-      display: flow-root;
-      margin-bottom: .62rem;
-    }
-
-    .cv-page-title.cv-nubes-initial {
-      float: left;
-      width: clamp(216px, 19.2vw, 324px);
-      max-width: 60%;
-      margin: 0 14px 4px 0;
-      color: #fff;
-      line-height: 1;
-    }
-
-    .cv-nubes-title-label {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-    }
-
-    .cv-nubes-title-art {
-      position: relative;
-      display: block;
-      width: 100%;
-      aspect-ratio: 3.6 / 1;
-      overflow: hidden;
-    }
-
-    .cv-nubes-title-art img {
-      position: absolute;
-      left: -5.723045%;
-      top: -47.96748%;
-      width: 112.723556%;
-      height: 193.224932%;
-      max-width: none;
-      filter: brightness(0) invert(1);
-    }
-
-    .cv-nubes-opening > .cv-nubes-copy { margin: 0; }
-
-    .cv-nubes-title-fallback .cv-nubes-title-art { display: none; }
-    .cv-nubes-title-fallback .cv-nubes-title-label {
-      position: static;
-      width: auto;
-      height: auto;
-      clip-path: none;
-      font-family: Impact, 'Ronzino', sans-serif;
-      font-size: clamp(64px, 5.3vw, 94px);
-      font-weight: 700;
-      font-style: oblique;
-      letter-spacing: -.035em;
+      --run-in-copy-size: clamp(11.4px, .86vw, 13.4px);
+      --run-in-copy-leading: 1.36;
+      --run-in-paragraph-gap: .62rem;
+      --run-in-title-height: clamp(30px, 2.4vw, 42px);
+      --run-in-title-ratio: 3.6;
+      --run-in-art-left: -5.723045%;
+      --run-in-art-top: -47.96748%;
+      --run-in-art-width: 112.723556%;
+      --run-in-art-height: 193.224932%;
     }
 
     .cv-nubes-copy {
@@ -270,6 +227,7 @@
       color: rgba(255,255,255,0.82);
     }
   </style>
+  <link rel="stylesheet" href="css/inline-project-heading.css?v=1" />
 </head>
 
 <body>
@@ -310,11 +268,11 @@
           </div>
 
           <article class="cv-nubes-text-slot">
-            <div class="cv-nubes-opening">
-              <h1 class="cv-page-title cv-nubes-initial">
-                <span class="cv-nubes-title-label">NUBES</span>
-                <span class="cv-nubes-title-art" aria-hidden="true">
-                  <img src="img/title-nubes-v1.png" alt="" width="2206" height="713" decoding="async" onerror="this.closest('h1').classList.add('cv-nubes-title-fallback')">
+            <div class="cv-nubes-opening cv-run-in-opening">
+              <h1 class="cv-page-title cv-run-in-title">
+                <span class="cv-run-in-title-label">NUBES</span>
+                <span class="cv-run-in-title-art" aria-hidden="true">
+                  <img src="img/title-nubes-v1.png" alt="" width="2206" height="713" decoding="async" onerror="this.closest('h1').classList.add('cv-run-in-fallback')">
                 </span>
               </h1>
             <p class="cv-nubes-copy">

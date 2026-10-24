@@ -1,0 +1,72 @@
+/* An inline headline shares the first text baseline; later lines use full width. */
+.cv-run-in-opening {
+  display: block;
+  margin-bottom: var(--run-in-paragraph-gap, .66rem);
+  font-size: var(--run-in-copy-size);
+  line-height: var(--run-in-copy-leading);
+  letter-spacing: .002em;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.cv-page-title.cv-run-in-title {
+  display: inline;
+  float: none;
+  width: auto;
+  max-width: none;
+  margin: 0 .5em 0 0;
+  color: #fff;
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
+}
+
+.cv-run-in-title-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.cv-run-in-title-art {
+  position: relative;
+  display: inline-block;
+  width: calc(var(--run-in-title-height) * var(--run-in-title-ratio));
+  max-width: calc(100% - 1em);
+  height: var(--run-in-title-height);
+  overflow: hidden;
+  vertical-align: baseline;
+}
+
+.cv-run-in-title-art img {
+  position: absolute;
+  left: var(--run-in-art-left);
+  top: var(--run-in-art-top);
+  width: var(--run-in-art-width);
+  height: var(--run-in-art-height);
+  max-width: none;
+  display: block;
+  filter: brightness(0) invert(1);
+}
+
+.cv-run-in-opening > p {
+  display: inline;
+  margin: 0;
+}
+
+.cv-run-in-fallback .cv-run-in-title-art { display: none; }
+.cv-run-in-fallback .cv-run-in-title-label {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  font-family: Impact, 'Ronzino', sans-serif;
+  font-size: var(--run-in-title-height);
+  font-weight: 700;
+  font-style: oblique;
+  line-height: 1;
+  letter-spacing: -.035em;
+}
