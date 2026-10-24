@@ -89,7 +89,7 @@ html:is(.cv-transition-to-des-visages, .cv-transition-to-spam, .cv-transition-to
 
 /* Photo transitions use spatial colors instead of a solid curtain.
    Small copies avoid downloading full backgrounds on other pages. */
-html:is(.cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo) :is(.cv-transition-curtain, .cv-transition-entering) {
+html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo) :is(.cv-transition-curtain, .cv-transition-entering) {
   overflow: hidden;
 }
 
@@ -99,7 +99,7 @@ html.cv-transition-to-artikulation :is(.cv-transition-curtain, .cv-transition-en
     linear-gradient(105deg, #030205 35%, #2116bc 80%, #30207b);
 }
 
-html:is(.cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo) :is(.cv-transition-curtain, .cv-transition-entering)::before {
+html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo) :is(.cv-transition-curtain, .cv-transition-entering)::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -154,6 +154,17 @@ html:is(.cv-transition-to-flor-photo, .cv-transition-to-nubes-photo) :is(.cv-tra
   background: #000;
 }
 
+html.cv-transition-to-aleas-photo :is(.cv-transition-curtain, .cv-transition-entering) {
+  background: #000;
+}
+
+html.cv-transition-to-aleas-photo :is(.cv-transition-curtain, .cv-transition-entering)::before {
+  background:
+    url("../img/cover-aleas.webp") left 10vw center / min(26vw, 350px) auto no-repeat,
+    linear-gradient(rgba(0,0,0,.4), rgba(0,0,0,.4)),
+    url("../img/aleas-transition.webp") center / cover no-repeat #000;
+}
+
 html.cv-transition-to-flor-photo :is(.cv-transition-curtain, .cv-transition-entering)::before {
   background:
     url("../img/cover-flor-de-loto.webp") left 10vw center / min(26vw, 350px) auto no-repeat,
@@ -174,7 +185,7 @@ html.cv-transition-incoming [data-page-transition-content] {
   transform: scale(1.008);
 }
 
-html:is(.cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo).cv-transition-incoming [data-page-transition-content] {
+html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo).cv-transition-incoming [data-page-transition-content] {
   filter: blur(var(--cv-transition-photo-content-blur)) brightness(1);
 }
 
@@ -199,7 +210,7 @@ html.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] 
     transform var(--cv-transition-in-duration) cubic-bezier(0.40, 0, 0.22, 1);
 }
 
-html:is(.cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo).cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
+html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo).cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
   filter: blur(0px) brightness(1);
 }
 
@@ -214,7 +225,7 @@ html.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [dat
   animation: cv-transition-content-in var(--cv-transition-css-duration) cubic-bezier(0.40, 0, 0.22, 1) both;
 }
 
-html:is(.cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo).cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
+html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo).cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
   animation-name: cv-transition-photo-in;
 }
 

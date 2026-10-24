@@ -205,7 +205,7 @@ html, body {
   transition: background-color .25s ease;
 }
 
-.cv-ab-live-track:last-child {
+.cv-ab-live-track + .cv-ab-live-track {
   background: #45288b;
 }
 
