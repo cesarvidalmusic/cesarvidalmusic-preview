@@ -14,17 +14,15 @@
         const age = state ? Date.now() - Number(state.time) : Infinity;
         if (state && state.target === location.pathname && age >= 0 && age < 60000) {
           document.documentElement.classList.add("cv-transition-incoming");
-          if (state.theme === "black") {
-            document.documentElement.classList.add("cv-transition-to-black");
-          }
+          document.documentElement.classList.add("cv-transition-to-nubes-photo");
         }
       } catch (error) {
         // Navigation remains available when storage is blocked.
       }
     })();
   </script>
-  <link rel="stylesheet" href="css/page-transition.css?v=16" />
-  <script defer src="page-transition.js?v=16" onerror="document.documentElement.classList.remove('cv-transition-incoming', 'cv-transition-to-black')"></script>
+  <link rel="stylesheet" href="css/page-transition.css?v=17" />
+  <script defer src="page-transition.js?v=17" onerror="document.documentElement.classList.remove('cv-transition-incoming', 'cv-transition-to-nubes-photo')"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="NUBES — César Vidal" />
@@ -34,11 +32,12 @@
   <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" as="image" href="img/cover-nubes.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/title-nubes-v1.png" type="image/png" fetchpriority="high">
   <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script defer src="favicon.js?v=6"></script>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=17" />
 
   <style>
     html, body {
@@ -148,9 +147,59 @@
       color: #ffffff;
     }
 
-    .cv-page-title {
-      margin: 0 0 clamp(0.75rem, 1.45vh, 1.1rem);
-      color: #ffffff;
+    .cv-nubes-opening {
+      display: flow-root;
+      margin-bottom: .62rem;
+    }
+
+    .cv-page-title.cv-nubes-initial {
+      float: left;
+      width: clamp(216px, 19.2vw, 324px);
+      max-width: 60%;
+      margin: 0 14px 4px 0;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .cv-nubes-title-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    .cv-nubes-title-art {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 3.6 / 1;
+      overflow: hidden;
+    }
+
+    .cv-nubes-title-art img {
+      position: absolute;
+      left: -5.723045%;
+      top: -47.96748%;
+      width: 112.723556%;
+      height: 193.224932%;
+      max-width: none;
+      filter: brightness(0) invert(1);
+    }
+
+    .cv-nubes-opening > .cv-nubes-copy { margin: 0; }
+
+    .cv-nubes-title-fallback .cv-nubes-title-art { display: none; }
+    .cv-nubes-title-fallback .cv-nubes-title-label {
+      position: static;
+      width: auto;
+      height: auto;
+      clip-path: none;
+      font-family: Impact, 'Ronzino', sans-serif;
+      font-size: clamp(64px, 5.3vw, 94px);
+      font-weight: 700;
+      font-style: oblique;
+      letter-spacing: -.035em;
     }
 
     .cv-nubes-copy {
@@ -261,11 +310,17 @@
           </div>
 
           <article class="cv-nubes-text-slot">
-            <h1 class="cv-page-title"><em>NUBES</em></h1>
-
+            <div class="cv-nubes-opening">
+              <h1 class="cv-page-title cv-nubes-initial">
+                <span class="cv-nubes-title-label">NUBES</span>
+                <span class="cv-nubes-title-art" aria-hidden="true">
+                  <img src="img/title-nubes-v1.png" alt="" width="2206" height="713" decoding="async" onerror="this.closest('h1').classList.add('cv-nubes-title-fallback')">
+                </span>
+              </h1>
             <p class="cv-nubes-copy">
-              <em>NUBES</em> is the first duo album by César Vidal and the renowned Chilean guitarist Nicolás Vera, a prolific musician with over 20 years of experience working in Chile and abroad alongside international artists. Released in Chile as the first album of 2025, <em>NUBES</em> features original compositions by both César and Nicolás.
+              is the first duo album by César Vidal and the renowned Chilean guitarist Nicolás Vera, a prolific musician with over 20 years of experience working in Chile and abroad alongside international artists. Released in Chile as the first album of 2025, <em>NUBES</em> features original compositions by both César and Nicolás.
             </p>
+            </div>
 
             <p class="cv-nubes-copy">
               The project was born from a period of remote collaboration that began in 2022, when César moved to Amsterdam. Between ideas and experiments, the two musicians exchanged recordings and explored various approaches, resulting in the ten tracks that make up the album. <em>NUBES</em> represents the first collaboration between two musicians of different generations, yet with similar artistic ambitions.

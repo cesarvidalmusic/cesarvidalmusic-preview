@@ -10,7 +10,7 @@ import threading
 from playwright.async_api import async_playwright
 
 from test_page_transitions import (
-    ROOT, GALLERY_COLORS, PAGE_COLORS, QuietHandler, TestServer, check_installation, new_page, direct, check_entry,
+    ROOT, GALLERY_COLORS, PAGE_COLORS, PHOTO_IMAGES, QuietHandler, TestServer, check_installation, new_page, direct, check_entry,
 )
 
 
@@ -21,7 +21,9 @@ function colorFrame() {
   const curtain = document.querySelector('.cv-transition-curtain');
   if (curtain && document.documentElement.className.includes('cv-transition-to-')) {
     const style = getComputedStyle(curtain);
+    const photo = getComputedStyle(curtain, '::before');
     colors.push({background:style.backgroundColor, gradient:style.backgroundImage,
+      photo:photo.backgroundImage, photoBlur:photo.filter,
       opacity:style.opacity});
     for (const animation of curtain.getAnimations()) {
       if (colorAnimations.has(animation)) continue;
@@ -56,13 +58,27 @@ def check_colors(samples, source_rgb, target_rgb, reduced):
     return len(frames)
 
 
+def check_photo_colors(samples, image, reduced):
+    assert samples and samples[0], samples
+    frames = samples[0]
+    assert frames[-1]['opacity'] == '1', frames
+    assert all(image in frame['photo'] and float(re.search(r'[\d.]+', frame['photoBlur'])[0]) > 0
+               for frame in frames), frames
+    if not reduced:
+        assert any(0 < float(frame['opacity']) < 1 for frame in frames), frames
+    return len(frames)
+
+
 async def early_cover(page, destination, color):
     await page.wait_for_url('**/' + destination, wait_until='commit')
     await page.wait_for_function("""expected => {
       const overlay=document.querySelector('.cv-transition-entering');
-      return overlay && getComputedStyle(overlay).backgroundColor===expected &&
+      const covered = overlay && (expected.photo
+        ? getComputedStyle(overlay, '::before').backgroundImage.includes(expected.photo)
+        : getComputedStyle(overlay).backgroundColor===expected.color);
+      return covered &&
         getComputedStyle(overlay).opacity==='1' && overlay.getAnimations().length===0;
-    }""", arg=color)
+    }""", arg={'color':color, 'photo':PHOTO_IMAGES.get(destination)})
 
 
 def link_selector(source, destination):
@@ -86,12 +102,13 @@ async def color_route(browser, base, destination='des-visages.html', *, source='
         async def delay_script(route):
             await asyncio.sleep(0.8)
             await route.continue_()
-        await page.route('**/page-transition.js?v=14', delay_script)
+        await page.route('**/page-transition.js?v=17', delay_script)
     await page.locator(link_selector(source, destination)).first.evaluate('(link)=>link.click()')
     if delayed:
         await early_cover(page, destination, target_color)
     await check_entry(page, destination, reduced=reduced, color=target_color)
-    forward_samples = check_colors(samples, source_rgb, target_rgb, reduced)
+    forward_samples = (check_photo_colors(samples, PHOTO_IMAGES[destination], reduced)
+                       if destination in PHOTO_IMAGES else check_colors(samples, source_rgb, target_rgb, reduced))
     assert abs(page.exits[-1]['duration'] - (0.08 if reduced else 0.5)) < 0.005, page.exits
     assert not await page.evaluate("document.documentElement.className.includes('cv-transition-')")
     # The return uses the original page's color, including white-to-white routes.
@@ -104,7 +121,7 @@ async def color_route(browser, base, destination='des-visages.html', *, source='
     assert abs(page.exits[-1]['duration'] - (0.08 if reduced else 0.5)) < 0.005, page.exits
     assert not await page.evaluate("document.documentElement.className.includes('cv-transition-')")
     if delayed:
-        await page.unroute('**/page-transition.js?v=14', delay_script)
+        await page.unroute('**/page-transition.js?v=17', delay_script)
     await page.go_back(wait_until='domcontentloaded')
     await page.wait_for_function("!document.documentElement.className.includes('cv-transition-')")
     await page.go_forward(wait_until='domcontentloaded')
@@ -163,6 +180,7 @@ async def run(base):
             ('bio.html', 'index.html', {'reduced':True, 'fallback':True}),
             ('music-projects.html', 'spam.html', {'fallback':True}),
             ('music-projects.html', 'des-visages.html', {'fallback':True}),
+            ('music-projects.html', 'artikulation-band.html', {'fallback':True}),
         ]
         for source, destination, options in routes:
             case = await color_route(browser, base, destination, source=source, **options)

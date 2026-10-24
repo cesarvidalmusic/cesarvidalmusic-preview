@@ -511,7 +511,7 @@ img { display: block; max-width: 100%; }
 .cv-nav--light a:hover,
 .cv-nav--dark a:hover {
   color: var(--accent);
-  transform: scale(1.18);
+  transform: scale(1.36);
   text-shadow: 0.35px 0 currentColor, -0.35px 0 currentColor;
 }
 

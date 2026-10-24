@@ -45,7 +45,7 @@ html, body {
 }
 
 .cv-nav.cv-nav--dark a:hover {
-  color: var(--accent);
+  color: #fff;
 }
 
 .cv-nav a.active {

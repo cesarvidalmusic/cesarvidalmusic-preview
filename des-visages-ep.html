@@ -14,17 +14,15 @@
         const age = state ? Date.now() - Number(state.time) : Infinity;
         if (state && state.target === location.pathname && age >= 0 && age < 60000) {
           document.documentElement.classList.add("cv-transition-incoming");
-          if (state.theme === "black") {
-            document.documentElement.classList.add("cv-transition-to-black");
-          }
+          document.documentElement.classList.add("cv-transition-to-des-visages-ep-photo");
         }
       } catch (error) {
         // Navigation remains available when storage is blocked.
       }
     })();
   </script>
-  <link rel="stylesheet" href="css/page-transition.css?v=16" />
-  <script defer src="page-transition.js?v=16" onerror="document.documentElement.classList.remove('cv-transition-incoming', 'cv-transition-to-black')"></script>
+  <link rel="stylesheet" href="css/page-transition.css?v=17" />
+  <script defer src="page-transition.js?v=17" onerror="document.documentElement.classList.remove('cv-transition-incoming', 'cv-transition-to-des-visages-ep-photo')"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Des Visages EP — César Vidal" />
@@ -40,7 +38,7 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <script defer src="favicon.js?v=6"></script>
 
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=17" />
 
   <style>
     html, body {
@@ -397,6 +395,9 @@
       </section>
     </main>
 
+    <script>
+      window.cvPageReady = document.querySelector('.cv-dv-ep-cover').decode().catch(() => {});
+    </script>
     <footer class="cv-dv-ep-footer">
       <span>© 2026 César Vidal</span>
       <span>cesarvidalmusic.art</span>

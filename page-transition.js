@@ -1,5 +1,5 @@
 /*
- * César Vidal — page transition v16 (preview)
+ * César Vidal — page transition v17 (preview)
  * Transición compartida para todas las páginas del sitio.
  * Transiciones adaptadas al fondo de origen y destino en todo el sitio.
  */
@@ -25,12 +25,16 @@
   };
   const PHOTO_TRANSITIONS = {
     "artikulation-band.html": { theme: "artikulation", image: "img/artikulation-video-1.webp" },
-    "des-visages.html": { theme: "des-visages-photo", image: "img/des-visages-transition.webp" }
+    "des-visages.html": { theme: "des-visages-photo", image: "img/des-visages-transition.webp" },
+    "spam.html": { theme: "spam-photo", image: "img/spam-transition.webp" },
+    "des-visages-ep.html": { theme: "des-visages-ep-photo", image: "img/des-visages-ep-transition.webp" },
+    "flor-de-loto.html": { theme: "flor-photo", image: "img/flor-de-loto-transition.webp", videoStart: 0.9 },
+    "nubes.html": { theme: "nubes-photo", image: "img/nubes-transition.webp", videoStart: 1.8 }
   };
   const PHOTO_TRANSITION_CLASSES = Object.values(PHOTO_TRANSITIONS).map(
     ({ theme }) => "cv-transition-to-" + theme
   );
-  const COLOR_TRANSITION_CLASSES = ["des-visages", "spam", "black", "white", "artikulation", "des-visages-photo"].flatMap(
+  const COLOR_TRANSITION_CLASSES = ["des-visages", "spam", "black", "white", "artikulation", "des-visages-photo", "spam-photo", "des-visages-ep-photo", "flor-photo", "nubes-photo"].flatMap(
     (theme) => ["cv-transition-from-" + theme, "cv-transition-to-" + theme]
   );
   const CSS_FALLBACK_CLASS = "cv-transition-css-fallback";
@@ -311,6 +315,45 @@
     ]).finally(() => clearTimeout(timeout));
   }
 
+  function prepareIncomingVideo() {
+    const visual = PHOTO_TRANSITIONS[pageName(location.href)];
+    const video = document.querySelector("video[autoplay]");
+    if (!visual?.videoStart || !video || video.error || video.currentTime >= visual.videoStart) {
+      return Promise.resolve();
+    }
+
+    // The new visual transition replaces only the black video introduction
+    // during internal navigation. Direct visits keep the original playback.
+    video.pause();
+    return new Promise((resolve) => {
+      let timeout;
+      let finished = false;
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        window.clearTimeout(timeout);
+        video.removeEventListener("loadedmetadata", seek);
+        video.removeEventListener("seeked", finish);
+        video.removeEventListener("error", finish);
+        if (!isNavigating) video.play().catch(() => {});
+        resolve();
+      };
+      const seek = () => {
+        if (isNavigating || video.error) { finish(); return; }
+        if (video.readyState >= 1 && video.videoWidth === 0) { finish(); return; }
+        try {
+          if (video.currentTime >= visual.videoStart) finish();
+          else video.currentTime = visual.videoStart;
+        } catch (error) { finish(); }
+      };
+      video.addEventListener("loadedmetadata", seek);
+      video.addEventListener("seeked", finish);
+      video.addEventListener("error", finish);
+      timeout = window.setTimeout(finish, 2400);
+      if (video.readyState >= 1) seek();
+    });
+  }
+
   async function revealIncomingPage() {
 
     // El estado inicial se aplica desde el <head>
@@ -336,6 +379,7 @@
         new Promise((resolve) => setTimeout(resolve, 2400))
       ]);
     }
+    await prepareIncomingVideo();
     await waitForPageAssets();
 
     if (isNavigating || !root.classList.contains("cv-transition-incoming")) return;
