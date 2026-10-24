@@ -15,7 +15,7 @@
   width: auto;
   max-width: none;
   margin: 0 .5em 0 0;
-  color: #fff;
+  color: var(--run-in-title-color, #fff);
   font-size: inherit;
   line-height: inherit;
   letter-spacing: inherit;
@@ -48,7 +48,7 @@
   height: var(--run-in-art-height);
   max-width: none;
   display: block;
-  filter: brightness(0) invert(1);
+  filter: var(--run-in-art-filter, brightness(0) invert(1));
 }
 
 .cv-run-in-opening > p {

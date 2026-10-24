@@ -33,6 +33,7 @@
   <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" as="image" href="img/des-visages-caratula.webp" type="image/webp" fetchpriority="high">
 
+  <link rel="preload" as="image" href="img/title-des-visages-v1.png" type="image/png" fetchpriority="high">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -134,6 +135,18 @@
       font-family: 'Ronzino', sans-serif;
       color: #ffffff;
       box-sizing: border-box;
+    }
+
+    .cv-dv-ep-opening {
+      --run-in-copy-size: clamp(11.7px, .88vw, 13.6px);
+      --run-in-copy-leading: 1.39;
+      --run-in-paragraph-gap: .65rem;
+      --run-in-title-height: clamp(26px, 2vw, 34px);
+      --run-in-title-ratio: 7.4;
+      --run-in-art-left: -5.74358974%;
+      --run-in-art-top: -71.86440678%;
+      --run-in-art-width: 111.38461538%;
+      --run-in-art-height: 245.42372881%;
     }
 
     .cv-page-title {
@@ -246,6 +259,7 @@
     }
 
     @media (max-width: 1100px) {
+      .cv-dv-ep-opening { --run-in-copy-size: 12.4px; --run-in-copy-leading: 1.38; }
       .cv-dv-ep-copy-panel {
         width: 52vw;
         margin-left: 6vw;
@@ -263,6 +277,7 @@
     }
 
     @media (max-width: 800px) {
+      .cv-dv-ep-opening { --run-in-copy-size: 15px; --run-in-copy-leading: 1.5; }
       html, body {
         overflow: auto;
       }
@@ -328,6 +343,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="css/inline-project-heading.css?v=2" />
 </head>
 
 <body>
@@ -353,11 +369,18 @@
       <section class="cv-dv-ep-layout">
 
         <article class="cv-dv-ep-copy-panel">
-          <h1 class="cv-page-title"><em>des visages</em></h1>
+          <div class="cv-dv-ep-opening cv-run-in-opening">
+            <h1 class="cv-page-title cv-run-in-title">
+              <span class="cv-run-in-title-label">Des Visages</span>
+              <span class="cv-run-in-title-art" aria-hidden="true">
+                <img src="img/title-des-visages-v1.png" width="2172" height="724" alt="" decoding="async" onerror="this.closest('h1').classList.add('cv-run-in-fallback')">
+              </span>
+            </h1>
 
-          <p class="cv-dv-ep-copy">
-            <strong>Des Visages</strong> marks the duo’s recorded debut, captured in 2025 at Studio d’enregistrement HEM in Geneva, Switzerland, and recorded, mixed, and mastered by Samuel Albert. Comprising three original pieces, the EP consolidates the group’s aesthetic vision, where acoustic and electronic elements intertwine through improvisation to form coherent and evolving musical narratives.
-          </p>
+            <p class="cv-dv-ep-copy">
+              marks the duo’s recorded debut, captured in 2025 at Studio d’enregistrement HEM in Geneva, Switzerland, and recorded, mixed, and mastered by Samuel Albert. Comprising three original pieces, the EP consolidates the group’s aesthetic vision, where acoustic and electronic elements intertwine through improvisation to form coherent and evolving musical narratives.
+            </p>
+          </div>
 
           <p class="cv-dv-ep-copy">
             Partly inspired by literary narrative structures, the works are presented as a triptych titled <em>Introduction</em>, <em>Corpo</em>, and <em>Conclusions (for Peter Evans and Sam Pluta)</em>. With this debut recording, the duo sought to allow sound to become a vehicle for the unpredictable, and for the unpredictable in turn to take shape as form, shaping a work that aims to remain precise in its conception while fluid and open in its execution.

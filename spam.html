@@ -32,6 +32,7 @@
   <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" as="image" href="img/spam-corner-static.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/title-projects-inline-v1.png" type="image/png" fetchpriority="high">
   <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -144,6 +145,20 @@
       z-index: 3;
     }
 
+    .cv-spam-opening {
+      --run-in-copy-size: clamp(12px, .92vw, 14.2px);
+      --run-in-copy-leading: 1.43;
+      --run-in-paragraph-gap: .78rem;
+      --run-in-title-height: clamp(30px, 2.4vw, 42px);
+      --run-in-title-ratio: 3;
+      --run-in-art-left: -69.09090909%;
+      --run-in-art-top: -184.23645320%;
+      --run-in-art-width: 233.84615385%;
+      --run-in-art-height: 463.54679803%;
+      --run-in-title-color: #050505;
+      --run-in-art-filter: brightness(0);
+    }
+
     .cv-page-title {
       margin: 0 0 clamp(1rem, 2vh, 1.45rem);
       color: var(--spam-black);
@@ -204,6 +219,7 @@
       color: rgba(5,5,5,0.58);
     }
   </style>
+  <link rel="stylesheet" href="css/inline-project-heading.css?v=2" />
 </head>
 
 <body>
@@ -241,11 +257,18 @@
         </div>
 
         <article class="cv-spam-text-panel">
-          <h1 class="cv-page-title"><em>SPAM</em></h1>
+          <div class="cv-spam-opening cv-run-in-opening">
+            <h1 class="cv-page-title cv-run-in-title">
+              <span class="cv-run-in-title-label">SPAM</span>
+              <span class="cv-run-in-title-art" aria-hidden="true">
+                <img src="img/title-projects-inline-v1.png" width="1672" height="941" alt="" decoding="async" onerror="this.closest('h1').classList.add('cv-run-in-fallback')">
+              </span>
+            </h1>
 
-          <p class="cv-spam-copy">
-            <strong>SPAM</strong> is the second release by the duo of César Vidal and Chilean guitarist Nicolás Vera, recorded between January and February 2026. The EP features eight compositions and remote improvisations developed through an exploration of sound, texture, melody, and harmony.
-          </p>
+            <p class="cv-spam-copy">
+              is the second release by the duo of César Vidal and Chilean guitarist Nicolás Vera, recorded between January and February 2026. The EP features eight compositions and remote improvisations developed through an exploration of sound, texture, melody, and harmony.
+            </p>
+          </div>
 
           <p class="cv-spam-copy">
             Building on the acoustic foundation of their first release, <em>NUBES</em>, <strong>SPAM</strong> expands the duo’s sonic palette through electronic textures, analog effects, synthesizers, and subtle forms of sound processing. The material was recorded remotely, with Vera working from Bruma in Santiago, Chile, and Vidal recording in Amsterdam.

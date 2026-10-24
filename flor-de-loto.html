@@ -31,6 +31,7 @@
   <link rel="preload" href="fonts/Ronzino-BoldOblique.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" as="image" href="img/title-projects-inline-v1.png" type="image/png" fetchpriority="high">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -140,6 +141,18 @@
       justify-self: start;
     }
 
+    .cv-flor-opening {
+      --run-in-copy-size: clamp(12px, .92vw, 14.2px);
+      --run-in-copy-leading: 1.43;
+      --run-in-paragraph-gap: .72rem;
+      --run-in-title-height: clamp(26px, 2vw, 34px);
+      --run-in-title-ratio: 6.1;
+      --run-in-art-left: -9.15395284%;
+      --run-in-art-top: -329.35323383%;
+      --run-in-art-width: 115.95006935%;
+      --run-in-art-height: 468.15920398%;
+    }
+
     .cv-page-title {
       margin: 0 0 clamp(0.9rem, 1.7vh, 1.3rem);
       color: #ffffff;
@@ -186,6 +199,7 @@
       color: rgba(255,255,255,0.82);
     }
   </style>
+  <link rel="stylesheet" href="css/inline-project-heading.css?v=2" />
 </head>
 
 <body>
@@ -226,11 +240,18 @@
           </div>
 
           <article class="cv-flor-text-slot">
-            <h1 class="cv-page-title"><em>Flor de Loto</em></h1>
+            <div class="cv-flor-opening cv-run-in-opening">
+              <h1 class="cv-page-title cv-run-in-title">
+                <span class="cv-run-in-title-label">Flor de Loto</span>
+                <span class="cv-run-in-title-art" aria-hidden="true">
+                  <img src="img/title-projects-inline-v1.png" width="1672" height="941" alt="" decoding="async" onerror="this.closest('h1').classList.add('cv-run-in-fallback')">
+                </span>
+              </h1>
 
-            <p class="cv-flor-copy">
-              <em>Flor de Loto</em> is a duo album by César Vidal and Chilean pianist Joaquín Fuentes, recorded during a period in which Vidal was beginning to shape his own voice through composition, improvisation, and the intimacy of small formats.
-            </p>
+              <p class="cv-flor-copy">
+                is a duo album by César Vidal and Chilean pianist Joaquín Fuentes, recorded during a period in which Vidal was beginning to shape his own voice through composition, improvisation, and the intimacy of small formats.
+              </p>
+            </div>
 
             <p class="cv-flor-copy">
               The album was created in Chile during a politically significant and unstable moment, marked by curfews and social tension. Despite those conditions, the two musicians were able to meet, record, and complete the project, turning the process itself into part of the album’s memory.
