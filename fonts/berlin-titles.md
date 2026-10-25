@@ -16,6 +16,10 @@ from Apfel Grotezk Mittel. In `title-berlin-music-v2.svg`, the ampersand uses
 normal system text in Arial Bold, with Liberation Sans Bold and sans-serif as
 fallbacks. No Arial font file is included or redistributed; Arial is not an
 open-license font. The earlier v1 ampersand used Apfel.
+The current Music & Projects heading uses two separate word images, with their
+letterforms extended vertically by 6%. Its larger ampersand is ordinary HTML
+text in Arial Bold with the same system fallbacks, so an SVG viewport cannot
+crop it. No additional font file is distributed.
 Apfel is licensed under the SIL Open Font License 1.1; its original copyright
 and license are preserved in `apfel-grotezk-mittel-OFL.txt`.
 
