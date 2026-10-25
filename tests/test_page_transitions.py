@@ -36,6 +36,9 @@ PAGE_COLORS = {
     'merch.html': 'rgb(255, 255, 255)',
 }
 PHOTO_IMAGES = {
+    'music-projects.html': 'music-projects-transition.webp',
+    'gonzalez-reeds.html': 'gonzalez-transition.webp',
+    'contact.html': 'contact-transition.webp',
     'aleas.html': 'aleas-transition.webp',
     'bio.html': 'bio-transition.webp',
     'artikulation-band.html': 'artikulation-video-1.webp',
@@ -138,7 +141,7 @@ def check_installation():
     assert not (ROOT / 'CNAME').exists(), 'The preview must not bind the official domain'
     for name in PAGES:
         html = (ROOT / name).read_text()
-        version = 19
+        version = 20
         assert html.count(f'src="page-transition.js?v={version}"') == 1, name
         assert html.count(f'href="css/page-transition.css?v={version}"') == 1, name
         assert html.count('data-page-transition-content') == 1, name

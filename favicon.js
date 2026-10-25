@@ -12,7 +12,7 @@
   const UPDATE_EVERY = 320;
 
   const FAVICON_SIZE = 128;
-  const CIRCLE_RADIUS = 54;
+  const CIRCLE_RADIUS = 62;
 
   document
     .querySelectorAll("link[data-dynamic-favicon='true']")

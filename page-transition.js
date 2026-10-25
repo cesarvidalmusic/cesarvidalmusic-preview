@@ -1,5 +1,5 @@
 /*
- * César Vidal — page transition v19 (preview)
+ * César Vidal — page transition v20 (preview)
  * Transición compartida para todas las páginas del sitio.
  * Transiciones adaptadas al fondo de origen y destino en todo el sitio.
  */
@@ -24,6 +24,9 @@
     "artikulation-band.html": "black"
   };
   const PHOTO_TRANSITIONS = {
+    "music-projects.html": { theme: "music-photo", image: "img/music-projects-transition.webp" },
+    "gonzalez-reeds.html": { theme: "gonzalez-photo", image: "img/gonzalez-transition.webp" },
+    "contact.html": { theme: "contact-photo", image: "img/contact-transition.webp" },
     "bio.html": { theme: "bio-photo", image: "img/bio-transition.webp" },
     "aleas.html": { theme: "aleas-photo", image: "img/aleas-transition.webp", videoStart: 1.8 },
     "artikulation-band.html": { theme: "artikulation", image: "img/artikulation-video-1.webp" },
@@ -36,7 +39,7 @@
   const PHOTO_TRANSITION_CLASSES = Object.values(PHOTO_TRANSITIONS).map(
     ({ theme }) => "cv-transition-to-" + theme
   );
-  const COLOR_TRANSITION_CLASSES = ["des-visages", "spam", "black", "white", "bio-photo", "aleas-photo", "artikulation", "des-visages-photo", "spam-photo", "des-visages-ep-photo", "flor-photo", "nubes-photo"].flatMap(
+  const COLOR_TRANSITION_CLASSES = ["des-visages", "spam", "black", "white", ...Object.values(PHOTO_TRANSITIONS).map(({ theme }) => theme)].flatMap(
     (theme) => ["cv-transition-from-" + theme, "cv-transition-to-" + theme]
   );
   const CSS_FALLBACK_CLASS = "cv-transition-css-fallback";

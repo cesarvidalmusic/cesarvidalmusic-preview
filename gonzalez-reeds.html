@@ -14,17 +14,15 @@
         const age = state ? Date.now() - Number(state.time) : Infinity;
         if (state && state.target === location.pathname && age >= 0 && age < 60000) {
           document.documentElement.classList.add("cv-transition-incoming");
-          if (state.theme === "white") {
-            document.documentElement.classList.add("cv-transition-to-white");
-          }
+          document.documentElement.classList.add("cv-transition-to-gonzalez-photo");
         }
       } catch (error) {
         // Navigation remains available when storage is blocked.
       }
     })();
   </script>
-  <link rel="stylesheet" href="css/page-transition.css?v=19" />
-  <script defer src="page-transition.js?v=19" onerror="document.documentElement.classList.remove('cv-transition-incoming', 'cv-transition-to-white')"></script>
+  <link rel="stylesheet" href="css/page-transition.css?v=20" />
+  <script defer src="page-transition.js?v=20" onerror="document.documentElement.classList.remove('cv-transition-incoming', 'cv-transition-to-gonzalez-photo')"></script>
 
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -35,10 +33,10 @@
   <link rel="preload" href="fonts/Ronzino-Regular.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="fonts/Ronzino-Oblique.woff2" as="font" type="font/woff2" crossorigin />
 
-  <link rel="icon" href="favicon.ico" sizes="any">
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <script defer src="favicon.js?v=6"></script>
+  <link rel="icon" href="favicon.ico?v=7" sizes="any">
+  <link rel="icon" href="favicon.svg?v=7" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=7">
+  <script defer src="favicon.js?v=7"></script>
 
   <link rel="stylesheet" href="css/style.css?v=17" />
 
@@ -163,12 +161,13 @@
     }
 
     .cv-reeds-visuals {
-      --reed-package-height: clamp(310px, 49vh, 485px);
+      --reed-package-height: clamp(310px, min(58vh, 38vw), 575px);
 
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: clamp(0.35rem, 0.9vw, 1rem);
+      gap: clamp(0.25rem, 0.55vw, 0.6rem);
+      margin-left: calc(-1 * clamp(12px, 2.5vw, 40px));
       min-width: 0;
     }
 
@@ -178,6 +177,8 @@
       justify-content: center;
       text-decoration: none;
       line-height: 0;
+      /* The photos' white margins must not hide adjacent copy as they grow. */
+      mix-blend-mode: multiply;
 
       transition:
         transform 0.38s ease,
@@ -209,11 +210,18 @@
     }
 
     .cv-reed-card--malbec {
-      transform: translateX(1cm);
+      transform: none;
     }
 
     .cv-reed-card--malbec:hover {
-      transform: translateX(1cm) scale(1.13);
+      transform: scale(1.13);
+    }
+
+    @media (max-width: 900px) {
+      .cv-reeds-visuals {
+        --reed-package-height: clamp(310px, 49vh, 485px);
+        margin-left: 0;
+      }
     }
 
     .cv-footer {
