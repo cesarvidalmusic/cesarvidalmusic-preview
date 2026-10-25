@@ -1,5 +1,5 @@
 /* Berlin Lite permits static title artwork, but not font-file redistribution.
-   These SVGs contain only the four title outlines. See fonts/berlin-titles.md. */
+   These SVGs contain the four title artworks. See fonts/berlin-titles.md. */
 .cv-hero-name.cv-title-berlin,
 .cv-page-title.cv-title-berlin {
   display: flex;
@@ -38,11 +38,16 @@
 }
 
 .cv-hero-name.cv-title-berlin--home {
+  width: min(100%, var(--cv-home-title-width, 6.35449219em));
   font-size: clamp(44px, 9vw, 112px);
   line-height: 1;
   margin-top: calc(clamp(1.8rem, 3.3vw, 2.8rem) + clamp(.75rem, 1.4vw, 1.25rem));
   margin-left: auto;
-  margin-right: 0;
+  margin-right: var(--cv-home-title-right, 0px);
+}
+
+.cv-title-berlin--home .cv-title-berlin-art {
+  width: 100%;
 }
 
 .cv-page-title.cv-title-berlin--bio {
