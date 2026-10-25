@@ -89,7 +89,7 @@ html:is(.cv-transition-to-des-visages, .cv-transition-to-spam, .cv-transition-to
 
 /* Photo transitions use spatial colors instead of a solid curtain.
    Small copies avoid downloading full backgrounds on other pages. */
-html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo, .cv-transition-to-music-photo, .cv-transition-to-gonzalez-photo, .cv-transition-to-contact-photo) :is(.cv-transition-curtain, .cv-transition-entering) {
+html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo, .cv-transition-to-music-live, .cv-transition-to-gonzalez-photo, .cv-transition-to-contact-photo, .cv-transition-to-home-photo) :is(.cv-transition-curtain, .cv-transition-entering) {
   overflow: hidden;
 }
 
@@ -99,7 +99,7 @@ html.cv-transition-to-artikulation :is(.cv-transition-curtain, .cv-transition-en
     linear-gradient(105deg, #030205 35%, #2116bc 80%, #30207b);
 }
 
-html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo, .cv-transition-to-music-photo, .cv-transition-to-gonzalez-photo, .cv-transition-to-contact-photo) :is(.cv-transition-curtain, .cv-transition-entering)::before {
+html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo, .cv-transition-to-music-live, .cv-transition-to-gonzalez-photo, .cv-transition-to-contact-photo, .cv-transition-to-home-photo) :is(.cv-transition-curtain, .cv-transition-entering)::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -179,12 +179,18 @@ html.cv-transition-to-nubes-photo :is(.cv-transition-curtain, .cv-transition-ent
     url("../img/nubes-transition.webp") center / cover no-repeat #000;
 }
 
-html:is(.cv-transition-to-music-photo, .cv-transition-to-gonzalez-photo) :is(.cv-transition-curtain, .cv-transition-entering) {
+html.cv-transition-to-gonzalez-photo :is(.cv-transition-curtain, .cv-transition-entering) {
   background: #fff;
 }
 
-html.cv-transition-to-music-photo :is(.cv-transition-curtain, .cv-transition-entering)::before {
-  background: url("../img/music-projects-transition.webp") center / cover no-repeat #fff;
+html.cv-transition-to-music-live :is(.cv-transition-curtain, .cv-transition-entering) {
+  background: transparent;
+}
+
+html.cv-transition-to-music-live :is(.cv-transition-curtain, .cv-transition-entering)::before {
+  background: var(--cv-transition-live-image, none) center / 100% 100% no-repeat;
+  filter: blur(var(--cv-transition-photo-content-blur));
+  transform: scale(1.008);
 }
 
 html.cv-transition-to-gonzalez-photo :is(.cv-transition-curtain, .cv-transition-entering)::before {
@@ -199,13 +205,31 @@ html.cv-transition-to-contact-photo :is(.cv-transition-curtain, .cv-transition-e
   background: url("../img/contact-transition.webp") center / cover no-repeat #999;
 }
 
+html.cv-transition-to-home-photo :is(.cv-transition-curtain, .cv-transition-entering) {
+  background: #0d0d0d;
+}
+
+html.cv-transition-to-home-photo :is(.cv-transition-curtain, .cv-transition-entering)::before {
+  top: -32px;
+  left: -14%;
+  right: auto;
+  bottom: auto;
+  width: 114%;
+  height: calc(100% + 64px);
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.08) 40%, transparent 65%, rgba(0,0,0,.18)),
+    url("../img/hero-home.webp") 50% 74% / cover no-repeat;
+  filter: blur(var(--cv-transition-photo-content-blur));
+  transform: scale(1.008);
+}
+
 html.cv-transition-leaving [data-page-transition-content],
 html.cv-transition-incoming [data-page-transition-content] {
   filter: blur(7px) brightness(0.90);
   transform: scale(1.008);
 }
 
-html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo, .cv-transition-to-music-photo, .cv-transition-to-gonzalez-photo, .cv-transition-to-contact-photo).cv-transition-incoming [data-page-transition-content] {
+html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo, .cv-transition-to-music-live, .cv-transition-to-gonzalez-photo, .cv-transition-to-contact-photo, .cv-transition-to-home-photo).cv-transition-incoming [data-page-transition-content] {
   filter: blur(var(--cv-transition-photo-content-blur)) brightness(1);
 }
 
@@ -230,7 +254,7 @@ html.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] 
     transform var(--cv-transition-in-duration) cubic-bezier(0.40, 0, 0.22, 1);
 }
 
-html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo, .cv-transition-to-music-photo, .cv-transition-to-gonzalez-photo, .cv-transition-to-contact-photo).cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
+html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo, .cv-transition-to-music-live, .cv-transition-to-gonzalez-photo, .cv-transition-to-contact-photo, .cv-transition-to-home-photo).cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
   filter: blur(0px) brightness(1);
 }
 
@@ -245,7 +269,7 @@ html.cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [dat
   animation: cv-transition-content-in var(--cv-transition-css-duration) cubic-bezier(0.40, 0, 0.22, 1) both;
 }
 
-html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo, .cv-transition-to-music-photo, .cv-transition-to-gonzalez-photo, .cv-transition-to-contact-photo).cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
+html:is(.cv-transition-to-aleas-photo, .cv-transition-to-bio-photo, .cv-transition-to-artikulation, .cv-transition-to-des-visages-photo, .cv-transition-to-spam-photo, .cv-transition-to-des-visages-ep-photo, .cv-transition-to-flor-photo, .cv-transition-to-nubes-photo, .cv-transition-to-music-live, .cv-transition-to-gonzalez-photo, .cv-transition-to-contact-photo, .cv-transition-to-home-photo).cv-transition-css-fallback.cv-transition-incoming.cv-transition-reveal [data-page-transition-content] {
   animation-name: cv-transition-photo-in;
 }
 

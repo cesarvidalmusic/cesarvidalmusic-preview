@@ -10,7 +10,7 @@ import threading
 from playwright.async_api import async_playwright
 
 from test_page_transitions import (
-    ROOT, GALLERY_COLORS, PAGE_COLORS, PHOTO_IMAGES, QuietHandler, TestServer, check_installation, new_page, direct, check_entry,
+    ROOT, GALLERY_COLORS, PAGE_COLORS, PHOTO_IMAGES, LIVE_PAGES, QuietHandler, TestServer, check_installation, new_page, direct, check_entry,
 )
 
 
@@ -23,7 +23,8 @@ function colorFrame() {
     const style = getComputedStyle(curtain);
     const photo = getComputedStyle(curtain, '::before');
     colors.push({background:style.backgroundColor, gradient:style.backgroundImage,
-      photo:photo.backgroundImage, photoBlur:photo.filter,
+      photo:photo.backgroundImage.includes('data:image/') ? 'prepared-gallery-preview' : photo.backgroundImage,
+      live:document.documentElement.classList.contains('cv-transition-to-music-live'), photoBlur:photo.filter,
       opacity:style.opacity});
     for (const animation of curtain.getAnimations()) {
       if (colorAnimations.has(animation)) continue;
@@ -62,10 +63,21 @@ def check_photo_colors(samples, image, reduced):
     assert samples and samples[0], samples
     frames = samples[0]
     assert frames[-1]['opacity'] == '1', frames
-    assert all(image in frame['photo'] and float(re.search(r'[\d.]+', frame['photoBlur'])[0]) > 0
+    assert all(image in frame['photo'] and (reduced or float(re.search(r'[\d.]+', frame['photoBlur'])[0]) > 0)
                for frame in frames), frames
     if not reduced:
         assert any(0 < float(frame['opacity']) < 1 for frame in frames), frames
+    return len(frames)
+
+
+def check_live_colors(samples, reduced):
+    assert samples and samples[0], samples
+    frames = samples[0]
+    assert frames[-1]['opacity'] == '1', frames
+    assert all(f['live'] and f['background'] == 'rgba(0, 0, 0, 0)' and
+               f['photo'] in ('prepared-gallery-preview', 'none') for f in frames), frames
+    if not reduced:
+        assert any(0 < float(f['opacity']) < 1 for f in frames), frames
     return len(frames)
 
 
@@ -73,12 +85,12 @@ async def early_cover(page, destination, color):
     await page.wait_for_url('**/' + destination, wait_until='commit')
     await page.wait_for_function("""expected => {
       const overlay=document.querySelector('.cv-transition-entering');
-      const covered = overlay && (expected.photo
+      const covered = overlay && (expected.live ? getComputedStyle(overlay).backgroundColor==='rgba(0, 0, 0, 0)' : expected.photo
         ? getComputedStyle(overlay, '::before').backgroundImage.includes(expected.photo)
         : getComputedStyle(overlay).backgroundColor===expected.color);
       return covered &&
         getComputedStyle(overlay).opacity==='1' && overlay.getAnimations().length===0;
-    }""", arg={'color':color, 'photo':PHOTO_IMAGES.get(destination)})
+    }""", arg={'color':color, 'photo':PHOTO_IMAGES.get(destination), 'live':destination in LIVE_PAGES})
 
 
 def link_selector(source, destination):
@@ -102,12 +114,13 @@ async def color_route(browser, base, destination='des-visages.html', *, source='
         async def delay_script(route):
             await asyncio.sleep(0.8)
             await route.continue_()
-        await page.route('**/page-transition.js?v=20', delay_script)
+        await page.route('**/page-transition.js?v=21', delay_script)
     await page.locator(link_selector(source, destination)).first.evaluate('(link)=>link.click()')
     if delayed:
         await early_cover(page, destination, target_color)
     await check_entry(page, destination, reduced=reduced, color=target_color)
-    forward_samples = (check_photo_colors(samples, PHOTO_IMAGES[destination], reduced)
+    forward_samples = (check_live_colors(samples, reduced) if destination in LIVE_PAGES else
+                       check_photo_colors(samples, PHOTO_IMAGES[destination], reduced)
                        if destination in PHOTO_IMAGES else check_colors(samples, source_rgb, target_rgb, reduced))
     assert abs(page.exits[-1]['duration'] - (0.08 if reduced else 0.5)) < 0.005, page.exits
     assert not await page.evaluate("document.documentElement.className.includes('cv-transition-')")
@@ -117,12 +130,13 @@ async def color_route(browser, base, destination='des-visages.html', *, source='
     if delayed:
         await early_cover(page, source, source_color)
     await check_entry(page, source, reduced=reduced, color=source_color)
-    reverse_samples = (check_photo_colors(samples, PHOTO_IMAGES[source], reduced)
+    reverse_samples = (check_live_colors(samples, reduced) if source in LIVE_PAGES else
+                       check_photo_colors(samples, PHOTO_IMAGES[source], reduced)
                        if source in PHOTO_IMAGES else check_colors(samples, target_rgb, source_rgb, reduced))
     assert abs(page.exits[-1]['duration'] - (0.08 if reduced else 0.5)) < 0.005, page.exits
     assert not await page.evaluate("document.documentElement.className.includes('cv-transition-')")
     if delayed:
-        await page.unroute('**/page-transition.js?v=20', delay_script)
+        await page.unroute('**/page-transition.js?v=21', delay_script)
     await page.go_back(wait_until='domcontentloaded')
     await page.wait_for_function("!document.documentElement.className.includes('cv-transition-')")
     await page.go_forward(wait_until='domcontentloaded')

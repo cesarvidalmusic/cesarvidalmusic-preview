@@ -7,6 +7,13 @@
   <script>
     (function () {
       try {
+        const previewSeed = Number(new URL(location.href).searchParams.get('cv-scene-preview'));
+        if (Number.isInteger(previewSeed) && previewSeed > 0 && previewSeed <= 0xffffffff) {
+          // Preparing the layout must not consume the real navigation's intent.
+          window.cvMusicTransitionSeed = previewSeed;
+          window.cvMusicTransitionPreview = true;
+          return;
+        }
         const key = "cv-page-transition";
         const raw = sessionStorage.getItem(key);
         sessionStorage.removeItem(key);
@@ -14,15 +21,23 @@
         const age = state ? Date.now() - Number(state.time) : Infinity;
         if (state && state.target === location.pathname && age >= 0 && age < 60000) {
           document.documentElement.classList.add("cv-transition-incoming");
-          document.documentElement.classList.add("cv-transition-to-music-photo");
+          document.documentElement.classList.add("cv-transition-to-music-live");
+          if (Number.isInteger(state.seed) && state.seed > 0 && state.seed <= 0xffffffff) {
+            window.cvMusicTransitionSeed = state.seed;
+          }
+          if (typeof state.preview === 'string' && state.preview.length < 1500000 &&
+              /^data:image\/(?:webp|png);base64,[A-Za-z0-9+/=]+$/.test(state.preview)) {
+            document.documentElement.style.setProperty('--cv-transition-live-image', `url("${state.preview}")`);
+          }
         }
       } catch (error) {
         // Navigation remains available when storage is blocked.
       }
     })();
   </script>
-  <link rel="stylesheet" href="css/page-transition.css?v=20" />
-  <script defer src="page-transition.js?v=20" onerror="document.documentElement.classList.remove('cv-transition-incoming', 'cv-transition-to-music-photo')"></script>
+  <link rel="stylesheet" href="css/page-transition.css?v=21" />
+  <script defer src="gallery-transition.js?v=1"></script>
+  <script defer src="page-transition.js?v=21" onerror="document.documentElement.classList.remove('cv-transition-incoming', 'cv-transition-to-music-live'); document.documentElement.style.removeProperty('--cv-transition-live-image')"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Music & Projects — César Vidal." />
@@ -361,6 +376,15 @@
 
   <script src="music-projects-views.js?v=5"></script>
   <script>
+    const IS_TRANSITION_PREVIEW = window.cvMusicTransitionPreview === true;
+    let projectSeed = window.cvMusicTransitionSeed;
+    function projectRandom() {
+      if (!Number.isInteger(projectSeed)) return Math.random();
+      projectSeed ^= projectSeed << 13;
+      projectSeed ^= projectSeed >>> 17;
+      projectSeed ^= projectSeed << 5;
+      return (projectSeed >>> 0) / 0x100000000;
+    }
     const SPEEDS = [22, 30, 18, 26];
 
     const DIRS = [1, -1, 1, -1];
@@ -449,7 +473,7 @@
     let stageHeight = 0;
     let lastTime = null;
     let reservedCards = new Set();
-    let motionRunning = true;
+    let motionRunning = !IS_TRANSITION_PREVIEW;
     let motionFrame = null;
     let motionObserver = null;
     let motionPrepared = false;
@@ -475,7 +499,7 @@
       const copy = [...array];
 
       for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(projectRandom() * (i + 1));
         [copy[i], copy[j]] = [copy[j], copy[i]];
       }
 
@@ -617,7 +641,7 @@
       });
 
       return available[
-        Math.floor(Math.random() * available.length)
+        Math.floor(projectRandom() * available.length)
       ];
     }
 
@@ -760,7 +784,7 @@
     }
 
     function resumeGallery() {
-      if (motionRunning) return;
+      if (IS_TRANSITION_PREVIEW || motionRunning) return;
       motionRunning = true;
       lastTime = null;
       motionFrame = requestAnimationFrame(animate);

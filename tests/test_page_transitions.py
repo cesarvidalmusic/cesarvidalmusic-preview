@@ -36,7 +36,7 @@ PAGE_COLORS = {
     'merch.html': 'rgb(255, 255, 255)',
 }
 PHOTO_IMAGES = {
-    'music-projects.html': 'music-projects-transition.webp',
+    'index.html': 'hero-home.webp',
     'gonzalez-reeds.html': 'gonzalez-transition.webp',
     'contact.html': 'contact-transition.webp',
     'aleas.html': 'aleas-transition.webp',
@@ -48,6 +48,7 @@ PHOTO_IMAGES = {
     'flor-de-loto.html': 'flor-de-loto-transition.webp',
     'nubes.html': 'nubes-transition.webp',
 }
+LIVE_PAGES = {'music-projects.html'}
 
 
 def route_color(source, destination):
@@ -80,7 +81,9 @@ new MutationObserver(() => {
     const seconds = animation.effect.getTiming().duration / 1000;
     window.fadeRuns.push({duration: seconds, background: style.backgroundColor,
       gradient: style.backgroundImage,
-      photo: photo.backgroundImage, photoBlur: photo.filter,
+      photo: photo.backgroundImage.includes('data:image/') ? 'prepared-gallery-preview' : photo.backgroundImage,
+      live: document.documentElement.classList.contains('cv-transition-to-music-live'),
+      photoTransform: photo.transform, photoBlur: photo.filter,
       contentFrames: contentAnimation?.effect.getKeyframes().map(frame => frame.filter) || [],
       cards: document.querySelectorAll('.cv-mp-card').length});
     animation.finished.then(() => {
@@ -138,11 +141,13 @@ class InlineScripts(HTMLParser):
 
 def check_installation():
     subprocess.run(['node', '--check', str(ROOT / 'page-transition.js')], check=True)
+    subprocess.run(['node', '--check', str(ROOT / 'gallery-transition.js')], check=True)
     assert not (ROOT / 'CNAME').exists(), 'The preview must not bind the official domain'
     for name in PAGES:
         html = (ROOT / name).read_text()
-        version = 20
+        version = 21
         assert html.count(f'src="page-transition.js?v={version}"') == 1, name
+        assert html.count('src="gallery-transition.js?v=1"') == 1, name
         assert html.count(f'href="css/page-transition.css?v={version}"') == 1, name
         assert html.count('data-page-transition-content') == 1, name
         assert html.count('class="cv-transition-entering"') == 1, name
@@ -201,9 +206,14 @@ async def check_entry(page, destination, *, reduced=False, color=None):
     duration = 0.1 if reduced else 0.65
     assert len(result['runs']) == 1 and result['ends'] == [duration], (destination, result)
     run = result['runs'][0]
-    if destination in PHOTO_IMAGES:
-        assert PHOTO_IMAGES[destination] in run['photo'], result
-        assert run['photoBlur'].startswith('blur(') and run['photoBlur'] != 'blur(0px)', result
+    if destination in PHOTO_IMAGES or destination in LIVE_PAGES:
+        if destination in LIVE_PAGES:
+            assert run['live'] and run['photo'] in ('prepared-gallery-preview', 'none'), result
+            assert run['background'] == 'rgba(0, 0, 0, 0)', result
+            assert run['photoTransform'] == 'matrix(1.008, 0, 0, 1.008, 0, 0)', result
+        else:
+            assert PHOTO_IMAGES[destination] in run['photo'], result
+        assert run['photoBlur'].startswith('blur(') and (reduced or run['photoBlur'] != 'blur(0px)'), result
         assert run['contentFrames'][0] == f"blur({0 if reduced else 48}px) brightness(1)", result
         assert run['contentFrames'][-1] == 'blur(0px) brightness(1)', result
     else:
@@ -350,6 +360,43 @@ async def failure_and_link_checks(browser, base):
     return 'external/modifier/disabled links and missing-resource/storage fallbacks'
 
 
+async def gallery_scene_alignment(browser, base):
+    cases = []
+    for mobile in (False, True):
+        for view in ('moving', 'overview'):
+            context, page = await new_page(browser, base, mobile=mobile)
+            await direct(page, base, 'bio.html')
+            await page.evaluate('(view)=>sessionStorage.setItem("cv-mp-view",view)', view)
+            scene = await page.evaluate('''async () => {
+              const scene=cvGalleryTransition.prepare();await scene.ready;
+              return {seed:scene.seed,hasImage:!!scene.image,layout:scene.layout};
+            }''')
+            assert scene['hasImage'] and scene['layout'], scene
+            assert not await page.locator('iframe[data-cv-gallery-preview]').count()
+            await page.locator('nav a[href="music-projects.html"]').click()
+            await check_entry(page, 'music-projects.html')
+            await page.evaluate('pauseGallery()')
+            actual = await page.evaluate('''() => {
+              const clip=document.querySelector('.cv-mp-stage').getBoundingClientRect();
+              return Array.from(document.querySelectorAll('.cv-mp-cover')).flatMap(image=>{
+                const box=image.getBoundingClientRect();
+                return box.width && box.right>clip.left && box.left<clip.right && box.bottom>clip.top && box.top<clip.bottom
+                  ? [{project:image.closest('.cv-mp-card').dataset.project,x:box.x,y:box.y,width:box.width}] : [];
+              });
+            }''')
+            assert [a['project'] for a in actual] == [a['project'] for a in scene['layout']], (scene, actual)
+            for a, b in zip(actual, scene['layout']):
+                assert abs(a['x'] - b['x']) < 1 and abs(a['width'] - b['width']) < 1, (a, b)
+                # Moving covers naturally travel during the 650 ms reveal.
+                assert abs(a['y'] - b['y']) < (40 if view == 'moving' else 1), (a, b)
+            assert await page.evaluate('window.cvMusicTransitionSeed') == scene['seed']
+            assert not await page.evaluate('document.documentElement.style.getPropertyValue("--cv-transition-live-image")')
+            assert not page.errors, page.errors
+            cases.append({'mobile': mobile, 'view': view, 'matching_covers': len(actual)})
+            await context.close()
+    return cases
+
+
 async def warm_cache_and_gallery(browser, base):
     context, page = await new_page(browser, base, external_filter=False)
     await direct(page, base, 'index.html')
@@ -413,6 +460,7 @@ async def run(base, suite):
             results['mobile'] = await mobile_cycle(browser, base)
             results['reduced_motion'] = await mobile_cycle(browser, base, reduced=True)
         if suite in ('all', 'resilience'):
+            results['gallery_scene_alignment'] = await gallery_scene_alignment(browser, base)
             results['fallbacks'] = await failure_and_link_checks(browser, base)
             results['cache_and_gallery'] = await warm_cache_and_gallery(browser, base)
             results['delayed_loads'] = await asyncio.gather(
