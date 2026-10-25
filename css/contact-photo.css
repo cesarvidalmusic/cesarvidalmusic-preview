@@ -1,0 +1,131 @@
+/* The original photograph stays complete at the right; only its empty backdrop extends. */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #999;
+}
+
+.cv-page {
+  height: 100vh;
+  height: 100svh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cv-contact-scene {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cv-contact-backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  filter: grayscale(1);
+  pointer-events: none;
+  user-select: none;
+}
+
+.cv-contact-texture {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: right center;
+}
+
+.cv-contact-photo {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: right bottom;
+  /* Blend only the empty left margin; the subject retains the original pixels. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 9%);
+  mask-image: linear-gradient(to right, transparent, #000 9%);
+}
+
+.cv-nav {
+  background: transparent;
+}
+
+.cv-nav.cv-nav--dark a {
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+
+.cv-nav.cv-nav--dark a:hover,
+.cv-nav a.active {
+  color: var(--accent);
+}
+
+.cv-page-content {
+  position: relative;
+  z-index: 2;
+  min-height: 0;
+  padding-top: var(--nav-height);
+  background: transparent;
+}
+
+.cv-page-hero {
+  display: block;
+  border-bottom: 0;
+  background: transparent;
+}
+
+.cv-page-title {
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0,0,0,.18);
+}
+
+.cv-contact-photo-credit {
+  position: absolute;
+  right: clamp(.75rem, 2vw, 1.25rem);
+  bottom: clamp(.5rem, 1.5vw, 1rem);
+  z-index: 3;
+  font-family: 'Ronzino', sans-serif;
+  font-size: clamp(9px, .9vw, 11px);
+  line-height: normal;
+  letter-spacing: .16em;
+  text-transform: lowercase;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,.5);
+  pointer-events: none;
+}
+
+.cv-footer {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  padding: .55rem clamp(.5rem, 2vw, 1.25rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: .5px solid #E0E0E0;
+  background: #fff;
+}
+
+.cv-footer span {
+  font-family: 'Ronzino', sans-serif;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: lowercase;
+  color: #bbb;
+}
+
+@media (max-aspect-ratio: 5/4) {
+  /* Narrow screens show the full photograph at the bottom without a duplicate figure. */
+  .cv-contact-texture { object-position: left center; }
+  .cv-contact-photo {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 8%);
+    mask-image: linear-gradient(to bottom, transparent, #000 8%);
+  }
+}
