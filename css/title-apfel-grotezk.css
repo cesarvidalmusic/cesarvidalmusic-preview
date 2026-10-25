@@ -1,0 +1,56 @@
+/* Apfel Grotezk Mittel by Collletttivo, as used in the Des Visages hero.
+   See fonts/apfel-grotezk-mittel-OFL.txt for its license and copyright. */
+@font-face {
+  font-family: 'Apfel Grotezk';
+  src: url('../fonts/apfel-grotezk-mittel.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+.cv-hero-name.cv-title-apfel,
+.cv-page-title.cv-title-apfel {
+  font-family: 'Apfel Grotezk', Arial, sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-synthesis: none;
+  font-size: clamp(38px, 8vw, 92px);
+  letter-spacing: -.045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  -webkit-text-stroke: 0;
+}
+
+.cv-page-title.cv-title-apfel {
+  line-height: clamp(28px, 5vw, 52px);
+}
+
+.cv-title-apfel.cv-title-apfel--black { color: #000; }
+.cv-title-apfel.cv-title-apfel--white { color: #fff; }
+
+.cv-hero-name.cv-title-apfel--home {
+  font-size: clamp(44px, 9vw, 112px);
+  line-height: 1;
+  margin-top: calc(clamp(1.8rem, 3.3vw, 2.8rem) + clamp(.75rem, 1.4vw, 1.25rem));
+  /* The L's 7-unit sidebearing and -45-unit tracking leave 38 units of ink
+     beyond its advance. Keep that ink aligned with the contact menu link. */
+  margin-right: .038em;
+}
+
+.cv-page-title.cv-title-apfel--bio {
+  width: fit-content;
+  max-width: 100%;
+  font-size: clamp(44px, 9vw, 112px);
+  transform: none;
+}
+
+.cv-page-title.cv-title-apfel--music {
+  /* The existing gallery controls fit this heading into the available width. */
+  width: fit-content;
+}
+
+.cv-page-title.cv-title-apfel--contact {
+  position: relative;
+  top: .05em;
+  font-size: clamp(44px, 9vw, 112px);
+}
